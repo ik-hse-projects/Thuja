@@ -5,39 +5,37 @@ namespace Тhuja
 {
     public class Screen
     {
-        private readonly (int width, int height) Size;
-        private char[,] Content { get; }
+        public readonly (int width, int height) Size;
+        public readonly char[,] Content;
 
-        public Screen(char[,] content)
+        public void Clear(char filler)
         {
-            Content = content;
-            Size = (content.GetLength(0), content.GetLength(1));
-        }
-
-        public static Screen Cleared(int width, int height)
-        {
-            var content = new char[width, height];
-            for (var x = 0; x < width; x++)
+            for (var x = 0; x < Size.width; x++)
             {
-                for (var y = 0; y < height; y++)
+                for (var y = 0; y < Size.height; y++)
                 {
-                    content[x, y] = ' ';
+                    Content[x, y] = filler;
                 }
             }
+        }
 
-            return new Screen(content);
+        public Screen(int width, int height)
+        {
+            Size = (width, height);
+            Content = new char[width, height];
+            Clear(' ');
         }
 
         private bool TrySet(int x, int y, char character)
         {
             var (width, height) = Size;
-            var isOk = x < width && x >= 0 && y < height && y >= 0;
-            if (isOk)
+            if (x < width && x >= 0 && y < height && y >= 0)
             {
                 Content[x, y] = character;
+                return true;
             }
 
-            return isOk;
+            return false;
         }
 
         public void PlaceWidget(int x, int y, IDisplayable widget)
@@ -45,7 +43,7 @@ namespace Тhuja
             var rendered = widget.Render();
             for (var i = 0; i < rendered.GetLength(0); i++)
             {
-                for (var j = 0; i < rendered.GetLength(1); j++)
+                for (var j = 0; j < rendered.GetLength(1); j++)
                 {
                     var ch = rendered[i, j];
                     if (ch != null)
@@ -61,6 +59,15 @@ namespace Тhuja
             if (other.Size != Size)
             {
                 throw new ArgumentException("Переданный экран имеет не тот размер", nameof(other));
+            }
+
+            if (ReferenceEquals(this.Content, other.Content))
+            {
+                yield break;
+            }
+            if (this.Content.Equals(other.Content))
+            {
+                yield break;
             }
 
             for (var y = 0; y < Size.height; y++)
@@ -82,7 +89,7 @@ namespace Тhuja
                         distanceFromLastDifference++;
                         if (distanceFromLastDifference > distanceThreshold && diff != null)
                         {
-                            diff.Value.Chars.RemoveLast(distanceFromLastDifference);
+                            diff.Value.Chars.RemoveLast(distanceFromLastDifference - 1);
                             yield return (Difference) diff;
                             diff = null;
                         }

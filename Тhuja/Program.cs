@@ -6,7 +6,7 @@ namespace Тhuja
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            VideoPlayer.Play(args[0]);
         }
     }
 }
