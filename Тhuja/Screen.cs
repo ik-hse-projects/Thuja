@@ -6,9 +6,9 @@ namespace Тhuja
     public class Screen
     {
         public readonly (int width, int height) Size;
-        public readonly char[,] Content;
+        public readonly ColoredChar[,] Content;
 
-        public void Clear(char filler)
+        public void Clear(ColoredChar filler)
         {
             for (var x = 0; x < Size.width; x++)
             {
@@ -22,11 +22,11 @@ namespace Тhuja
         public Screen(int width, int height)
         {
             Size = (width, height);
-            Content = new char[width, height];
-            Clear(' ');
+            Content = new ColoredChar[width, height];
+            Clear(ColoredChar.Whitespace);
         }
 
-        private bool TrySet(int x, int y, char character)
+        private bool TrySet(int x, int y, ColoredChar character)
         {
             var (width, height) = Size;
             if (x < width && x >= 0 && y < height && y >= 0)
@@ -77,14 +77,9 @@ namespace Тhuja
                 Difference? diff = null;
                 for (var x = 0; x < Size.width; x++)
                 {
-                    var thisChar = Content[x, y];
+                    var thisChar = this.Content[x, y];
                     var otherChar = other.Content[x, y];
-                    if (thisChar != otherChar)
-                    {
-                        distanceFromLastDifference = 0;
-                        diff ??= new Difference(y, x);
-                    }
-                    else
+                    if (thisChar.Equals(otherChar))
                     {
                         distanceFromLastDifference++;
                         if (distanceFromLastDifference > distanceThreshold && diff != null)
@@ -93,6 +88,11 @@ namespace Тhuja
                             yield return (Difference) diff;
                             diff = null;
                         }
+                    }
+                    else
+                    {
+                        distanceFromLastDifference = 0;
+                        diff ??= new Difference(y, x);
                     }
 
                     diff?.Chars.Add(thisChar);
@@ -110,13 +110,13 @@ namespace Тhuja
     {
         public int Line;
         public int Column;
-        public List<char> Chars;
+        public List<ColoredChar> Chars;
 
         public Difference(int line, int column) : this()
         {
             Line = line;
             Column = column;
-            Chars = new List<char>();
+            Chars = new List<ColoredChar>();
         }
     }
 }

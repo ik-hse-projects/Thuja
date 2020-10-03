@@ -2,6 +2,6 @@ namespace Тhuja
 {
     public interface IDisplayable
     {
-        char?[,] Render();
+        ColoredChar?[,] Render();
     }
 }
