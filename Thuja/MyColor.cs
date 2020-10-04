@@ -1,6 +1,6 @@
 using System;
 
-namespace Тhuja
+namespace Thuja
 {
     public enum MyColor: byte
     {

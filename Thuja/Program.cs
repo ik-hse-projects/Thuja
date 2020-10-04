@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace Тhuja
+namespace Thuja
 {
     class Program
     {
         static void Main(string[] args)
         {
-            VideoPlayer.Play(args[0]);
+            VideoPlayer.Play();
         }
     }
 }

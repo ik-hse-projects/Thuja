@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Тhuja
+namespace Thuja
 {
     public class Screen
     {

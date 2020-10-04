@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 
-namespace Тhuja
+namespace Thuja
 {
     public struct Style
     {

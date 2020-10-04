@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Тhuja
+namespace Thuja
 {
     public class Display
     {

@@ -1,4 +1,4 @@
-namespace Тhuja
+namespace Thuja
 {
     public interface IDisplayable
     {
