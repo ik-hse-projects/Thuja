@@ -91,8 +91,8 @@ namespace Thuja
                 for (int x = 0; x < Info.Width; x++)
                 {
                     var style = BitConverter.ToUInt16(_buffer, offset);
-                    var foreground = (MyColor)((style & 0b11111_00000_000000) >> 11);
-                    var background = (MyColor)((style & 0b00000_11111_000000) >> 6);
+                    var foreground = MyColorExt.FromInt((style & 0b11111_00000_000000) >> 11);
+                    var background = MyColorExt.FromInt((style & 0b00000_11111_000000) >> 6);
                     var flags = (byte)(style & 0b00000_00000_111111);
 
                     if (!Enum.IsDefined(typeof(MyColor), foreground))

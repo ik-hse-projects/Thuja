@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Thuja
 {
@@ -21,22 +22,39 @@ namespace Thuja
         Yellow = 14,
         White = 15,
         Default = 16,
-        Transparent = 32,
+        Transparent = 17,
     }
 
     public static class MyColorExt
     {
+        private static Dictionary<MyColor, ConsoleColor> _mapping = new Dictionary<MyColor, ConsoleColor>();
+
+        public static MyColor FromInt(int b)
+        {
+            if (b <= 17)
+            {
+                return (MyColor) b;
+            }
+
+            return MyColor.Default;
+        }
+        
         public static ConsoleColor ToConsoleColor(this MyColor color)
         {
             if (color == MyColor.Default || color == MyColor.Transparent)
             {
                 return default;
             }
-
-            // Slow, but robust
-            if (Enum.TryParse<ConsoleColor>(color.ToString(), out var res))
+            
+            if (_mapping.TryGetValue(color, out var cached))
             {
-                return res;
+                return cached;
+            }
+            // Slow, but robust
+            if (Enum.TryParse<ConsoleColor>(color.ToString(), out var parsed))
+            {
+                _mapping.Add(color, parsed);
+                return parsed;
             }
 
             // Should not be here, but we do not want to crash because of colors
