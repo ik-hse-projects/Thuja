@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Thuja
 {
-    public static class ListExt
+    public static class Extensions
     {
-        public static void RemoveLast<T>(this List<T> self, int count)
+        public static void RemoveLast<T>(this List<T> self, int count=1)
         {
             self.RemoveRange(self.Count - count, count);
         }
@@ -37,6 +37,17 @@ namespace Thuja
             }
 
             yield return (key, group);
+        }
+
+        public static ColoredChar[,] ToColoredRow(this string str, Style style, int layer = 0)
+        {
+            var result = new ColoredChar[str.Length, 1];
+            for (var i = 0; i < str.Length; i++)
+            {
+                result[i, 0] = new ColoredChar(style, str[i], layer);
+            }
+
+            return result;
         }
     }
 }

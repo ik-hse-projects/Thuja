@@ -8,10 +8,10 @@ namespace Thuja.Widgets
 
         public (int x, int y, int layer) Position { get; set; }
 
-        public ColoredChar?[,] Render()
+        public ColoredChar[,] Render()
         {
             var s = info.KeyChar.ToString();
-            var res = new ColoredChar?[s.Length, 1];
+            var res = new ColoredChar[s.Length, 1];
             for (var i = 0; i < s.Length; i++) res[i, 0] = new ColoredChar(new Style(MyColor.White, MyColor.Red), s[i]);
 
             return res;

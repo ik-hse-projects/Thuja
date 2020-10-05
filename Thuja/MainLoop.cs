@@ -6,8 +6,14 @@ using System.Threading;
 
 namespace Thuja
 {
-    public struct Tick
+    public readonly struct Tick
     {
+        public readonly bool IsFocused;
+
+        public Tick(bool isFocused)
+        {
+            IsFocused = isFocused;
+        }
     }
 
     public interface IWidget : IDisplayable
@@ -76,7 +82,7 @@ namespace Thuja
                 var scaled = scaledCounters[index];
                 if (scaled % counter == 0)
                 {
-                    widget.Update(new Tick());
+                    widget.Update(new Tick(ReferenceEquals(widget, Focused)));
                     display!.CurrentScreen.PlaceWidget(widget);
                 }
             }

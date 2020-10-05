@@ -69,13 +69,7 @@ namespace Thuja
             for (var j = 0; j < rendered.GetLength(1); j++)
             {
                 var ch = rendered[i, j];
-                if (ch != null)
-                {
-                    var coloredChar = ch.Value;
-                    TrySet(x + i, y + j,
-                        new ColoredChar(coloredChar.Style, coloredChar.Char,
-                            coloredChar.Layer + layer));
-                }
+                TrySet(x + i, y + j, new ColoredChar(ch.Style, ch.Char, ch.Layer + layer));
             }
         }
 

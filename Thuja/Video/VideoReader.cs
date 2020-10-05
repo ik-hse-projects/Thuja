@@ -23,7 +23,7 @@ namespace Thuja.Video
         public int TotalLength => Width * Height;
     }
 
-    public class VideoReader : IEnumerator<ColoredChar?[,]>
+    public class VideoReader : IEnumerator<ColoredChar[,]>
     {
         public readonly VideoInfo Info;
         private readonly byte[] buffer;
@@ -33,11 +33,11 @@ namespace Thuja.Video
         {
             Info = info;
             this.stream = stream;
-            Current = new ColoredChar?[Info.Width, Info.Height];
+            Current = new ColoredChar[Info.Width, Info.Height];
             buffer = new byte[info.TotalLength * 5];
         }
 
-        public ColoredChar?[,] Current { get; }
+        public ColoredChar[,] Current { get; }
 
         public void Reset()
         {

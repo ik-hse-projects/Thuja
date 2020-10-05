@@ -7,19 +7,19 @@ namespace Thuja.Video
     public class VideoPlayer : IWidget
     {
         private readonly FileStream fileStream;
-        private ColoredChar?[,] frame;
+        private ColoredChar[,] frame;
         private VideoReader reader;
 
         public VideoPlayer(FileStream file)
         {
             fileStream = file;
-            frame = new ColoredChar?[0, 0];
+            frame = new ColoredChar[0, 0];
             Reset();
         }
 
         public (int x, int y, int layer) Position { get; set; }
 
-        public ColoredChar?[,] Render() => frame;
+        public ColoredChar[,] Render() => frame;
 
         public (int, int) Fps => (reader.Info.Fps1, reader.Info.Fps2);
 
