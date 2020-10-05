@@ -12,7 +12,7 @@ namespace Thuja
             loop.Add(new VideoPlayer(File.OpenRead(Path.Combine(args[0]))));
             loop.AddFocused(new InputField
             {
-                Position = (2, 2, 1),
+                RelativePosition = (2, 2, 1),
                 MaxLength = 15,
                 AllowedChars = {CharRange.Ascii},
                 Placeholder = new Placeholder(new Style(MyColor.Cyan, MyColor.Black), "Enter text")

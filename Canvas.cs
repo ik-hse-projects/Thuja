@@ -31,7 +31,14 @@ namespace Thuja
                 Content[x, y] = filler;
         }
 
-        private bool TrySet(int x, int y, ColoredChar character)
+        public ColoredChar? Get(int x, int y)
+        {
+            var (width, height) = Size;
+            if (x >= width || x < 0 || y >= height || y < 0) return null;
+            return Content[x, y];
+        }
+
+        public bool TrySet(int x, int y, ColoredChar character)
         {
             var (width, height) = Size;
             if (x >= width || x < 0 || y >= height || y < 0) return false;
@@ -61,16 +68,9 @@ namespace Thuja
             return true;
         }
 
-        public void PlaceWidget(IDisplayable widget)
+        public RenderContext BeginRender()
         {
-            var (x, y, layer) = widget.Position;
-            var rendered = widget.Render();
-            for (var i = 0; i < rendered.GetLength(0); i++)
-            for (var j = 0; j < rendered.GetLength(1); j++)
-            {
-                var ch = rendered[i, j];
-                TrySet(x + i, y + j, new ColoredChar(ch.Style, ch.Char, ch.Layer + layer));
-            }
+            return new RenderContext((0, 0, 0), this);
         }
 
         public IEnumerable<Difference> FindDifferences(Canvas other)

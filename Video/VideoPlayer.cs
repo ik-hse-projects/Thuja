@@ -17,9 +17,18 @@ namespace Thuja.Video
             Reset();
         }
 
-        public (int x, int y, int layer) Position { get; set; }
+        public (int x, int y, int layer) RelativePosition { get; set; }
 
-        public ColoredChar[,] Render() => frame;
+        public void Render(RenderContext context)
+        {
+            for (int x = 0; x < reader.Info.Width; x++)
+            {
+                for (int y = 0; y < reader.Info.Height; y++)
+                {
+                    context[x, y] = frame[x, y];
+                }
+            }
+        }
 
         public int Fps => reader.Info.Fps;
 

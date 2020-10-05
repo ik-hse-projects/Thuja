@@ -60,6 +60,7 @@ namespace Thuja
                 Focused?.BubbleDown(key);
             }
 
+            var context = display!.CurrentScreen.BeginRender();
             for (var index = 0; index < widgets.Count; index++)
             {
                 var widget = widgets[index];
@@ -67,7 +68,7 @@ namespace Thuja
                 if (scaled % counter == 0)
                 {
                     widget.Update(new Tick());
-                    display!.CurrentScreen.PlaceWidget(widget);
+                    widget.Render(context.Derive(widget.RelativePosition));
                 }
             }
 

@@ -67,10 +67,15 @@ namespace Thuja.Widgets
             }
         }
 
-        public (int x, int y, int layer) Position { get; set; }
+        public (int x, int y, int layer) RelativePosition { get; set; }
 
-        public ColoredChar[,] Render()
+        public void Render(RenderContext context)
         {
+            if (isFocused)
+            {
+                context.CursorPosition = (cursorLeft, 0);
+            }
+            
             string text;
             Style style;
             if (!isFocused && Text.Length == 0)
@@ -89,16 +94,7 @@ namespace Thuja.Widgets
                 text += new string('_', MaxLength - text.Length);
             }
 
-            return text.ToColoredRow(style);
-        }
-
-        public void Update(Tick tick)
-        {
-            if (isFocused)
-            {
-                Console.CursorLeft = Position.x + CursorLeft;
-                Console.CursorTop = Position.y;
-            }
+            context.PlaceString(text, style);
         }
 
         private void Del()
