@@ -8,19 +8,23 @@ namespace Thuja.Widgets
     public readonly struct CharRange
     {
         public static CharRange Ascii = new CharRange(' ', '~');
-        public static CharRange Digits = new CharRange('0', '9');
         
-        public readonly char Start;
-        public readonly char End;
+        private readonly char start;
+        private  readonly char end;
 
-        public CharRange(char start, char end)
+        private CharRange(char start, char end)
         {
             if (start > end)
             {
                 throw new ArgumentException("start > end");
             }
-            Start = start;
-            End = end;
+            this.start = start;
+            this.end = end;
+        }
+
+        public bool Check(char ch)
+        {
+            return start <= ch && ch <= end;
         }
     }
 
@@ -36,7 +40,7 @@ namespace Thuja.Widgets
         }
     }
 
-    public class InputField : IWidget
+    public class InputField : IFocusable
     {
         public int MaxLength { get; set; } = int.MaxValue;
         public HashSet<CharRange> AllowedChars { get; } = new HashSet<CharRange>();
@@ -88,11 +92,8 @@ namespace Thuja.Widgets
             return text.ToColoredRow(style);
         }
 
-        public int Fps { get; } = 0;
-
         public void Update(Tick tick)
         {
-            isFocused = tick.IsFocused;
             if (isFocused)
             {
                 Console.CursorLeft = Position.x + CursorLeft;
@@ -134,7 +135,7 @@ namespace Thuja.Widgets
             }
 
             var ch = key.KeyChar;
-            if (AllowedChars.Any(range => ch >= range.Start && ch <= range.End))
+            if (AllowedChars.Any(range => range.Check(ch)))
             {
                 if (Text.Length < MaxLength)
                 {
@@ -146,6 +147,11 @@ namespace Thuja.Widgets
             }
 
             return false;
+        }
+
+        public void FocusChange(bool focused)
+        {
+            isFocused = focused;
         }
     }
 }

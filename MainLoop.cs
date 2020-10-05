@@ -8,34 +8,18 @@ namespace Thuja
 {
     public readonly struct Tick
     {
-        public readonly bool IsFocused;
-
-        public Tick(bool isFocused)
-        {
-            IsFocused = isFocused;
-        }
     }
 
-    public interface IWidget : IDisplayable
-    {
-        public int Fps { get; }
-        public void Update(Tick tick);
-        public bool BubbleDown(ConsoleKeyInfo key);
-    }
-
-    public class MainLoop
+    public class MainLoop: Container
     {
         private Display? display;
-
-        public IWidget? Focused;
-        private readonly List<IWidget> widgets = new List<IWidget>();
 
         public void Add(IWidget widget)
         {
             widgets.Add(widget);
         }
 
-        public void AddFocused(IWidget widget)
+        public void AddFocused(IFocusable widget)
         {
             Add(widget);
             Focused = widget;
@@ -82,7 +66,7 @@ namespace Thuja
                 var scaled = scaledCounters[index];
                 if (scaled % counter == 0)
                 {
-                    widget.Update(new Tick(ReferenceEquals(widget, Focused)));
+                    widget.Update(new Tick());
                     display!.CurrentScreen.PlaceWidget(widget);
                 }
             }
