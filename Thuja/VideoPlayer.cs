@@ -30,7 +30,7 @@ namespace Thuja
         private ColoredChar?[,] Frame;
         private VideoReader Reader;
         
-        public (int x, int y) Position { get; set; }
+        public (int x, int y, int layer) Position { get; set; }
         public ColoredChar?[,] Render() => Frame;
 
         public (int, int) Fps => (Reader.Info.Fps1, Reader.Info.Fps2);

@@ -8,6 +8,15 @@ namespace Thuja
         public readonly (int width, int height) Size;
         public readonly ColoredChar[,] Content;
 
+        public void Clear()
+        {
+            Clear(new ColoredChar(
+                new Style(MyColor.Transparent, MyColor.Transparent),
+                ' ',
+                Int32.MinValue
+            ));
+        }
+
         public void Clear(ColoredChar filler)
         {
             for (var x = 0; x < Size.width; x++)
@@ -23,7 +32,7 @@ namespace Thuja
         {
             Size = (width, height);
             Content = new ColoredChar[width, height];
-            Clear(ColoredChar.Whitespace);
+            Clear();
         }
 
         private bool TrySet(int x, int y, ColoredChar character)
@@ -41,6 +50,11 @@ namespace Thuja
             }
 
             var old = Content[x, y];
+            if (old.Layer > character.Layer)
+            {
+                return true;
+            }
+
             if (character.Style.Foreground == MyColor.Transparent)
             {
                 var style = new Style(old.Style.Foreground, character.Style.Background);
@@ -61,7 +75,7 @@ namespace Thuja
 
         public void PlaceWidget(IDisplayable widget)
         {
-            var (x, y) = widget.Position;
+            var (x, y, layer) = widget.Position;
             var rendered = widget.Render();
             for (var i = 0; i < rendered.GetLength(0); i++)
             {
@@ -70,7 +84,10 @@ namespace Thuja
                     var ch = rendered[i, j];
                     if (ch != null)
                     {
-                        TrySet(x + i, y + j, ch.Value);
+                        var coloredChar = ch.Value;
+                        TrySet(x + i, y + j,
+                            new ColoredChar(coloredChar.Style, coloredChar.Char,
+                                coloredChar.Layer + layer));
                     }
                 }
             }
@@ -87,6 +104,7 @@ namespace Thuja
             {
                 yield break;
             }
+
             if (this.Content.Equals(other.Content))
             {
                 yield break;

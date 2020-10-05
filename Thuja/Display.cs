@@ -62,7 +62,7 @@ namespace Thuja
             if (_prev != null && _prev.Size == (width, height))
             {
                 (_curr, _prev) = (_prev, _curr);
-                _curr.Clear(ColoredChar.Whitespace);
+                _curr.Clear();
             }
             else
             {

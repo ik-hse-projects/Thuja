@@ -34,18 +34,22 @@ namespace Thuja
     {
         public readonly Style Style;
         public readonly char Char;
+        public readonly int Layer;
 
-        public ColoredChar(Style style, char c)
+        public ColoredChar(Style style, char c, int layer)
         {
             Style = style;
             Char = c;
+            Layer = layer;
+        }
+        
+        public ColoredChar(Style style, char c): this(style, c, 0)
+        {
         }
         
         public ColoredChar(char c) : this(new Style(MyColor.Default, MyColor.Default), c)
         {
         }
-
-        public static ColoredChar Whitespace = new ColoredChar(new Style(MyColor.Transparent, MyColor.Transparent), ' ');
 
         public bool Equals(ColoredChar other)
         {
