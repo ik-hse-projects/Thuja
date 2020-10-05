@@ -18,7 +18,7 @@ namespace Thuja
 
     public interface IWidget : IDisplayable
     {
-        public (int, int) Fps { get; }
+        public int Fps { get; }
         public void Update(Tick tick);
         public bool BubbleDown(ConsoleKeyInfo key);
     }
@@ -49,7 +49,7 @@ namespace Thuja
                 var fps = FindFps();
                 var delay = Stopwatch.Frequency / fps;
                 var scaledCounters = widgets
-                    .Select(w => w.Fps.Item2 == 0 ? 0 : w.Fps.Item1 * (fps / w.Fps.Item2))
+                    .Select(w => w.Fps == 0 ? 0 : fps / w.Fps)
                     .ToArray();
                 var maxCounter = scaledCounters.Max();
                 var counter = 0;
@@ -100,7 +100,7 @@ namespace Thuja
             // Find lowest common divisor of all widgets 
             const double minimum = 20;
             var calculated = widgets
-                .Select(w => w.Fps.Item2)
+                .Select(w => w.Fps)
                 .Where(fps => fps != 0)
                 .Aggregate(1, Lcm);
             return calculated * (int) Math.Ceiling(minimum / calculated);

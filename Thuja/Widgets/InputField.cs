@@ -88,7 +88,7 @@ namespace Thuja.Widgets
             return text.ToColoredRow(style);
         }
 
-        public (int, int) Fps { get; } = (0, 0);
+        public int Fps { get; } = 0;
 
         public void Update(Tick tick)
         {

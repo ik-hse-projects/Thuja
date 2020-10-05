@@ -17,7 +17,7 @@ namespace Thuja.Widgets
             return res;
         }
 
-        public (int, int) Fps => (0, 0);
+        public int Fps => 0;
 
         public void Update(Tick tick)
         {

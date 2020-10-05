@@ -9,15 +9,13 @@ namespace Thuja.Video
     {
         public readonly int Width;
         public readonly int Height;
-        public readonly int Fps1;
-        public readonly int Fps2;
+        public readonly int Fps;
 
-        public VideoInfo(int width, int height, int fps1, int fps2 = 1)
+        public VideoInfo(int width, int height, int fps)
         {
             Width = width;
             Height = height;
-            Fps1 = fps1;
-            Fps2 = fps2;
+            Fps = fps;
         }
 
         public int TotalLength => Width * Height;
@@ -90,10 +88,9 @@ namespace Thuja.Video
 
             var width = BitConverter.ToInt16(buffer, 0);
             var height = BitConverter.ToInt16(buffer, 2);
-            var fps2 = buffer[4];
-            var fps1 = buffer[5];
+            var fps = buffer[4];
 
-            return new VideoReader(new VideoInfo(width, height, fps1, fps2), stream);
+            return new VideoReader(new VideoInfo(width, height, fps), stream);
         }
     }
 }

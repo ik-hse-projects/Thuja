@@ -21,7 +21,7 @@ namespace Thuja.Video
 
         public ColoredChar[,] Render() => frame;
 
-        public (int, int) Fps => (reader.Info.Fps1, reader.Info.Fps2);
+        public int Fps => reader.Info.Fps;
 
         public void Update(Tick tick)
         {
