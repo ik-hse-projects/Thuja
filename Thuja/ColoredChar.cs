@@ -1,9 +1,8 @@
 using System;
-using System.Drawing;
 
 namespace Thuja
 {
-    public struct Style
+    public readonly struct Style
     {
         public readonly MyColor Foreground;
         public readonly MyColor Background;
@@ -30,30 +29,26 @@ namespace Thuja
         }
     }
 
-    public struct ColoredChar
+    public readonly struct ColoredChar
     {
         public readonly Style Style;
         public readonly char Char;
         public readonly int Layer;
 
-        public ColoredChar(Style style, char c, int layer)
+        public ColoredChar(Style style, char c, int layer = 0)
         {
             Style = style;
             Char = c;
             Layer = layer;
         }
-        
-        public ColoredChar(Style style, char c): this(style, c, 0)
-        {
-        }
-        
+
         public ColoredChar(char c) : this(new Style(MyColor.Default, MyColor.Default), c)
         {
         }
 
         public bool Equals(ColoredChar other)
         {
-            return Style.Equals(other.Style) && Char == other.Char;
+            return Style.Equals(other.Style) && Char == other.Char && Layer == other.Layer;
         }
 
         public override bool Equals(object? obj)
@@ -63,7 +58,7 @@ namespace Thuja
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Style, Char);
+            return HashCode.Combine(Style, Char, Layer);
         }
     }
 }

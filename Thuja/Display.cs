@@ -5,45 +5,55 @@ namespace Thuja
 {
     public class Display
     {
-        private Canvas? _prev;
-        private Canvas _curr;
+        private Canvas? prev;
 
         public Display()
         {
-            _prev = null;
-            _curr = new Canvas(Console.WindowWidth, Console.WindowHeight);
+            prev = null;
+            CurrentScreen = new Canvas(Console.WindowWidth, Console.WindowHeight);
         }
 
-        public Canvas CurrentScreen => _curr;
+        public Canvas CurrentScreen { get; private set; }
 
-        public void Clear()
+        private void Clear()
         {
             Console.Clear();
-            _prev = new Canvas(_curr.Size.width, _curr.Size.height);
+            prev = new Canvas(CurrentScreen.Size.width, CurrentScreen.Size.height);
         }
 
         public void Draw()
         {
-            var position = (Console.CursorLeft, Console.CursorTop);
+            var (cursorLeft, cursorTop) = (Console.CursorLeft, Console.CursorTop);
 
             Console.CursorVisible = false;
-            if (_prev == null || _prev.Size != _curr.Size)
-            {
-                Clear();
-            }
-            
-            foreach (var difference in _curr.FindDifferences(_prev))
-            {
-                DrawDifference(difference);
-            }
+            if (prev == null || prev.Size != CurrentScreen.Size) Clear();
 
-            Console.SetCursorPosition(position.CursorLeft, position.CursorTop);
+            foreach (var difference in CurrentScreen.FindDifferences(prev)) DrawDifference(difference);
+
+            Console.SetCursorPosition(cursorLeft, cursorTop);
             Console.CursorVisible = true;
 
             Swap();
         }
 
-        private void DrawDifference(Difference difference)
+        private void Swap()
+        {
+            var width = Console.WindowWidth;
+            var height = Console.WindowHeight;
+
+            if (prev != null && prev.Size == (width, height))
+            {
+                (CurrentScreen, prev) = (prev, CurrentScreen);
+                CurrentScreen.Clear();
+            }
+            else
+            {
+                prev = null;
+                CurrentScreen = new Canvas(width, height);
+            }
+        }
+        
+        private static void DrawDifference(Difference difference)
         {
             Console.SetCursorPosition(difference.Column, difference.Line);
             foreach (var (style, coloredChars) in difference.Chars.MakeGroups(c => c.Style))
@@ -54,24 +64,7 @@ namespace Thuja
             }
         }
 
-        private void Swap()
-        {
-            var width = Console.WindowWidth;
-            var height = Console.WindowHeight;
-
-            if (_prev != null && _prev.Size == (width, height))
-            {
-                (_curr, _prev) = (_prev, _curr);
-                _curr.Clear();
-            }
-            else
-            {
-                _prev = null;
-                _curr = new Canvas(width, height);
-            }
-        }
-
-        public static void WriteString(Style style, string str)
+        private static void WriteString(Style style, string str)
         {
             if (style.Foreground == MyColor.Transparent && style.Background == MyColor.Transparent)
             {
@@ -79,16 +72,13 @@ namespace Thuja
                 return;
             }
 
-            if (style.Foreground == MyColor.Transparent)
-            {
-                str = new string(' ', str.Length);
-            }
+            if (style.Foreground == MyColor.Transparent) str = new string(' ', str.Length);
 
             // Treat transparent background as default.
             var background = style.Background == MyColor.Transparent
                 ? MyColor.Default
                 : style.Background;
-            
+
             var changed = false;
             if (style.Foreground != MyColor.Default)
             {
@@ -101,13 +91,10 @@ namespace Thuja
                 Console.BackgroundColor = background.ToConsoleColor();
                 changed = true;
             }
-            
+
             Console.Write(str);
 
-            if (changed)
-            {
-                Console.ResetColor();
-            }
+            if (changed) Console.ResetColor();
         }
     }
 }

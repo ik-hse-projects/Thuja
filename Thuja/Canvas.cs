@@ -5,28 +5,8 @@ namespace Thuja
 {
     public class Canvas
     {
-        public readonly (int width, int height) Size;
         public readonly ColoredChar[,] Content;
-
-        public void Clear()
-        {
-            Clear(new ColoredChar(
-                new Style(MyColor.Transparent, MyColor.Transparent),
-                ' ',
-                Int32.MinValue
-            ));
-        }
-
-        public void Clear(ColoredChar filler)
-        {
-            for (var x = 0; x < Size.width; x++)
-            {
-                for (var y = 0; y < Size.height; y++)
-                {
-                    Content[x, y] = filler;
-                }
-            }
-        }
+        public readonly (int width, int height) Size;
 
         public Canvas(int width, int height)
         {
@@ -35,25 +15,33 @@ namespace Thuja
             Clear();
         }
 
+        public void Clear()
+        {
+            Clear(new ColoredChar(
+                new Style(MyColor.Transparent, MyColor.Transparent),
+                ' ',
+                int.MinValue
+            ));
+        }
+
+        public void Clear(ColoredChar filler)
+        {
+            for (var x = 0; x < Size.width; x++)
+            for (var y = 0; y < Size.height; y++)
+                Content[x, y] = filler;
+        }
+
         private bool TrySet(int x, int y, ColoredChar character)
         {
             var (width, height) = Size;
-            if (x >= width || x < 0 || y >= height || y < 0)
-            {
-                return false;
-            }
+            if (x >= width || x < 0 || y >= height || y < 0) return false;
 
             if (character.Style.Foreground == MyColor.Transparent &&
                 character.Style.Background == MyColor.Transparent)
-            {
                 return true;
-            }
 
             var old = Content[x, y];
-            if (old.Layer > character.Layer)
-            {
-                return true;
-            }
+            if (old.Layer > character.Layer) return true;
 
             if (character.Style.Foreground == MyColor.Transparent)
             {
@@ -78,37 +66,26 @@ namespace Thuja
             var (x, y, layer) = widget.Position;
             var rendered = widget.Render();
             for (var i = 0; i < rendered.GetLength(0); i++)
+            for (var j = 0; j < rendered.GetLength(1); j++)
             {
-                for (var j = 0; j < rendered.GetLength(1); j++)
+                var ch = rendered[i, j];
+                if (ch != null)
                 {
-                    var ch = rendered[i, j];
-                    if (ch != null)
-                    {
-                        var coloredChar = ch.Value;
-                        TrySet(x + i, y + j,
-                            new ColoredChar(coloredChar.Style, coloredChar.Char,
-                                coloredChar.Layer + layer));
-                    }
+                    var coloredChar = ch.Value;
+                    TrySet(x + i, y + j,
+                        new ColoredChar(coloredChar.Style, coloredChar.Char,
+                            coloredChar.Layer + layer));
                 }
             }
         }
 
         public IEnumerable<Difference> FindDifferences(Canvas other)
         {
-            if (other.Size != Size)
-            {
-                throw new ArgumentException("Переданный экран имеет не тот размер", nameof(other));
-            }
+            if (other.Size != Size) throw new ArgumentException("Переданный экран имеет не тот размер", nameof(other));
 
-            if (ReferenceEquals(this.Content, other.Content))
-            {
-                yield break;
-            }
+            if (ReferenceEquals(Content, other.Content)) yield break;
 
-            if (this.Content.Equals(other.Content))
-            {
-                yield break;
-            }
+            if (Content.Equals(other.Content)) yield break;
 
             for (var y = 0; y < Size.height; y++)
             {
@@ -117,7 +94,7 @@ namespace Thuja
                 Difference? diff = null;
                 for (var x = 0; x < Size.width; x++)
                 {
-                    var thisChar = this.Content[x, y];
+                    var thisChar = Content[x, y];
                     var otherChar = other.Content[x, y];
                     if (thisChar.Equals(otherChar))
                     {
@@ -138,19 +115,16 @@ namespace Thuja
                     diff?.Chars.Add(thisChar);
                 }
 
-                if (diff != null)
-                {
-                    yield return (Difference) diff;
-                }
+                if (diff != null) yield return (Difference) diff;
             }
         }
     }
 
-    public struct Difference
+    public readonly struct Difference
     {
-        public int Line;
-        public int Column;
-        public List<ColoredChar> Chars;
+        public readonly int Line;
+        public readonly int Column;
+        public readonly List<ColoredChar> Chars;
 
         public Difference(int line, int column) : this()
         {

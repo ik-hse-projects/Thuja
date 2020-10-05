@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Thuja
 {
@@ -14,11 +13,8 @@ namespace Thuja
         public static IEnumerable<(TKey, List<TSource>)> MakeGroups<TSource, TKey>(this IEnumerable<TSource> self,
             Func<TSource, TKey> selector)
         {
-            var enumerator = self.GetEnumerator();
-            if (!enumerator.MoveNext())
-            {
-                yield break;
-            }
+            using var enumerator = self.GetEnumerator();
+            if (!enumerator.MoveNext()) yield break;
 
             var first = enumerator.Current;
             var key = selector(first);
@@ -28,7 +24,7 @@ namespace Thuja
             {
                 var current = enumerator.Current;
                 var currentKey = selector(current);
-                if (currentKey.Equals(key))
+                if ((currentKey == null && key == null) || (currentKey != null && currentKey.Equals(key)))
                 {
                     group.Add(current);
                 }

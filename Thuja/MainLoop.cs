@@ -6,41 +6,43 @@ using System.Threading;
 
 namespace Thuja
 {
-    public struct Tick {}
-    
-    public interface IWidget: IDisplayable
+    public struct Tick
+    {
+    }
+
+    public interface IWidget : IDisplayable
     {
         public (int, int) Fps { get; }
         public void Update(Tick tick);
         public bool BubbleDown(ConsoleKeyInfo key);
     }
-    
+
     public class MainLoop
     {
-        private List<IWidget> Widgets = new List<IWidget>();
-        private Display _display;
+        private Display? display;
 
-        public IWidget? Foucused;
+        public IWidget? Focused;
+        private readonly List<IWidget> widgets = new List<IWidget>();
 
         public void Add(IWidget widget)
         {
-            Widgets.Add(widget);
+            widgets.Add(widget);
         }
 
         public void AddFocused(IWidget widget)
         {
             Add(widget);
-            Foucused = widget;
+            Focused = widget;
         }
 
         public void Start()
         {
-            _display = new Display();
+            display = new Display();
             while (true)
             {
                 var fps = FindFps();
                 var delay = Stopwatch.Frequency / fps;
-                var scaledCounters = Widgets
+                var scaledCounters = widgets
                     .Select(w => w.Fps.Item2 == 0 ? 0 : w.Fps.Item1 * (fps / w.Fps.Item2))
                     .ToArray();
                 var maxCounter = scaledCounters.Max();
@@ -53,12 +55,10 @@ namespace Thuja
 
                     Tick(scaledCounters, counter);
 
-                    while (Stopwatch.GetTimestamp() < end)
-                    {
-                        Thread.Sleep(1);
-                    }
+                    while (Stopwatch.GetTimestamp() < end) Thread.Sleep(1);
                 } while (counter <= maxCounter);
             }
+
             // ReSharper disable once FunctionNeverReturns
         }
 
@@ -67,48 +67,46 @@ namespace Thuja
             if (Console.KeyAvailable)
             {
                 var key = Console.ReadKey(true);
-                Foucused?.BubbleDown(key);
+                Focused?.BubbleDown(key);
             }
-                    
-            for (var index = 0; index < Widgets.Count; index++)
+
+            for (var index = 0; index < widgets.Count; index++)
             {
-                var widget = Widgets[index];
+                var widget = widgets[index];
                 var scaled = scaledCounters[index];
                 if (scaled % counter == 0)
                 {
                     widget.Update(new Tick());
-                    _display.CurrentScreen.PlaceWidget(widget);
+                    display!.CurrentScreen.PlaceWidget(widget);
                 }
             }
-            _display.Draw();
+
+            display!.Draw();
         }
 
         private int FindFps()
         {
-            static int Lcm(int a, int b) => a * b / Euclid(a, b);
-            
+            static int Lcm(int a, int b)
+            {
+                return a * b / Euclid(a, b);
+            }
+
             // Find lowest common divisor of all widgets 
-            const double Minimum = 20;
-            var calculated = Widgets
+            const double minimum = 20;
+            var calculated = widgets
                 .Select(w => w.Fps.Item2)
                 .Where(fps => fps != 0)
                 .Aggregate(1, Lcm);
-            return calculated * (int) Math.Ceiling(Minimum / calculated);
+            return calculated * (int) Math.Ceiling(minimum / calculated);
         }
-        
+
         private static int Euclid(int a, int b)
         {
             while (a != 0 && b != 0)
-            {
                 if (a > b)
-                {
                     a %= b;
-                }
                 else
-                {
                     b %= a;
-                }
-            }
 
             return a + b;
         }
