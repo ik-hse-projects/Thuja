@@ -6,8 +6,6 @@ namespace Thuja.Widgets
     {
         private ConsoleKeyInfo info;
 
-        public (int x, int y, int layer) RelativePosition { get; set; }
-
         public void Render(RenderContext context)
         {
             var s = info.KeyChar.ToString();

@@ -8,7 +8,7 @@ namespace Thuja
         private readonly (int x, int y, int layer) offset;
         private readonly Canvas canvas;
         private (int x, int y) size;
-        public (int x, int y) Size => size;
+        public (int x, int y) Size => (size.x + 1, size.y + 1);
 
         public RenderContext((int x, int y, int layer) offset, Canvas canvas, RenderContext? parent = null)
         {
@@ -44,6 +44,10 @@ namespace Thuja
         {
             if (x > size.x) size.x = x;
             if (y > size.y) size.y = y;
+            if (parent != null)
+            {
+            }
+
             parent?.UpdateSize(x + offset.x, y + offset.y);
         }
 

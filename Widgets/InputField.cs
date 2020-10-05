@@ -8,6 +8,7 @@ namespace Thuja.Widgets
     public readonly struct CharRange
     {
         public static CharRange Ascii = new CharRange(' ', '~');
+        public static CharRange Digits = new CharRange('0', '9');
         
         private readonly char start;
         private  readonly char end;
@@ -66,8 +67,6 @@ namespace Thuja.Widgets
                     cursorLeft = value;
             }
         }
-
-        public (int x, int y, int layer) RelativePosition { get; set; }
 
         public void Render(RenderContext context)
         {

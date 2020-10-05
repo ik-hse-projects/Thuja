@@ -13,7 +13,6 @@ namespace Thuja
         {
         }
 
-        public (int x, int y, int layer) RelativePosition { get; }
         void Render(RenderContext context);
         
         public int Fps => 0;

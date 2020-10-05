@@ -17,8 +17,6 @@ namespace Thuja.Video
             Reset();
         }
 
-        public (int x, int y, int layer) RelativePosition { get; set; }
-
         public void Render(RenderContext context)
         {
             for (int x = 0; x < reader.Info.Width; x++)

@@ -1,14 +1,15 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Thuja
 {
-    public class Container : IFocusable
+    public abstract class BaseContainer : IFocusable, IEnumerable<IWidget>
     {
-        private MainLoop? loop;
-        private IFocusable? focused;
+        protected MainLoop? loop;
         protected readonly List<IWidget> widgets = new List<IWidget>();
 
+        private IFocusable? focused;
         public IFocusable? Focused
         {
             get => focused;
@@ -42,24 +43,33 @@ namespace Thuja
             this.loop = loop;
         }
 
-        public (int x, int y, int layer) RelativePosition { get; set; }
-
-        public void Render(RenderContext context)
-        {
-            foreach (var widget in widgets)
-            {
-                widget.Render(context.Derive(widget.RelativePosition));
-            }
-        }
+        public abstract void Render(RenderContext context);
 
         public void FocusChange(bool isFocused)
         {
             focused?.FocusChange(isFocused);
         }
 
+        public virtual bool BubbleUp(ConsoleKeyInfo key) => false;
+
         public bool BubbleDown(ConsoleKeyInfo key)
         {
-            return focused?.BubbleDown(key) ?? false;
+            if (focused != null && focused.BubbleDown(key))
+            {
+                return true;
+            }
+
+            return BubbleUp(key);
+        }
+
+        public IEnumerator<IWidget> GetEnumerator()
+        {
+            return widgets.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

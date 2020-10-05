@@ -73,8 +73,7 @@ namespace Thuja
                 }
             }
 
-            var context = display!.CurrentScreen.BeginRender()
-                .Derive(root.RelativePosition);
+            var context = display!.CurrentScreen.BeginRender();
             root.Render(context);
 
             display!.Draw();
