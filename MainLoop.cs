@@ -10,19 +10,22 @@ namespace Thuja
     {
     }
 
-    public class MainLoop: Container
+    public class MainLoop
     {
+        private readonly List<IWidget> widgets = new List<IWidget>();
+        private IWidget root;
         private Display? display;
 
-        public void Add(IWidget widget)
+        public MainLoop(IWidget root)
         {
-            widgets.Add(widget);
+            Register(root);
+            this.root = root;
         }
 
-        public void AddFocused(IFocusable widget)
+        public void Register(IWidget widget)
         {
-            Add(widget);
-            Focused = widget;
+            widget.OnRegistered(this);
+            widgets.Add(widget);
         }
 
         public void Start()
@@ -54,13 +57,12 @@ namespace Thuja
 
         private void Tick(int[] scaledCounters, int counter)
         {
-            if (Console.KeyAvailable)
+            if (Console.KeyAvailable && root is IFocusable focusable)
             {
                 var key = Console.ReadKey(true);
-                Focused?.BubbleDown(key);
+                focusable.BubbleDown(key);
             }
 
-            var context = display!.CurrentScreen.BeginRender();
             for (var index = 0; index < widgets.Count; index++)
             {
                 var widget = widgets[index];
@@ -68,9 +70,12 @@ namespace Thuja
                 if (scaled % counter == 0)
                 {
                     widget.Update(new Tick());
-                    widget.Render(context.Derive(widget.RelativePosition));
                 }
             }
+
+            var context = display!.CurrentScreen.BeginRender()
+                .Derive(root.RelativePosition);
+            root.Render(context);
 
             display!.Draw();
         }

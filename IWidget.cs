@@ -4,11 +4,15 @@ namespace Thuja
 {
     public interface IFocusable : IWidget
     {
-        public void FocusChange(bool focused);
+        public void FocusChange(bool isFocused);
     }
     
     public interface IWidget
     {
+        public void OnRegistered(MainLoop loop)
+        {
+        }
+
         public (int x, int y, int layer) RelativePosition { get; }
         void Render(RenderContext context);
         

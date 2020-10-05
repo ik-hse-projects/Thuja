@@ -145,9 +145,9 @@ namespace Thuja.Widgets
             return false;
         }
 
-        public void FocusChange(bool focused)
+        public void FocusChange(bool isFocused)
         {
-            isFocused = focused;
+            this.isFocused = isFocused;
         }
     }
 }
