@@ -10,4 +10,16 @@
       <DocumentationFile>bin\Debug\Thuja.xml</DocumentationFile>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Compile Remove="work\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="work\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="work\**" />
+    </ItemGroup>
+
 </Project>
