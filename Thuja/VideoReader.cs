@@ -30,20 +30,18 @@ namespace Thuja
         }
     }
 
-    public class VideoReader : IEnumerator<VideoFrame>
+    public class VideoReader : IEnumerator<ColoredChar?[,]>
     {
         public readonly VideoInfo Info;
         private Stream _stream;
         private byte[] _buffer;
+        public ColoredChar?[,] Current { get; }
 
         private VideoReader(VideoInfo info, Stream stream)
         {
             Info = info;
             _stream = stream;
-            Current = new VideoFrame
-            {
-                Content = new ColoredChar?[Info.Width, Info.Height]
-            };
+            Current = new ColoredChar?[Info.Width, Info.Height];
             _buffer = new byte[info.TotalLength * 5];
         }
 
@@ -58,16 +56,21 @@ namespace Thuja
 
             var width = BitConverter.ToInt16(buffer, 0);
             var height = BitConverter.ToInt16(buffer, 2);
-            var fps1 = buffer[4];
-            var fps2 = buffer[5];
+            var fps2 = buffer[4];
+            var fps1 = buffer[5];
 
             if (fps1 == 0 && fps2 == 0)
             {
-                fps1 = 24;
-                fps2 = 1;
+                fps1 = 1;
+                fps2 = 24;
             }
 
             return new VideoReader(new VideoInfo(width, height, fps1, fps2), stream);
+        }
+        
+        public void Reset()
+        {
+            _stream.Seek(6, SeekOrigin.Begin);
         }
 
         public bool MoveNext()
@@ -82,7 +85,6 @@ namespace Thuja
                 throw new Exception("Can't read full frame");
             }
 
-            var frame = Current.Content;
             var offset = 0;
             for (int y = 0; y < Info.Height; y++)
             {
@@ -109,19 +111,12 @@ namespace Thuja
                     var character = (char) charNumber;
                     offset += 5;
 
-                    frame[x, y] = new ColoredChar(foreground, background, new Flags(flags), character);
+                    Current[x, y] = new ColoredChar(new Style(foreground, background), character);
                 }
             }
 
             return true;
         }
-
-        public void Reset()
-        {
-            _stream.Seek(12, SeekOrigin.Begin);
-        }
-
-        public VideoFrame Current { get; }
 
         object IEnumerator.Current => Current;
 

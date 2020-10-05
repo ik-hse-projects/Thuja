@@ -5,24 +5,21 @@ namespace Thuja
 {
     public class Display
     {
-        private Screen? _prev;
-        private Screen _curr;
+        private Canvas? _prev;
+        private Canvas _curr;
 
         public Display()
         {
             _prev = null;
-            _curr = new Screen(Console.WindowWidth, Console.WindowHeight);
+            _curr = new Canvas(Console.WindowWidth, Console.WindowHeight);
         }
 
-        public Screen CurrentScreen()
-        {
-            return _curr;
-        }
+        public Canvas CurrentScreen => _curr;
 
         public void Clear()
         {
             Console.Clear();
-            _prev = new Screen(_curr.Size.width, _curr.Size.height);
+            _prev = new Canvas(_curr.Size.width, _curr.Size.height);
         }
 
         public void Draw()
@@ -70,7 +67,7 @@ namespace Thuja
             else
             {
                 _prev = null;
-                _curr = new Screen(width, height);
+                _curr = new Canvas(width, height);
             }
         }
 

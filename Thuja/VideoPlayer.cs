@@ -7,42 +7,52 @@ using System.Threading;
 
 namespace Thuja
 {
-    public class VideoPlayer
+    public class VideoPlayer: IWidget
     {
         public static void Play(string path)
         {
             var root = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             var file = File.OpenRead(Path.Combine(root, path));
-            var brotli = new BrotliStream(file, CompressionMode.Decompress);
-            var reader = VideoReader.Init(brotli);
-            
-            var invFps = (double) reader.Info.Fps2 / reader.Info.Fps1;
-            var display = new Display();
-            var delay = Stopwatch.Frequency * invFps;
-            Console.WriteLine($"Playing...");
-            while (reader.MoveNext())
-            {
-                var end = Stopwatch.GetTimestamp() + delay;
 
-                var frame = reader.Current;
-                display.CurrentScreen().PlaceWidget(0, 0, frame);
-                display.Draw();
-
-                while (Stopwatch.GetTimestamp() < end)
-                {
-                    Thread.Sleep(1);
-                }
-            }
+            var loop = new MainLoop();
+            loop.Add(new VideoPlayer(file));
+            loop.Start();
         }
-    }
-
-    public class VideoFrame : IDisplayable
-    {
-        public ColoredChar?[,] Content;
-
-        public ColoredChar?[,] Render()
+        
+        public VideoPlayer(FileStream file)
         {
-            return Content;
+            FileStream = file;
+            Frame = new ColoredChar?[0,0];
+            Reset();
+        }
+
+        private FileStream FileStream;
+        private ColoredChar?[,] Frame;
+        private VideoReader Reader;
+        
+        public (int x, int y) Position { get; set; }
+        public ColoredChar?[,] Render() => Frame;
+
+        public (int, int) Fps => (Reader.Info.Fps1, Reader.Info.Fps2);
+        public void Update(Tick tick)
+        {
+            if (!Reader.MoveNext())
+            {
+                Reset();
+                Reader.MoveNext();
+            }
+            Frame = Reader.Current;
+        }
+
+        private void Reset()
+        {
+            FileStream.Seek(0, SeekOrigin.Begin);
+            Reader = VideoReader.Init(new BufferedStream(new BrotliStream(FileStream, CompressionMode.Decompress)));
+        }
+
+        public bool BubbleDown(ConsoleKeyInfo key)
+        {
+            return false;
         }
     }
 }

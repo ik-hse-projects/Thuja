@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Thuja
 {
-    public class Screen
+    public class Canvas
     {
         public readonly (int width, int height) Size;
         public readonly ColoredChar[,] Content;
@@ -19,7 +19,7 @@ namespace Thuja
             }
         }
 
-        public Screen(int width, int height)
+        public Canvas(int width, int height)
         {
             Size = (width, height);
             Content = new ColoredChar[width, height];
@@ -29,17 +29,39 @@ namespace Thuja
         private bool TrySet(int x, int y, ColoredChar character)
         {
             var (width, height) = Size;
-            if (x < width && x >= 0 && y < height && y >= 0)
+            if (x >= width || x < 0 || y >= height || y < 0)
             {
-                Content[x, y] = character;
+                return false;
+            }
+
+            if (character.Style.Foreground == MyColor.Transparent &&
+                character.Style.Background == MyColor.Transparent)
+            {
                 return true;
             }
 
-            return false;
+            var old = Content[x, y];
+            if (character.Style.Foreground == MyColor.Transparent)
+            {
+                var style = new Style(old.Style.Foreground, character.Style.Background);
+                Content[x, y] = new ColoredChar(style, old.Char);
+                return true;
+            }
+
+            if (character.Style.Background == MyColor.Transparent)
+            {
+                var style = new Style(character.Style.Foreground, old.Style.Background);
+                Content[x, y] = new ColoredChar(style, character.Char);
+                return true;
+            }
+
+            Content[x, y] = character;
+            return true;
         }
 
-        public void PlaceWidget(int x, int y, IDisplayable widget)
+        public void PlaceWidget(IDisplayable widget)
         {
+            var (x, y) = widget.Position;
             var rendered = widget.Render();
             for (var i = 0; i < rendered.GetLength(0); i++)
             {
@@ -54,7 +76,7 @@ namespace Thuja
             }
         }
 
-        public IEnumerable<Difference> FindDifferences(Screen other)
+        public IEnumerable<Difference> FindDifferences(Canvas other)
         {
             if (other.Size != Size)
             {
