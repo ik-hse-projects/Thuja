@@ -7,9 +7,9 @@ namespace Thuja
     {
         public readonly MyColor Foreground;
         public readonly MyColor Background;
-        public readonly ushort Flags;
+        public readonly Flags Flags;
 
-        public Style(MyColor foreground, MyColor background, ushort flags)
+        public Style(MyColor foreground, MyColor background, Flags flags)
         {
             Foreground = foreground;
             Background = background;
@@ -18,7 +18,7 @@ namespace Thuja
 
         public bool Equals(Style other)
         {
-            return Foreground == other.Foreground && Background == other.Background && Flags == other.Flags;
+            return Foreground == other.Foreground && Background == other.Background && Flags.Equals(other.Flags);
         }
 
         public override bool Equals(object? obj)
@@ -37,13 +37,13 @@ namespace Thuja
         public readonly Style Style;
         public readonly char Char;
 
-        public ColoredChar(MyColor foreground, MyColor background, ushort flags, char c)
+        public ColoredChar(MyColor foreground, MyColor background, Flags flags, char c)
         {
             Style = new Style(foreground, background, flags);
             Char = c;
         }
 
-        public ColoredChar(MyColor foreground, MyColor background, char c) : this(foreground, background, 0, c)
+        public ColoredChar(MyColor foreground, MyColor background, char c) : this(foreground, background, default, c)
         {
         }
 

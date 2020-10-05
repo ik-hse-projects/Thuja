@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -43,22 +44,28 @@ namespace Thuja
             {
                 Content = new ColoredChar?[Info.Width, Info.Height]
             };
-            _buffer = new byte[info.TotalLength * 8];
+            _buffer = new byte[info.TotalLength * 5];
         }
 
         public static VideoReader Init(Stream stream)
         {
-            var buffer = new byte[12];
-            var bytesRead = stream.Read(buffer, 0, 12);
-            if (bytesRead != 12)
+            var buffer = new byte[6];
+            var bytesRead = stream.Read(buffer, 0, 6);
+            if (bytesRead != 6)
             {
                 throw new Exception("Can't read header");
             }
 
-            var width = BitConverter.ToInt32(buffer, 0);
-            var height = BitConverter.ToInt32(buffer, 4);
-            var fps1 = BitConverter.ToUInt16(buffer, 8);
-            var fps2 = BitConverter.ToUInt16(buffer, 10);
+            var width = BitConverter.ToInt16(buffer, 0);
+            var height = BitConverter.ToInt16(buffer, 2);
+            var fps1 = buffer[4];
+            var fps2 = buffer[5];
+
+            if (fps1 == 0 && fps2 == 0)
+            {
+                fps1 = 24;
+                fps2 = 1;
+            }
 
             return new VideoReader(new VideoInfo(width, height, fps1, fps2), stream);
         }
@@ -70,7 +77,7 @@ namespace Thuja
             {
                 return false;
             }
-            if (bytesRead != Info.TotalLength * 8)
+            if (bytesRead != Info.TotalLength * 5)
             {
                 throw new Exception("Can't read full frame");
             }
@@ -81,15 +88,28 @@ namespace Thuja
             {
                 for (int x = 0; x < Info.Width; x++)
                 {
-                    var background = _buffer[offset];
-                    var foreground = _buffer[offset + 1];
-                    var flags = BitConverter.ToUInt16(_buffer, offset + 2);
-                    var chars = Encoding.UTF32.GetChars(_buffer, offset + 4, 4);
-                    offset += 8;
+                    var style = BitConverter.ToUInt16(_buffer, offset);
+                    var foreground = (MyColor)((style & 0b11111_00000_000000) >> 11);
+                    var background = (MyColor)((style & 0b00000_11111_000000) >> 6);
+                    var flags = (byte)(style & 0b00000_00000_111111);
 
-                    var character = chars.Length == 1 ? chars[0] : '�';
+                    if (!Enum.IsDefined(typeof(MyColor), foreground))
+                    {
+                        foreground = default;
+                    }
+                    if (!Enum.IsDefined(typeof(MyColor), background))
+                    {
+                        background = default;
+                    }
 
-                    frame[x, y] = new ColoredChar((MyColor) foreground, (MyColor) background, flags, character);
+                    var charNumber =
+                        _buffer[offset + 2]
+                        | (_buffer[offset + 3] << 8)
+                        | (_buffer[offset + 4] << 16);
+                    var character = (char) charNumber;
+                    offset += 5;
+
+                    frame[x, y] = new ColoredChar(foreground, background, new Flags(flags), character);
                 }
             }
 

@@ -4,28 +4,24 @@ namespace Thuja
 {
     public enum MyColor: byte
     {
-        // Dark
         Black = 0,
-        DarkRed = 1,
+        DarkBlue = 1,
         DarkGreen = 2,
-        DarkYellow = 3,
-        DarkBlue = 4,
+        DarkCyan = 3,
+        DarkRed = 4,
         DarkMagenta = 5,
-        DarkCyan = 6,
-        DarkGray = 8,
-        
-        // Bright
+        DarkYellow = 6,
         Gray = 7,
-        Red = 9,
-        Green = 10,
-        Yellow = 11,
-        Blue = 12,
-        Magenta = 13,
-        Cyan = 14,
+        DarkGray = 8,
+        Blue = 10,
+        Green = 11,
+        Cyan = 12,
+        Red = 13,
+        Magenta = 14,
+        Yellow = 14,
         White = 15,
-
-        Default = 255,
-        Transparent = 254,
+        Default = 16,
+        Transparent = 32,
     }
 
     public static class MyColorExt

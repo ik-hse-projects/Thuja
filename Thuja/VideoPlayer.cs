@@ -9,9 +9,8 @@ namespace Thuja
 {
     public class VideoPlayer
     {
-        public static void Play()
+        public static void Play(string path)
         {
-            var path = Console.BufferWidth >= 84 && Console.BufferHeight >= 63 ? "apple.br" : "small.br";
             var root = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             var file = File.OpenRead(Path.Combine(root, path));
             var brotli = new BrotliStream(file, CompressionMode.Decompress);

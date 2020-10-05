@@ -6,7 +6,7 @@ namespace Thuja
     {
         static void Main(string[] args)
         {
-            VideoPlayer.Play();
+            VideoPlayer.Play(args[0]);
         }
     }
 }
