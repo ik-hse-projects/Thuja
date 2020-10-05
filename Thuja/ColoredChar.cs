@@ -41,11 +41,11 @@ namespace Thuja
             Char = c;
         }
         
-        public ColoredChar(char c) : this(new Style(), c)
+        public ColoredChar(char c) : this(new Style(MyColor.Default, MyColor.Default), c)
         {
         }
 
-        public static ColoredChar Whitespace = new ColoredChar(' ');
+        public static ColoredChar Whitespace = new ColoredChar(new Style(MyColor.Transparent, MyColor.Transparent), ' ');
 
         public bool Equals(ColoredChar other)
         {

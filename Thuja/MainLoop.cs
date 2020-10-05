@@ -27,6 +27,12 @@ namespace Thuja
             Widgets.Add(widget);
         }
 
+        public void AddFocused(IWidget widget)
+        {
+            Add(widget);
+            Foucused = widget;
+        }
+
         public void Start()
         {
             _display = new Display();
@@ -35,20 +41,23 @@ namespace Thuja
                 var fps = FindFps();
                 var delay = Stopwatch.Frequency / fps;
                 var scaledCounters = Widgets
-                    .Select(w => w.Fps.Item1 * (fps / w.Fps.Item2))
+                    .Select(w => w.Fps.Item2 == 0 ? 0 : w.Fps.Item1 * (fps / w.Fps.Item2))
                     .ToArray();
                 var maxCounter = scaledCounters.Max();
-                for (var counter = 1; counter <= maxCounter; counter++)
+                var counter = 0;
+                do
                 {
+                    counter++;
+
                     var end = Stopwatch.GetTimestamp() + delay;
-                    
+
                     Tick(scaledCounters, counter);
 
                     while (Stopwatch.GetTimestamp() < end)
                     {
                         Thread.Sleep(1);
                     }
-                }
+                } while (counter <= maxCounter);
             }
             // ReSharper disable once FunctionNeverReturns
         }
@@ -82,6 +91,7 @@ namespace Thuja
             const double Minimum = 20;
             var calculated = Widgets
                 .Select(w => w.Fps.Item2)
+                .Where(fps => fps != 0)
                 .Aggregate(1, Lcm);
             return calculated * (int) Math.Ceiling(Minimum / calculated);
         }
