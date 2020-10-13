@@ -5,6 +5,8 @@ namespace Thuja
     public readonly struct Style
     {
         public static Style Default = new Style(MyColor.Default, MyColor.Default);
+        public static Style Active = new Style(MyColor.White, MyColor.Black);
+        public static Style Inactive = new Style(MyColor.Gray, MyColor.DarkGray);
         
         public readonly MyColor Foreground;
         public readonly MyColor Background;

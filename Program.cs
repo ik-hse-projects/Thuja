@@ -14,12 +14,14 @@ namespace Thuja
             {
                 new VerticalContainer
                 {
+                    new Label("Hello"),
                     new InputField
                     {
                         MaxLength = 15,
                         AllowedChars = {CharRange.Ascii},
                         Placeholder = new Placeholder(new Style(MyColor.Cyan, MyColor.Black), "Enter text")
                     },
+                    new Label("World"),
                     new InputField
                     {
                         MaxLength = 5,

@@ -45,8 +45,8 @@ namespace Thuja.Widgets
     {
         public int MaxLength { get; set; } = int.MaxValue;
         public HashSet<CharRange> AllowedChars { get; } = new HashSet<CharRange>();
-        public Style ActiveStyle { get; set; } = new Style(MyColor.White, MyColor.DarkGray);
-        public Style InactiveStyle { get; set; } = new Style(MyColor.Gray, MyColor.DarkGray);
+        public Style ActiveStyle { get; set; } = Style.Active;
+        public Style InactiveStyle { get; set; } = Style.Inactive;
         public StringBuilder Text { get; } = new StringBuilder();
         public Placeholder? Placeholder { get; set; }
 

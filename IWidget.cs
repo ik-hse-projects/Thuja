@@ -4,6 +4,7 @@ namespace Thuja
 {
     public interface IFocusable : IWidget
     {
+        public bool CanFocus { get => true; }
         public void FocusChange(bool isFocused);
     }
     

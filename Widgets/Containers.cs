@@ -30,7 +30,10 @@ namespace Thuja.Widgets
         
         private bool MoveSelection(int direction)
         {
-            var focusable = widgets.OfType<IFocusable>().ToList();
+            var focusable = widgets
+                .OfType<IFocusable>()
+                .Where(w => w.CanFocus)
+                .ToList();
             if (focusable.Count == 0)
             {
                 return false;
@@ -79,11 +82,6 @@ namespace Thuja.Widgets
         
         public void Add(IWidget widget)
         {
-            if (widgets.Count > 0)
-            {
-                throw new Exception("RelativePosition supports only single children.");
-            }
-
             base.Add(widget);
             if (widget is IFocusable focusable)
             {
