@@ -3,17 +3,38 @@ using System.Linq;
 
 namespace Thuja.Widgets
 {
-    public class VerticalContainer: BaseContainer
+    public enum Orientation
     {
+        Vertical,
+        Horizontal,
+    }
+    
+    public class StackContainer: BaseContainer
+    {
+        public Orientation Orientation { get; set; }
+        public int Margin { get; set; }
+
+        public StackContainer(Orientation orientation = Orientation.Vertical, int margin = 0)
+        {
+            Orientation = orientation;
+            Margin = margin;
+        }
+
         public override void Render(RenderContext context)
         {
             var offsetY = 0;
+            var offsetX = 0;
             foreach (var widget in widgets)
             {
-                var newPosition = (0, offsetY, 0);
+                var newPosition = Orientation switch
+                {
+                    Orientation.Vertical => (0, offsetY, 0),
+                    Orientation.Horizontal => (offsetX, 0, 0),
+                };
                 var ctx = context.Derive(newPosition);
                 widget.Render(ctx);
-                offsetY += ctx.Size.y;
+                offsetX += ctx.Size.x + Margin;
+                offsetY += ctx.Size.y + Margin;
             }
         }
         
@@ -50,11 +71,13 @@ namespace Thuja.Widgets
             switch (key.Key)
             {
                 case ConsoleKey.Tab when key.Modifiers.HasFlag(ConsoleModifiers.Shift):
-                case ConsoleKey.UpArrow:
+                case ConsoleKey.UpArrow when Orientation == Orientation.Vertical:
+                case ConsoleKey.LeftArrow when Orientation == Orientation.Horizontal:
                     return MoveSelection(-1);
                 case ConsoleKey.Enter:
                 case ConsoleKey.Tab:
-                case ConsoleKey.DownArrow:
+                case ConsoleKey.DownArrow when Orientation == Orientation.Vertical:
+                case ConsoleKey.RightArrow when Orientation == Orientation.Horizontal:
                     return MoveSelection(+1);
                 default:
                     return false;

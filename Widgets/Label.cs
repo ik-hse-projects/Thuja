@@ -27,7 +27,7 @@ namespace Thuja.Widgets
 
         public int MaxWidth { get; set; } = 30;
 
-        public int Fps => 1;
+        public int Fps => 2;
 
         private int position = 0;
         private string text;

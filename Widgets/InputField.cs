@@ -9,6 +9,7 @@ namespace Thuja.Widgets
     {
         public static CharRange Ascii = new CharRange(' ', '~');
         public static CharRange Digits = new CharRange('0', '9');
+        public static CharRange Letters = new CharRange('A', 'z');
         
         private readonly char start;
         private  readonly char end;

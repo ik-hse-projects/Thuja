@@ -9,14 +9,20 @@ namespace Thuja
         protected MainLoop? loop;
         protected readonly List<IWidget> widgets = new List<IWidget>();
 
+        private bool isFocused;
+
         private IFocusable? focused;
         public IFocusable? Focused
         {
             get => focused;
             set
             {
-                focused?.FocusChange(false);
-                value?.FocusChange(true);
+                if (isFocused)
+                {
+                    focused?.FocusChange(false);
+                    value?.FocusChange(true);
+                }
+
                 focused = value;
             }
         }
@@ -55,8 +61,11 @@ namespace Thuja
             }
         }
 
+        public bool CanFocus => Focused?.CanFocus ?? false;
+
         public void FocusChange(bool isFocused)
         {
+            this.isFocused = isFocused;
             focused?.FocusChange(isFocused);
         }
 

@@ -31,6 +31,10 @@ namespace Thuja
         public void Start()
         {
             display = new Display();
+            if (root is IFocusable focusable)
+            {
+                focusable.FocusChange(true);
+            }
             while (true)
             {
                 var fps = FindFps();

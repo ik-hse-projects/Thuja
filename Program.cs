@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Thuja.Video;
 using Thuja.Widgets;
 
@@ -11,7 +12,7 @@ namespace Thuja
             var button = new Button("Hello");
             button.OnClick += button1 =>
             {
-                
+                Environment.Exit(0);
             };
             
             var root = new BaseContainer
@@ -21,7 +22,7 @@ namespace Thuja
                 {
                     new Frame
                     {
-                        new VerticalContainer
+                        new StackContainer
                         {
                             button,
                             new InputField
@@ -32,17 +33,34 @@ namespace Thuja
                                     new Placeholder(new Style(MyColor.Cyan, MyColor.Black),
                                         "Enter text")
                             },
-                            new Label("1234567890")
+                            new StackContainer(Orientation.Horizontal, 2)
                             {
-                                MaxWidth = 4
+                                new Label("1234567890")
+                                {
+                                    MaxWidth = 4
+                                },
+                                new Label("abcdefg")
+                                {
+                                    MaxWidth = 4
+                                },
                             },
-                            new InputField
+                            new StackContainer(Orientation.Horizontal, 2)
                             {
-                                MaxLength = 5,
-                                AllowedChars = {CharRange.Digits},
-                                Placeholder = new Placeholder(
-                                    new Style(MyColor.DarkMagenta, MyColor.Black), "Digits!")
-                            }
+                                new InputField
+                                {
+                                    MaxLength = 5,
+                                    AllowedChars = {CharRange.Digits},
+                                    Placeholder = new Placeholder(
+                                        new Style(MyColor.DarkMagenta, MyColor.Black), "Digits!")
+                                },
+                                new InputField
+                                {
+                                    MaxLength = 5,
+                                    AllowedChars = {CharRange.Letters},
+                                    Placeholder = new Placeholder(
+                                        new Style(MyColor.DarkMagenta, MyColor.Black), "Letters!")
+                                }
+                            },
                         }
                     }
                 }

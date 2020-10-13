@@ -4,17 +4,33 @@ namespace Thuja
 {
     public class RenderContext
     {
-        private readonly RenderContext? parent;
-        private readonly (int x, int y, int layer) offset;
+        private readonly struct ParentRef
+        {
+            public readonly RenderContext parent;
+            public readonly (int x, int y, int layer) relativeOffset;
+
+            public ParentRef(RenderContext parent, (int x, int y, int layer) relativeOffset)
+            {
+                this.parent = parent;
+                this.relativeOffset = relativeOffset;
+            }
+        }
+        
+        private readonly ParentRef? parentRef;
+        private readonly (int x, int y, int layer) absoluteOffset;
         private readonly Canvas canvas;
         private (int x, int y) size;
         public (int x, int y) Size => (size.x + 1, size.y + 1);
-
-        public RenderContext((int x, int y, int layer) offset, Canvas canvas, RenderContext? parent = null)
+        
+        private RenderContext((int x, int y, int layer) absoluteOffset, Canvas canvas, ParentRef parentRef): this(absoluteOffset, canvas)
         {
-            this.offset = offset;
+            this.parentRef = parentRef;
+        }
+        
+        public RenderContext((int x, int y, int layer) absoluteOffset, Canvas canvas)
+        {
+            this.absoluteOffset = absoluteOffset;
             this.canvas = canvas;
-            this.parent = parent;
             this.size = (0, 0);
         }
 
@@ -24,7 +40,7 @@ namespace Thuja
             set => Set(x, y, value);
         }
 
-        public ColoredChar? Get(int x, int y) => canvas.Get(x + offset.x, y + offset.y);
+        public ColoredChar? Get(int x, int y) => canvas.Get(x + absoluteOffset.x, y + absoluteOffset.y);
 
         public void Set(int x, int y, ColoredChar ch)
         {
@@ -32,33 +48,39 @@ namespace Thuja
             if (y < 0) throw new ArgumentOutOfRangeException(nameof(x));
 
             UpdateSize(x, y);
-            if (offset.layer != 0)
+            if (absoluteOffset.layer != 0)
             {
-                ch = new ColoredChar(ch.Style, ch.Char, ch.Layer + offset.layer);
+                ch = new ColoredChar(ch.Style, ch.Char, ch.Layer + absoluteOffset.layer);
             }
 
-            canvas.TrySet(x + offset.x, y + offset.y, ch);
+            canvas.TrySet(x + absoluteOffset.x, y + absoluteOffset.y, ch);
         }
 
         private void UpdateSize(int x, int y)
         {
-            if (x > size.x) size.x = x;
-            if (y > size.y) size.y = y;
-            if (parent != null)
+            if (x <= size.x && y <= size.y)
             {
+                return;
             }
 
-            parent?.UpdateSize(x + offset.x, y + offset.y);
+            if (x > size.x) size.x = x;
+            if (y > size.y) size.y = y;
+
+            if (parentRef != null)
+            {
+                var p = parentRef.Value;
+                p.parent.UpdateSize(x + p.relativeOffset.x, y + p.relativeOffset.y);
+            }
         }
 
         public RenderContext Derive((int x, int y, int layer) offset)
         {
             var newOffset = (
-                this.offset.x + offset.x,
-                this.offset.y + offset.y,
-                this.offset.layer + offset.y
+                this.absoluteOffset.x + offset.x,
+                this.absoluteOffset.y + offset.y,
+                this.absoluteOffset.layer + offset.y
             );
-            return new RenderContext(newOffset, canvas, this);
+            return new RenderContext(newOffset, canvas, new ParentRef(this, offset));
         }
 
         public void PlaceString(string str, Style style, int layer = 0)
@@ -72,13 +94,13 @@ namespace Thuja
         public (int x, int y) CursorPosition
         {
             get => (
-                Console.CursorLeft - offset.x,
-                Console.CursorTop - offset.y
+                Console.CursorLeft - absoluteOffset.x,
+                Console.CursorTop - absoluteOffset.y
             );
             set
             {
-                Console.CursorLeft = offset.x + value.x;
-                Console.CursorTop = offset.y + value.y;
+                Console.CursorLeft = absoluteOffset.x + value.x;
+                Console.CursorTop = absoluteOffset.y + value.y;
             }
         }
     }
