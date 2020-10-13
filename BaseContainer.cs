@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Thuja
 {
-    public abstract class BaseContainer : IFocusable, IEnumerable<IWidget>
+    public class BaseContainer : IFocusable, IEnumerable<IWidget>
     {
         protected MainLoop? loop;
         protected readonly List<IWidget> widgets = new List<IWidget>();
@@ -23,14 +23,18 @@ namespace Thuja
 
         public void Add(IWidget widget)
         {
+            if (Focused == null && widget is IFocusable focusable)
+            {
+                Focused = focusable;
+            }
             loop?.Register(widget);
             widgets.Add(widget);
         }
 
         public void AddFocused(IFocusable widget)
         {
-            Add(widget);
             Focused = widget;
+            Add(widget);
         }
 
         public void OnRegistered(MainLoop loop)
@@ -43,7 +47,13 @@ namespace Thuja
             this.loop = loop;
         }
 
-        public abstract void Render(RenderContext context);
+        public virtual void Render(RenderContext context)
+        {
+            foreach (var widget in widgets)
+            {
+                widget.Render(context);
+            }
+        }
 
         public void FocusChange(bool isFocused)
         {

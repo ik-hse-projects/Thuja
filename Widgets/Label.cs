@@ -8,16 +8,16 @@ namespace Thuja.Widgets
         {
             Text = text ?? throw new ArgumentNullException(nameof(text));
 
-            Style = Style.Default;
+            CurrentStyle = Style.Default;
         }
         
         public string Text { get; set; }
 
-        public Style Style { get; set; }
+        public Style CurrentStyle { get; set; }
         
         public void Render(RenderContext context)
         {
-            context.PlaceString(Text, Style);
+            context.PlaceString(Text, CurrentStyle);
         }
     }
 }
