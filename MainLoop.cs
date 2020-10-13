@@ -36,7 +36,7 @@ namespace Thuja
                 var fps = FindFps();
                 var delay = Stopwatch.Frequency / fps;
                 var scaledCounters = widgets
-                    .Select(w => w.Fps == 0 ? 0 : fps / w.Fps)
+                    .Select(w => w.Fps == 0 ? 1 : fps / w.Fps)
                     .ToArray();
                 var maxCounter = scaledCounters.Max();
                 var counter = 0;
@@ -67,7 +67,7 @@ namespace Thuja
             {
                 var widget = widgets[index];
                 var scaled = scaledCounters[index];
-                if (scaled % counter == 0)
+                if (counter % scaled == 0)
                 {
                     widget.Update(new Tick());
                 }

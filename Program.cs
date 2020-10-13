@@ -32,7 +32,10 @@ namespace Thuja
                                     new Placeholder(new Style(MyColor.Cyan, MyColor.Black),
                                         "Enter text")
                             },
-                            new Label("World"),
+                            new Label("1234567890")
+                            {
+                                MaxWidth = 4
+                            },
                             new InputField
                             {
                                 MaxLength = 5,

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace Thuja.Widgets
 {
@@ -10,14 +11,49 @@ namespace Thuja.Widgets
 
             CurrentStyle = Style.Default;
         }
-        
-        public string Text { get; set; }
+
+        public string Text
+        {
+            get => text;
+            set
+            {
+                position = 0;
+                withSeparator = $"{value} | ";
+                text = value;
+            }
+        }
 
         public Style CurrentStyle { get; set; }
-        
-        public void Render(RenderContext context)
+
+        public int MaxWidth { get; set; } = 30;
+
+        public int Fps => 1;
+
+        private int position = 0;
+        private string text;
+        private string withSeparator;
+
+        public void Update(Tick tick)
         {
-            context.PlaceString(Text, CurrentStyle);
+            position = (position + 1) % withSeparator.Length;
+        }
+
+        public virtual void Render(RenderContext context)
+        {
+            if (MaxWidth >= Text.Length)
+            {
+                context.PlaceString(Text, CurrentStyle);
+                return;
+            }
+
+            var scroll = new char[MaxWidth];
+
+            for (var i = 0; i < MaxWidth; i++)
+            {
+                scroll[i] = withSeparator[(position + i) % withSeparator.Length];
+            }
+
+            context.PlaceString(new string(scroll), CurrentStyle);
         }
     }
 }
