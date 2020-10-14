@@ -1,8 +1,28 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Thuja.Widgets
 {
-    public class Button: Label, IFocusable
+    public readonly struct KeySelector
+    {
+        public readonly ConsoleModifiers Modifiers;
+        public readonly ConsoleKey Key;
+
+        public KeySelector(ConsoleKey key, ConsoleModifiers modifiers = 0)
+        {
+            Modifiers = modifiers;
+            Key = key;
+        }
+
+        public bool Match(in ConsoleKeyInfo key)
+        {
+            return key.Modifiers.HasFlag(Modifiers) && key.Key == Key;
+        }
+    }
+    
+    public class Button: Label, IFocusable, IEnumerable<(KeySelector, Action)>
     {
         public Button(string text) : base(text)
         {
@@ -13,7 +33,7 @@ namespace Thuja.Widgets
         public Style FocusedStyle { get; set; } = Style.Active;
         public Style UnfocusedStyle { get; set; } = Style.Inactive;
 
-        public event Action<Button>? OnClick;
+        public Dictionary<KeySelector, Action> Actions { get; } = new Dictionary<KeySelector, Action>();
 
         private bool isFocused;
 
@@ -27,20 +47,41 @@ namespace Thuja.Widgets
             base.Render(context);
         }
 
+        public void Add((KeySelector selector, Action action) handler)
+        {
+            Actions.Add(handler.selector, handler.action);
+        }
+
         public bool BubbleDown(ConsoleKeyInfo key)
         {
-            if (key.Key == ConsoleKey.Enter || key.Key == ConsoleKey.Spacebar)
+            var result = false;
+            foreach (var (selector, handler) in Actions)
             {
-                OnClick?.Invoke(this);
-                return true;
+                if (selector.Match(key))
+                {
+                    handler();
+                    result = true;
+                }
             }
 
-            return false;
+            return result;
         }
 
         public void FocusChange(bool isFocused)
         {
             this.isFocused = isFocused;
+        }
+
+        public IEnumerator<(KeySelector, Action)> GetEnumerator()
+        {
+            return Actions
+                .Select(kv => (kv.Key, kv.Value))
+                .GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

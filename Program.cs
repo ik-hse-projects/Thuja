@@ -9,12 +9,6 @@ namespace Thuja
     {
         private static void Main(string[] args)
         {
-            var button = new Button("Hello");
-            button.OnClick += button1 =>
-            {
-                Environment.Exit(0);
-            };
-            
             var root = new BaseContainer
             {
                 new VideoPlayer(File.OpenRead(Path.Combine(args[0]))),
@@ -23,10 +17,10 @@ namespace Thuja
                     new StackContainer(maxVisibleCount: 5)
                     {
                         new Label("1"),
-                        new Button("2 <-"),
-                        new Button("3 <-"),
+                        new Button("Enter") { (new KeySelector(ConsoleKey.Enter), () => Environment.Exit(0)) },
+                        new Button("F1") { (new KeySelector(ConsoleKey.F1), () => Environment.Exit(0)) },
                         new Label("4"),
-                        new Button("5 <-"),
+                        new Button("Ctrl+Q") { (new KeySelector(ConsoleKey.Q, ConsoleModifiers.Control), () => Environment.Exit(0)) },
                         new Label("6"),
                         new Label("7"),
                         new Label("8"),
