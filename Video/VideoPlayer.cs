@@ -19,18 +19,14 @@ namespace Thuja.Video
 
         public void Render(RenderContext context)
         {
-            for (int x = 0; x < reader.Info.Width; x++)
-            {
-                for (int y = 0; y < reader.Info.Height; y++)
-                {
-                    context[x, y] = frame[x, y];
-                }
-            }
+            for (var x = 0; x < reader.Info.Width; x++)
+            for (var y = 0; y < reader.Info.Height; y++)
+                context[x, y] = frame[x, y];
         }
 
         public int Fps => reader.Info.Fps;
 
-        public void Update(Tick tick)
+        public void Update()
         {
             if (!reader.MoveNext())
             {

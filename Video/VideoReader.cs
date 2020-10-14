@@ -23,8 +23,8 @@ namespace Thuja.Video
 
     public class VideoReader : IEnumerator<ColoredChar[,]>
     {
-        public readonly VideoInfo Info;
         private readonly byte[] buffer;
+        public readonly VideoInfo Info;
         private readonly Stream stream;
 
         private VideoReader(VideoInfo info, Stream stream)

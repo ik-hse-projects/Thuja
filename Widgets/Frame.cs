@@ -2,10 +2,7 @@ namespace Thuja.Widgets
 {
     public class Frame : BaseContainer
     {
-        public Style Style { get; set; }
-        public MyColor Background { get; set; }
-        
-        public Frame(MyColor background = MyColor.Default): this(Style.Decoration, background)
+        public Frame(MyColor background = MyColor.Default) : this(Style.Decoration, background)
         {
         }
 
@@ -15,13 +12,13 @@ namespace Thuja.Widgets
             Background = background;
         }
 
+        public Style Style { get; set; }
+        public MyColor Background { get; set; }
+
         public override void Render(RenderContext context)
         {
             var ctx = context.Derive((1, 1, 1));
-            foreach (var widget in widgets)
-            {
-                widget.Render(ctx);
-            }
+            foreach (var widget in widgets) widget.Render(ctx);
 
             var (width, height) = ctx.Size;
 
@@ -47,12 +44,8 @@ namespace Thuja.Widgets
 
             var bgStyle = new Style(MyColor.Transparent, Background);
             for (var x = 0; x <= right; x++)
-            {
-                for (var y = 0; y <= bottom; y++)
-                {
-                    context[x, y] = new ColoredChar(bgStyle, ' ');
-                }
-            }
+            for (var y = 0; y <= bottom; y++)
+                context[x, y] = new ColoredChar(bgStyle, ' ');
         }
     }
 }

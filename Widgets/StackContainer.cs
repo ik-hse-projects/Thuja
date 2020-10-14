@@ -7,36 +7,33 @@ namespace Thuja.Widgets
     public enum Orientation
     {
         Vertical,
-        Horizontal,
+        Horizontal
     }
-    
-    public class StackContainer: BaseContainer
-    {
-        public Orientation Orientation { get; set; }
-        public int Margin { get; set; }
-        
-        public int MaxVisibleCount { get; set; }
-        private int position { get; set; }
 
-        public StackContainer(Orientation orientation = Orientation.Vertical, int margin = 0, int maxVisibleCount = int.MaxValue)
+    public class StackContainer : BaseContainer
+    {
+        public StackContainer(Orientation orientation = Orientation.Vertical, int margin = 0,
+            int maxVisibleCount = int.MaxValue)
         {
             Orientation = orientation;
             Margin = margin;
             MaxVisibleCount = maxVisibleCount;
         }
 
+        public Orientation Orientation { get; set; }
+        public int Margin { get; set; }
+
+        public int MaxVisibleCount { get; set; }
+        private int position { get; set; }
+
         private IEnumerable<IWidget> FindVisible()
         {
             var start = position;
             var minStart = widgets.Count - MaxVisibleCount;
             if (start > minStart)
-            {
                 start = minStart;
-            }
             else
-            {
                 start -= MaxVisibleCount / 2;
-            }
 
             return widgets.Skip(start).Take(MaxVisibleCount);
         }
@@ -50,7 +47,7 @@ namespace Thuja.Widgets
                 var newPosition = Orientation switch
                 {
                     Orientation.Vertical => (0, offsetY, 0),
-                    Orientation.Horizontal => (offsetX, 0, 0),
+                    Orientation.Horizontal => (offsetX, 0, 0)
                 };
                 var ctx = context.Derive(newPosition);
                 widget.Render(ctx);
@@ -58,17 +55,14 @@ namespace Thuja.Widgets
                 offsetY += ctx.Size.y + Margin;
             }
         }
-        
+
         private bool MoveSelection(int direction)
         {
             var focusable = widgets
                 .Select((widget, index) => (widget as IFocusable, index))
                 .Where(w => w.Item1?.CanFocus ?? default)
                 .ToList();
-            if (focusable.Count == 0)
-            {
-                return false;
-            }
+            if (focusable.Count == 0) return false;
 
             if (Focused == null)
             {
@@ -78,10 +72,7 @@ namespace Thuja.Widgets
 
             var currentlySelected = focusable.FindIndex(x => ReferenceEquals(x.Item1, Focused));
             var newSelected = currentlySelected + direction;
-            if (newSelected < 0 || newSelected >= focusable.Count)
-            {
-                return false;
-            }
+            if (newSelected < 0 || newSelected >= focusable.Count) return false;
 
             (Focused, position) = focusable[newSelected];
             return true;
@@ -104,6 +95,5 @@ namespace Thuja.Widgets
                     return false;
             }
         }
-        
     }
 }

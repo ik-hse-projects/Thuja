@@ -6,12 +6,13 @@ namespace Thuja
 {
     public class BaseContainer : IFocusable, IEnumerable<IWidget>
     {
-        protected MainLoop? loop;
         protected readonly List<IWidget> widgets = new List<IWidget>();
 
-        private bool isFocused;
-
         private IFocusable? focused;
+
+        private bool isFocused;
+        protected MainLoop? loop;
+
         public IFocusable? Focused
         {
             get => focused;
@@ -27,38 +28,26 @@ namespace Thuja
             }
         }
 
-        public void Add(IWidget widget)
+        public IEnumerator<IWidget> GetEnumerator()
         {
-            if (Focused == null && widget is IFocusable focusable)
-            {
-                Focused = focusable;
-            }
-            loop?.Register(widget);
-            widgets.Add(widget);
+            return widgets.GetEnumerator();
         }
 
-        public void AddFocused(IFocusable widget)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            Focused = widget;
-            Add(widget);
+            return GetEnumerator();
         }
 
         public void OnRegistered(MainLoop loop)
         {
-            foreach (var widget in widgets)
-            {
-                loop.Register(widget);
-            }
+            foreach (var widget in widgets) loop.Register(widget);
 
             this.loop = loop;
         }
 
         public virtual void Render(RenderContext context)
         {
-            foreach (var widget in widgets)
-            {
-                widget.Render(context);
-            }
+            foreach (var widget in widgets) widget.Render(context);
         }
 
         public bool CanFocus => Focused?.CanFocus ?? false;
@@ -69,26 +58,29 @@ namespace Thuja
             focused?.FocusChange(isFocused);
         }
 
-        public virtual bool BubbleUp(ConsoleKeyInfo key) => false;
-
         public bool BubbleDown(ConsoleKeyInfo key)
         {
-            if (focused != null && focused.BubbleDown(key))
-            {
-                return true;
-            }
+            if (focused != null && focused.BubbleDown(key)) return true;
 
             return BubbleUp(key);
         }
 
-        public IEnumerator<IWidget> GetEnumerator()
+        public void Add(IWidget widget)
         {
-            return widgets.GetEnumerator();
+            if (Focused == null && widget is IFocusable focusable) Focused = focusable;
+            loop?.Register(widget);
+            widgets.Add(widget);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public void AddFocused(IFocusable widget)
         {
-            return GetEnumerator();
+            Focused = widget;
+            Add(widget);
+        }
+
+        public virtual bool BubbleUp(ConsoleKeyInfo key)
+        {
+            return false;
         }
     }
 }

@@ -6,14 +6,10 @@ using System.Threading;
 
 namespace Thuja
 {
-    public readonly struct Tick
-    {
-    }
-
     public class MainLoop
     {
+        private readonly IWidget root;
         private readonly List<IWidget> widgets = new List<IWidget>();
-        private IWidget root;
         private Display? display;
 
         public MainLoop(IWidget root)
@@ -31,10 +27,7 @@ namespace Thuja
         public void Start()
         {
             display = new Display();
-            if (root is IFocusable focusable)
-            {
-                focusable.FocusChange(true);
-            }
+            if (root is IFocusable focusable) focusable.FocusChange(true);
             while (true)
             {
                 var fps = FindFps();
@@ -71,10 +64,7 @@ namespace Thuja
             {
                 var widget = widgets[index];
                 var scaled = scaledCounters[index];
-                if (counter % scaled == 0)
-                {
-                    widget.Update(new Tick());
-                }
+                if (counter % scaled == 0) widget.Update();
             }
 
             var context = display!.CurrentScreen.BeginRender();

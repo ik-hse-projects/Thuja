@@ -21,9 +21,11 @@ namespace Thuja.Widgets
             return key.Modifiers.HasFlag(Modifiers) && key.Key == Key;
         }
     }
-    
-    public class Button: Label, IFocusable, IEnumerable<(KeySelector, Action)>
+
+    public class Button : Label, IFocusable, IEnumerable<(KeySelector, Action)>
     {
+        private bool isFocused;
+
         public Button(string text) : base(text)
         {
         }
@@ -35,43 +37,6 @@ namespace Thuja.Widgets
 
         public Dictionary<KeySelector, Action> Actions { get; } = new Dictionary<KeySelector, Action>();
 
-        private bool isFocused;
-
-        public void Render(RenderContext context)
-        {
-            if (isFocused)
-            {
-                context.CursorPosition = (0, 0);
-            }
-
-            base.Render(context);
-        }
-
-        public void Add((KeySelector selector, Action action) handler)
-        {
-            Actions.Add(handler.selector, handler.action);
-        }
-
-        public bool BubbleDown(ConsoleKeyInfo key)
-        {
-            var result = false;
-            foreach (var (selector, handler) in Actions)
-            {
-                if (selector.Match(key))
-                {
-                    handler();
-                    result = true;
-                }
-            }
-
-            return result;
-        }
-
-        public void FocusChange(bool isFocused)
-        {
-            this.isFocused = isFocused;
-        }
-
         public IEnumerator<(KeySelector, Action)> GetEnumerator()
         {
             return Actions
@@ -82,6 +47,36 @@ namespace Thuja.Widgets
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public override void Render(RenderContext context)
+        {
+            if (isFocused) context.CursorPosition = (0, 0);
+
+            base.Render(context);
+        }
+
+        public bool BubbleDown(ConsoleKeyInfo key)
+        {
+            var result = false;
+            foreach (var (selector, handler) in Actions)
+                if (selector.Match(key))
+                {
+                    handler();
+                    result = true;
+                }
+
+            return result;
+        }
+
+        public void FocusChange(bool isFocused)
+        {
+            this.isFocused = isFocused;
+        }
+
+        public void Add((KeySelector selector, Action action) handler)
+        {
+            Actions.Add(handler.selector, handler.action);
         }
     }
 }

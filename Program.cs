@@ -17,15 +17,16 @@ namespace Thuja
                     new StackContainer(maxVisibleCount: 5)
                     {
                         new Label("1"),
-                        new Button("Enter") { (new KeySelector(ConsoleKey.Enter), () => Environment.Exit(0)) },
-                        new Button("F1") { (new KeySelector(ConsoleKey.F1), () => Environment.Exit(0)) },
+                        new Button("Enter") {(new KeySelector(ConsoleKey.Enter), () => Environment.Exit(0))},
+                        new Button("F1") {(new KeySelector(ConsoleKey.F1), () => Environment.Exit(0))},
                         new Label("4"),
-                        new Button("Ctrl+Q") { (new KeySelector(ConsoleKey.Q, ConsoleModifiers.Control), () => Environment.Exit(0)) },
+                        new Button("Ctrl+Q")
+                            {(new KeySelector(ConsoleKey.Q, ConsoleModifiers.Control), () => Environment.Exit(0))},
                         new Label("6"),
                         new Label("7"),
                         new Label("8"),
                         new Button("9 <-"),
-                        new Button("0 <-"),
+                        new Button("0 <-")
                     }
                 }
             };

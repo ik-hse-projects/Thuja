@@ -10,16 +10,14 @@ namespace Thuja.Widgets
         public static CharRange Ascii = new CharRange(' ', '~');
         public static CharRange Digits = new CharRange('0', '9');
         public static CharRange Letters = new CharRange('A', 'z');
-        
+
         private readonly char start;
-        private  readonly char end;
+        private readonly char end;
 
         private CharRange(char start, char end)
         {
-            if (start > end)
-            {
-                throw new ArgumentException("start > end");
-            }
+            if (start > end) throw new ArgumentException("start > end");
+
             this.start = start;
             this.end = end;
         }
@@ -44,16 +42,15 @@ namespace Thuja.Widgets
 
     public class InputField : IFocusable
     {
+        private int cursorLeft;
+
+        private bool isFocused;
         public int MaxLength { get; set; } = int.MaxValue;
         public HashSet<CharRange> AllowedChars { get; } = new HashSet<CharRange>();
         public Style ActiveStyle { get; set; } = Style.Active;
         public Style InactiveStyle { get; set; } = Style.Inactive;
         public StringBuilder Text { get; } = new StringBuilder();
         public Placeholder? Placeholder { get; set; }
-
-        private bool isFocused = false;
-
-        private int cursorLeft = 0;
 
         private int CursorLeft
         {
@@ -71,11 +68,8 @@ namespace Thuja.Widgets
 
         public void Render(RenderContext context)
         {
-            if (isFocused)
-            {
-                context.CursorPosition = (cursorLeft, 0);
-            }
-            
+            if (isFocused) context.CursorPosition = (cursorLeft, 0);
+
             string text;
             Style style;
             if (!isFocused && Text.Length == 0)
@@ -89,20 +83,9 @@ namespace Thuja.Widgets
                 style = isFocused ? ActiveStyle : InactiveStyle;
             }
 
-            if (MaxLength != int.MaxValue && text.Length < MaxLength)
-            {
-                text += new string('_', MaxLength - text.Length);
-            }
+            if (MaxLength != int.MaxValue && text.Length < MaxLength) text += new string('_', MaxLength - text.Length);
 
             context.PlaceString(text, style);
-        }
-
-        private void Del()
-        {
-            if (cursorLeft < Text.Length)
-            {
-                Text.Remove(cursorLeft, 1);
-            }
         }
 
         public bool BubbleDown(ConsoleKeyInfo key)
@@ -148,6 +131,11 @@ namespace Thuja.Widgets
         public void FocusChange(bool isFocused)
         {
             this.isFocused = isFocused;
+        }
+
+        private void Del()
+        {
+            if (cursorLeft < Text.Length) Text.Remove(cursorLeft, 1);
         }
     }
 }

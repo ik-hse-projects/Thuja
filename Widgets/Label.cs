@@ -1,15 +1,16 @@
 using System;
-using System.Diagnostics;
 
 namespace Thuja.Widgets
 {
-    public class Label: IWidget
+    public class Label : IWidget
     {
+        private int position;
+        private string text;
+        private string withSeparator;
+
         public Label(string text)
         {
             Text = text ?? throw new ArgumentNullException(nameof(text));
-
-            CurrentStyle = Style.Default;
         }
 
         public string Text
@@ -23,17 +24,13 @@ namespace Thuja.Widgets
             }
         }
 
-        public virtual Style CurrentStyle { get; set; }
+        public virtual Style CurrentStyle { get; set; } = Style.Default;
 
         public int MaxWidth { get; set; } = 30;
 
         public int Fps => 2;
 
-        private int position = 0;
-        private string text;
-        private string withSeparator;
-
-        public void Update(Tick tick)
+        public void Update()
         {
             position = (position + 1) % withSeparator.Length;
         }
@@ -48,10 +45,7 @@ namespace Thuja.Widgets
 
             var scroll = new char[MaxWidth];
 
-            for (var i = 0; i < MaxWidth; i++)
-            {
-                scroll[i] = withSeparator[(position + i) % withSeparator.Length];
-            }
+            for (var i = 0; i < MaxWidth; i++) scroll[i] = withSeparator[(position + i) % withSeparator.Length];
 
             context.PlaceString(new string(scroll), CurrentStyle);
         }

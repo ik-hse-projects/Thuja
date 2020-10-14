@@ -52,7 +52,7 @@ namespace Thuja
                 CurrentScreen = new Canvas(width, height);
             }
         }
-        
+
         private static void DrawDifference(Difference difference)
         {
             Console.SetCursorPosition(difference.Column, difference.Line);

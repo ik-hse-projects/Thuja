@@ -4,24 +4,27 @@ namespace Thuja
 {
     public interface IFocusable : IWidget
     {
-        public bool CanFocus { get => true; }
+        public bool CanFocus => true;
         public void FocusChange(bool isFocused);
     }
-    
+
     public interface IWidget
     {
+        public int Fps => 0;
+
         public void OnRegistered(MainLoop loop)
         {
         }
 
         void Render(RenderContext context);
-        
-        public int Fps => 0;
 
-        public void Update(Tick tick)
+        public void Update()
         {
         }
 
-        public bool BubbleDown(ConsoleKeyInfo key) => false;
+        public bool BubbleDown(ConsoleKeyInfo key)
+        {
+            return false;
+        }
     }
 }

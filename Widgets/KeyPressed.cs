@@ -14,7 +14,7 @@ namespace Thuja.Widgets
 
         public int Fps => 0;
 
-        public void Update(Tick tick)
+        public void Update()
         {
         }
 

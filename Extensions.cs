@@ -5,7 +5,7 @@ namespace Thuja
 {
     public static class Extensions
     {
-        public static void RemoveLast<T>(this List<T> self, int count=1)
+        public static void RemoveLast<T>(this List<T> self, int count = 1)
         {
             self.RemoveRange(self.Count - count, count);
         }
@@ -24,7 +24,7 @@ namespace Thuja
             {
                 var current = enumerator.Current;
                 var currentKey = selector(current);
-                if ((currentKey == null && key == null) || (currentKey != null && currentKey.Equals(key)))
+                if (currentKey == null && key == null || currentKey != null && currentKey.Equals(key))
                 {
                     group.Add(current);
                 }
