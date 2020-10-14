@@ -20,7 +20,7 @@ namespace Thuja
         {
             this.absoluteOffset = absoluteOffset;
             this.canvas = canvas;
-            size = (0, 0);
+            size = (-1, -1);
         }
 
         public (int x, int y) Size => (size.x + 1, size.y + 1);
@@ -62,8 +62,6 @@ namespace Thuja
 
         private void UpdateSize(int x, int y)
         {
-            if (x <= size.x && y <= size.y) return;
-
             if (x > size.x) size.x = x;
             if (y > size.y) size.y = y;
 
@@ -79,7 +77,7 @@ namespace Thuja
             var newOffset = (
                 absoluteOffset.x + offset.x,
                 absoluteOffset.y + offset.y,
-                absoluteOffset.layer + offset.y
+                absoluteOffset.layer + offset.layer
             );
             return new RenderContext(newOffset, canvas, new ParentRef(this, offset));
         }

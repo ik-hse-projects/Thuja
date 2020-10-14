@@ -26,7 +26,7 @@ namespace Thuja.Widgets
 
         public virtual Style CurrentStyle { get; set; } = Style.Default;
 
-        public int MaxWidth { get; set; } = 30;
+        public int MaxWidth { get; set; } = int.MaxValue;
 
         public int Fps => 2;
 

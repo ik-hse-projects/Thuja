@@ -53,14 +53,14 @@ namespace Thuja
             if (character.Style.Foreground == MyColor.Transparent)
             {
                 var style = new Style(old.Style.Foreground, character.Style.Background);
-                Content[x, y] = new ColoredChar(style, old.Char);
+                Content[x, y] = new ColoredChar(style, old.Char, character.Layer);
                 return true;
             }
 
             if (character.Style.Background == MyColor.Transparent)
             {
                 var style = new Style(character.Style.Foreground, old.Style.Background);
-                Content[x, y] = new ColoredChar(style, character.Char);
+                Content[x, y] = new ColoredChar(style, character.Char, character.Layer);
                 return true;
             }
 
