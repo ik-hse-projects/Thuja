@@ -20,48 +20,18 @@ namespace Thuja
                 new VideoPlayer(File.OpenRead(Path.Combine(args[0]))),
                 new RelativePosition(10, 10)
                 {
-                    new Frame
+                    new StackContainer(maxVisibleCount: 5)
                     {
-                        new StackContainer
-                        {
-                            button,
-                            new InputField
-                            {
-                                MaxLength = 15,
-                                AllowedChars = {CharRange.Ascii},
-                                Placeholder =
-                                    new Placeholder(new Style(MyColor.Cyan, MyColor.Black),
-                                        "Enter text")
-                            },
-                            new StackContainer(Orientation.Horizontal, 2)
-                            {
-                                new Label("1234567890")
-                                {
-                                    MaxWidth = 4
-                                },
-                                new Label("abcdefg")
-                                {
-                                    MaxWidth = 4
-                                },
-                            },
-                            new StackContainer(Orientation.Horizontal, 2)
-                            {
-                                new InputField
-                                {
-                                    MaxLength = 5,
-                                    AllowedChars = {CharRange.Digits},
-                                    Placeholder = new Placeholder(
-                                        new Style(MyColor.DarkMagenta, MyColor.Black), "Digits!")
-                                },
-                                new InputField
-                                {
-                                    MaxLength = 5,
-                                    AllowedChars = {CharRange.Letters},
-                                    Placeholder = new Placeholder(
-                                        new Style(MyColor.DarkMagenta, MyColor.Black), "Letters!")
-                                }
-                            },
-                        }
+                        new Label("1"),
+                        new Button("2 <-"),
+                        new Button("3 <-"),
+                        new Label("4"),
+                        new Button("5 <-"),
+                        new Label("6"),
+                        new Label("7"),
+                        new Label("8"),
+                        new Button("9 <-"),
+                        new Button("0 <-"),
                     }
                 }
             };

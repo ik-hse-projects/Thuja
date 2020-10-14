@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Thuja.Widgets
@@ -13,18 +14,38 @@ namespace Thuja.Widgets
     {
         public Orientation Orientation { get; set; }
         public int Margin { get; set; }
+        
+        public int MaxVisibleCount { get; set; }
+        private int position { get; set; }
 
-        public StackContainer(Orientation orientation = Orientation.Vertical, int margin = 0)
+        public StackContainer(Orientation orientation = Orientation.Vertical, int margin = 0, int maxVisibleCount = int.MaxValue)
         {
             Orientation = orientation;
             Margin = margin;
+            MaxVisibleCount = maxVisibleCount;
+        }
+
+        private IEnumerable<IWidget> FindVisible()
+        {
+            var start = position;
+            var minStart = widgets.Count - MaxVisibleCount;
+            if (start > minStart)
+            {
+                start = minStart;
+            }
+            else
+            {
+                start -= MaxVisibleCount / 2;
+            }
+
+            return widgets.Skip(start).Take(MaxVisibleCount);
         }
 
         public override void Render(RenderContext context)
         {
             var offsetY = 0;
             var offsetX = 0;
-            foreach (var widget in widgets)
+            foreach (var widget in FindVisible())
             {
                 var newPosition = Orientation switch
                 {
@@ -41,8 +62,8 @@ namespace Thuja.Widgets
         private bool MoveSelection(int direction)
         {
             var focusable = widgets
-                .OfType<IFocusable>()
-                .Where(w => w.CanFocus)
+                .Select((widget, index) => (widget as IFocusable, index))
+                .Where(w => w.Item1?.CanFocus ?? default)
                 .ToList();
             if (focusable.Count == 0)
             {
@@ -51,18 +72,18 @@ namespace Thuja.Widgets
 
             if (Focused == null)
             {
-                Focused = focusable[0];
+                (Focused, position) = focusable[0];
                 return true;
             }
 
-            var currentlySelected = focusable.FindIndex(x => ReferenceEquals(x, Focused));
-            var newIndex = currentlySelected + direction;
-            if (newIndex < 0 || newIndex >= focusable.Count)
+            var currentlySelected = focusable.FindIndex(x => ReferenceEquals(x.Item1, Focused));
+            var newSelected = currentlySelected + direction;
+            if (newSelected < 0 || newSelected >= focusable.Count)
             {
                 return false;
             }
 
-            Focused = focusable[newIndex];
+            (Focused, position) = focusable[newSelected];
             return true;
         }
 

@@ -23,7 +23,7 @@ namespace Thuja.Widgets
             }
         }
 
-        public Style CurrentStyle { get; set; }
+        public virtual Style CurrentStyle { get; set; }
 
         public int MaxWidth { get; set; } = 30;
 

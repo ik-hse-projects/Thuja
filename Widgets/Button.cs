@@ -7,17 +7,23 @@ namespace Thuja.Widgets
         public Button(string text) : base(text)
         {
         }
-        
+
+        public override Style CurrentStyle => isFocused ? Style.Active : Style.Inactive;
+
         public Style FocusedStyle { get; set; } = Style.Active;
         public Style UnfocusedStyle { get; set; } = Style.Inactive;
 
-        public bool CanFocus => OnClick != null;
-
         public event Action<Button>? OnClick;
+
+        private bool isFocused;
 
         public void Render(RenderContext context)
         {
-            context.CursorPosition = (0, 0);
+            if (isFocused)
+            {
+                context.CursorPosition = (0, 0);
+            }
+
             base.Render(context);
         }
 
@@ -34,7 +40,7 @@ namespace Thuja.Widgets
 
         public void FocusChange(bool isFocused)
         {
-            CurrentStyle = isFocused ? FocusedStyle : UnfocusedStyle;
+            this.isFocused = isFocused;
         }
     }
 }
