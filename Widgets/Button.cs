@@ -26,8 +26,9 @@ namespace Thuja.Widgets
     {
         private bool isFocused;
 
-        public Button(string text) : base(text)
+        public Button(string text, int maxWidth = Int32.MaxValue) : base(text)
         {
+            MaxWidth = maxWidth;
         }
 
         public override Style CurrentStyle => isFocused ? Style.Active : Style.Inactive;
@@ -73,10 +74,15 @@ namespace Thuja.Widgets
         {
             this.isFocused = isFocused;
         }
+        
+        public void Add(KeySelector selector, Action action)
+        {
+            Actions.Add(selector, action);
+        }
 
         public void Add((KeySelector selector, Action action) handler)
         {
-            Actions.Add(handler.selector, handler.action);
+            Add(handler.selector, handler.action);
         }
     }
 }

@@ -38,6 +38,12 @@ namespace Thuja
             return GetEnumerator();
         }
 
+        public void Clear()
+        {
+            Focused = null;
+            widgets.Clear();
+        }
+
         public void OnRegistered(MainLoop loop)
         {
             foreach (var widget in widgets) loop.Register(widget);

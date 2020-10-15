@@ -32,10 +32,7 @@ namespace Thuja
             {
                 var fps = FindFps();
                 var delay = Stopwatch.Frequency / fps;
-                var scaledCounters = widgets
-                    .Select(w => w.Fps == 0 ? 1 : fps / w.Fps)
-                    .ToArray();
-                var maxCounter = scaledCounters.Max();
+                var maxCounter = 0;
                 var counter = 0;
                 do
                 {
@@ -43,16 +40,23 @@ namespace Thuja
 
                     var end = Stopwatch.GetTimestamp() + delay;
 
-                    Tick(scaledCounters, counter);
+                    var newMaxCounter = Tick(fps, counter);
+                    if (newMaxCounter > maxCounter)
+                    {
+                        maxCounter = newMaxCounter;
+                    }
 
-                    while (Stopwatch.GetTimestamp() < end) Thread.Sleep(1);
+                    while (Stopwatch.GetTimestamp() < end)
+                    {
+                        Thread.Sleep(1);
+                    }
                 } while (counter <= maxCounter);
             }
 
             // ReSharper disable once FunctionNeverReturns
         }
 
-        private void Tick(int[] scaledCounters, int counter)
+        private int Tick(int fps, int counter)
         {
             if (Console.KeyAvailable && root is IFocusable focusable)
             {
@@ -60,17 +64,28 @@ namespace Thuja
                 focusable.BubbleDown(key);
             }
 
+            var maxCounter = 0;
             for (var index = 0; index < widgets.Count; index++)
             {
                 var widget = widgets[index];
-                var scaled = scaledCounters[index];
-                if (counter % scaled == 0) widget.Update();
+                var scaled = widget.Fps == 0 ? 1 : fps / widget.Fps;
+                if (scaled > maxCounter)
+                {
+                    maxCounter = scaled;
+                }
+
+                if (counter % scaled == 0)
+                {
+                    widget.Update();
+                }
             }
 
             var context = display!.CurrentScreen.BeginRender();
             root.Render(context);
 
             display!.Draw();
+
+            return maxCounter;
         }
 
         private int FindFps()
