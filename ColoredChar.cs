@@ -51,10 +51,15 @@ namespace Thuja
         public ColoredChar(char c) : this(new Style(MyColor.Default, MyColor.Default), c)
         {
         }
+        
+        public bool FlatEquals(ColoredChar other)
+        {
+            return Style.Equals(other.Style) && Char == other.Char;
+        }
 
         public bool Equals(ColoredChar other)
         {
-            return Style.Equals(other.Style) && Char == other.Char && Layer == other.Layer;
+            return FlatEquals(other) && Layer == other.Layer;
         }
 
         public override bool Equals(object? obj)

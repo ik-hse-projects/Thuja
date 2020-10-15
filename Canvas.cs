@@ -90,7 +90,7 @@ namespace Thuja
                 {
                     var thisChar = Content[x, y];
                     var otherChar = other.Content[x, y];
-                    if (thisChar.Equals(otherChar))
+                    if (thisChar.FlatEquals(otherChar))
                     {
                         distanceFromLastDifference++;
                         if (distanceFromLastDifference > distanceThreshold && diff != null)

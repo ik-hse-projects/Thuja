@@ -66,13 +66,11 @@ namespace Thuja
 
         private static void WriteString(Style style, string str)
         {
-            if (style.Foreground == MyColor.Transparent && style.Background == MyColor.Transparent)
+            // Draw transparent foreground as whitespace.
+            if (style.Foreground == MyColor.Transparent)
             {
-                Console.SetCursorPosition(Console.CursorLeft + str.Length, Console.CursorTop);
-                return;
+                str = new string(' ', str.Length);
             }
-
-            if (style.Foreground == MyColor.Transparent) str = new string(' ', str.Length);
 
             // Treat transparent background as default.
             var background = style.Background == MyColor.Transparent

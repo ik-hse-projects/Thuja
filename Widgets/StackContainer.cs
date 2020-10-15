@@ -28,14 +28,32 @@ namespace Thuja.Widgets
 
         private IEnumerable<IWidget> FindVisible()
         {
-            var start = position;
-            var minStart = widgets.Count - MaxVisibleCount;
-            if (start > minStart)
-                start = minStart;
-            else
-                start -= MaxVisibleCount / 2;
+            if (widgets.Count <= MaxVisibleCount)
+            {
+                return widgets;
+            }
+            
+            var offsetBefore = MaxVisibleCount / 2;
+            var offsetAfter = MaxVisibleCount / 2;
+            if (MaxVisibleCount % 2 != 0)
+            {
+                offsetAfter++;
+            }
 
-            return widgets.Skip(start).Take(MaxVisibleCount);
+            var start = position - offsetBefore;
+            var end = position + offsetAfter;
+
+            if (start < 0)
+            {
+                return widgets.GetRange(0, MaxVisibleCount);
+            }
+
+            if (end > widgets.Count)
+            {
+                return widgets.GetRange(widgets.Count - MaxVisibleCount, MaxVisibleCount);
+            }
+
+            return widgets.GetRange(start, end - start);
         }
 
         public override void Render(RenderContext context)
