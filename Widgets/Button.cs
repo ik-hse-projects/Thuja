@@ -26,9 +26,8 @@ namespace Thuja.Widgets
     {
         private bool isFocused;
 
-        public Button(string text, int maxWidth = Int32.MaxValue) : base(text)
+        public Button(string text, int maxWidth = int.MaxValue) : base(text, maxWidth)
         {
-            MaxWidth = maxWidth;
         }
 
         public override Style CurrentStyle => isFocused ? Style.Active : Style.Inactive;

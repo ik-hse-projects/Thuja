@@ -8,9 +8,10 @@ namespace Thuja.Widgets
         private string text;
         private string withSeparator;
 
-        public Label(string text)
+        public Label(string text, int maxWidth = int.MaxValue)
         {
             Text = text ?? throw new ArgumentNullException(nameof(text));
+            MaxWidth = maxWidth;
         }
 
         public string Text
@@ -26,7 +27,7 @@ namespace Thuja.Widgets
 
         public virtual Style CurrentStyle { get; set; } = Style.Default;
 
-        public int MaxWidth { get; set; } = int.MaxValue;
+        public int MaxWidth { get; set; }
 
         public int Fps => 2;
 
