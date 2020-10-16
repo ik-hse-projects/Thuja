@@ -98,6 +98,10 @@ namespace Thuja.Widgets
 
         public override bool BubbleUp(ConsoleKeyInfo key)
         {
+            if (base.BubbleUp(key))
+            {
+                return true;
+            }
             switch (key.Key)
             {
                 case ConsoleKey.Tab when key.Modifiers.HasFlag(ConsoleModifiers.Shift):

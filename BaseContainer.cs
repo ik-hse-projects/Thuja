@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Thuja.Widgets;
 
 namespace Thuja
 {
-    public class BaseContainer : IFocusable, IEnumerable<IWidget>
+    public class BaseContainer : IKeyHandler, IEnumerable<IWidget>
     {
         protected readonly List<IWidget> widgets = new List<IWidget>();
 
@@ -27,6 +28,8 @@ namespace Thuja
                 focused = value;
             }
         }
+
+        public Dictionary<KeySelector, Action> Actions { get; } = new Dictionary<KeySelector, Action>();
 
         public IEnumerator<IWidget> GetEnumerator()
         {
@@ -86,7 +89,9 @@ namespace Thuja
 
         public virtual bool BubbleUp(ConsoleKeyInfo key)
         {
-            return false;
+            return AsIKeyHandler().TryHandleKey(key);
         }
+        
+        public IKeyHandler AsIKeyHandler() => this;
     }
 }

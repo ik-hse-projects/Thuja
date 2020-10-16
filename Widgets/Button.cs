@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Thuja.Widgets
 {
@@ -22,7 +20,7 @@ namespace Thuja.Widgets
         }
     }
 
-    public class Button : Label, IFocusable, IEnumerable<(KeySelector, Action)>
+    public class Button : Label, IKeyHandler
     {
         private bool isFocused;
 
@@ -37,17 +35,6 @@ namespace Thuja.Widgets
 
         public Dictionary<KeySelector, Action> Actions { get; } = new Dictionary<KeySelector, Action>();
 
-        public IEnumerator<(KeySelector, Action)> GetEnumerator()
-        {
-            return Actions
-                .Select(kv => (kv.Key, kv.Value))
-                .GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
 
         public override void Render(RenderContext context)
         {
@@ -58,30 +45,14 @@ namespace Thuja.Widgets
 
         public bool BubbleDown(ConsoleKeyInfo key)
         {
-            var result = false;
-            foreach (var (selector, handler) in Actions)
-                if (selector.Match(key))
-                {
-                    handler();
-                    result = true;
-                }
-
-            return result;
+            return AsIKeyHandler().TryHandleKey(key);
         }
 
         public void FocusChange(bool isFocused)
         {
             this.isFocused = isFocused;
         }
-        
-        public void Add(KeySelector selector, Action action)
-        {
-            Actions.Add(selector, action);
-        }
 
-        public void Add((KeySelector selector, Action action) handler)
-        {
-            Add(handler.selector, handler.action);
-        }
+        public IKeyHandler AsIKeyHandler() => this;
     }
 }
