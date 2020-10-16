@@ -5,7 +5,7 @@ using Thuja.Widgets;
 
 namespace Thuja
 {
-    public class BaseContainer : IKeyHandler, IEnumerable<IWidget>
+    public class BaseContainer : IKeyHandler
     {
         protected readonly List<IWidget> widgets = new List<IWidget>();
 
@@ -30,16 +30,6 @@ namespace Thuja
         }
 
         public Dictionary<KeySelector, Action> Actions { get; } = new Dictionary<KeySelector, Action>();
-
-        public IEnumerator<IWidget> GetEnumerator()
-        {
-            return widgets.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
 
         public void Clear()
         {
@@ -74,17 +64,19 @@ namespace Thuja
             return BubbleUp(key);
         }
 
-        public void Add(IWidget widget)
+        public BaseContainer Add(IWidget widget)
         {
             if (Focused == null && widget is IFocusable focusable) Focused = focusable;
             loop?.Register(widget);
             widgets.Add(widget);
+            return this;
         }
 
-        public void AddFocused(IFocusable widget)
+        public BaseContainer AddFocused(IFocusable widget)
         {
             Focused = widget;
             Add(widget);
+            return this;
         }
 
         public virtual bool BubbleUp(ConsoleKeyInfo key)

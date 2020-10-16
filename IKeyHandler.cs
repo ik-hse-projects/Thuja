@@ -6,21 +6,9 @@ using Thuja.Widgets;
 
 namespace Thuja
 {
-    public interface IKeyHandler: IEnumerable<(KeySelector, Action)>, IFocusable
+    public interface IKeyHandler: IFocusable
     {
         Dictionary<KeySelector, Action> Actions { get; }
-        
-        IEnumerator<(KeySelector, Action)> IEnumerable<(KeySelector, Action)>.GetEnumerator()
-        {
-            return Actions
-                .Select(kv => (kv.Key, kv.Value))
-                .GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
 
         // Builder pattern
         IKeyHandler Add(KeySelector selector, Action action)
@@ -29,12 +17,6 @@ namespace Thuja
             return this;
         }
 
-        // IEnumerable implementation
-        void Add((KeySelector selector, Action action) handler)
-        {
-            Add(handler.selector, handler.action);
-        }
-        
         bool TryHandleKey(ConsoleKeyInfo key)
         {
             var result = false;
