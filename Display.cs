@@ -17,6 +17,7 @@ namespace Thuja
 
         public void Clear()
         {
+            Console.ResetColor();
             Console.Clear();
             prev = new Canvas(CurrentScreen.Size.width, CurrentScreen.Size.height);
         }

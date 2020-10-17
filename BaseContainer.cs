@@ -79,6 +79,7 @@ namespace Thuja
 
         public bool Remove(IWidget widget)
         {
+            Loop?.Unregister(widget);
             var isRemoved = widgets.Remove(widget);
             if (isRemoved && Focused == widget)
             {

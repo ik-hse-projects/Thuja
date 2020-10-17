@@ -21,6 +21,11 @@ namespace Thuja
             Register(root);
             this.root = root;
         }
+        
+        public void Unregister(IWidget widget)
+        {
+            widgets.Remove(widget);
+        }
 
         public void Register(IWidget widget)
         {
