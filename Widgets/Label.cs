@@ -20,7 +20,7 @@ namespace Thuja.Widgets
             set
             {
                 position = 0;
-                withSeparator = $"{value} | ";
+                withSeparator = $"{value}   ";
                 text = value;
             }
         }

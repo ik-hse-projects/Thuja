@@ -6,6 +6,11 @@ namespace Thuja
 {
     public readonly struct KeySelector
     {
+        public static KeySelector[] SelectItem = {
+            new KeySelector(ConsoleKey.Enter),
+            new KeySelector(ConsoleKey.Spacebar),
+        };
+        
         public readonly ConsoleModifiers Modifiers;
         public readonly ConsoleKey? Key;
         public readonly char? Character;
