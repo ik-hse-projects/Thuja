@@ -30,7 +30,7 @@ namespace Thuja
             }
         }
 
-        public Dictionary<KeySelector, Action> Actions { get; } = new Dictionary<KeySelector, Action>();
+        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new Dictionary<HashSet<KeySelector>, Action>();
 
         public void Clear()
         {
