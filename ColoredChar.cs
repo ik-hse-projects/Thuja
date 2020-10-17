@@ -7,7 +7,7 @@ namespace Thuja
         public static Style Default = new Style(MyColor.Default, MyColor.Default);
         public static Style Active = new Style(MyColor.Black, MyColor.White);
         public static Style Inactive = new Style(MyColor.Gray, MyColor.DarkGray);
-        public static Style Decoration = new Style(MyColor.DarkGray, MyColor.Transparent);
+        public static Style Decoration = new Style(MyColor.DarkGray, MyColor.Black);
         public static Style DarkGrayOnDefault = new Style(MyColor.DarkGray, MyColor.Default);
 
         public readonly MyColor Foreground;

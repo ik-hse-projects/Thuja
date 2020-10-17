@@ -7,7 +7,7 @@ namespace FileManager
     public class Dialog<T>
     {
         public string Question { get; set; }
-        public (string text, T obj)[] Answers { get; set; }
+        public (string text, T obj)[] Answers { get; set; } = new (string, T)[0];
         public Action<T> OnAnswered { get; set; }
         public Action OnCancelled { get; set; }
 
@@ -48,14 +48,14 @@ namespace FileManager
 
         private void Select(T answer)
         {
-            OnAnswered?.Invoke(answer);
             Close();
+            OnAnswered?.Invoke(answer);
         }
 
         private void Cancel()
         {
-            OnCancelled?.Invoke();
             Close();
+            OnCancelled?.Invoke();
         }
 
         private void Close()
