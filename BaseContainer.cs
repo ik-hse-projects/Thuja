@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Thuja.Widgets;
 
 namespace Thuja
@@ -77,6 +78,16 @@ namespace Thuja
             Focused = widget;
             Add(widget);
             return this;
+        }
+
+        public bool Remove(IWidget widget)
+        {
+            var isRemoved = widgets.Remove(widget);
+            if (isRemoved && Focused == widget)
+            {
+                Focused = null;
+            } 
+            return isRemoved;
         }
 
         public virtual bool BubbleUp(ConsoleKeyInfo key)

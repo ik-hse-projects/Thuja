@@ -22,6 +22,11 @@ namespace Thuja.Widgets
 
             var (width, height) = ctx.Size;
 
+            if (width == 0 && height == 0)
+            {
+                return;
+            }
+
             var right = width + 1;
             var bottom = height + 1;
 

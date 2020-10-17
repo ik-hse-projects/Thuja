@@ -38,5 +38,20 @@ namespace Thuja
 
             yield return (key, group);
         }
+
+        public static T? MinBy<T>(this IEnumerable<T> enumerable, Func<T, int> keySelector) where T: struct
+        {
+            (int key, T item)? result = null;
+            foreach (var item in enumerable)
+            {
+                var key = keySelector(item);
+                if (result == null || key < result.Value.key)
+                {
+                    result = (key, item);
+                }
+            }
+
+            return result?.item;
+        }
     }
 }

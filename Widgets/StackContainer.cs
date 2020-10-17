@@ -10,7 +10,7 @@ namespace Thuja.Widgets
         Horizontal
     }
 
-    public class StackContainer : BaseContainer
+    public class StackContainer : BaseContainer, IWidget
     {
         public StackContainer(Orientation orientation = Orientation.Vertical, int margin = 0,
             int maxVisibleCount = int.MaxValue)
@@ -24,7 +24,8 @@ namespace Thuja.Widgets
         public int Margin { get; set; }
 
         public int MaxVisibleCount { get; set; }
-        private int position { get; set; }
+        private int position;
+        private IFocusable? lastFocused;
 
         private IEnumerable<IWidget> FindVisible()
         {
@@ -56,6 +57,15 @@ namespace Thuja.Widgets
             return widgets.GetRange(start, end - start);
         }
 
+        public void Update()
+        {
+            if (Focused != lastFocused)
+            {
+                lastFocused = Focused;
+                MoveSelection(0);
+            }
+        }
+
         public override void Render(RenderContext context)
         {
             var offsetY = 0;
@@ -82,13 +92,18 @@ namespace Thuja.Widgets
                 .ToList();
             if (focusable.Count == 0) return false;
 
-            if (Focused == null)
-            {
-                (Focused, position) = focusable[0];
-                return true;
-            }
-
             var currentlySelected = focusable.FindIndex(x => ReferenceEquals(x.Item1, Focused));
+            if (currentlySelected == -1)
+            {
+                var nearest = focusable.MinBy(i => Math.Abs(i.index - position));
+                if (nearest == null)
+                {
+                    (Focused, position) = (null, 0);
+                    return false;
+                }
+
+                currentlySelected = nearest.Value.index;
+            }
             var newSelected = currentlySelected + direction;
             if (newSelected < 0 || newSelected >= focusable.Count) return false;
 
