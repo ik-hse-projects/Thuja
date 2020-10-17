@@ -7,17 +7,35 @@ namespace Thuja
     public readonly struct KeySelector
     {
         public readonly ConsoleModifiers Modifiers;
-        public readonly ConsoleKey Key;
+        public readonly ConsoleKey? Key;
+        public readonly char? Character;
 
         public KeySelector(ConsoleKey key, ConsoleModifiers modifiers = 0)
         {
             Modifiers = modifiers;
             Key = key;
+            Character = null;
+        }
+        
+        public KeySelector(char character, ConsoleModifiers modifiers = 0)
+        {
+            Modifiers = modifiers;
+            Key = null;
+            Character = character;
+        }
+        
+        public KeySelector(ConsoleKey? key = null, char? character = null, ConsoleModifiers modifiers = 0)
+        {
+            Modifiers = modifiers;
+            Key = key;
+            Character = character;
         }
 
         public bool Match(in ConsoleKeyInfo key)
         {
-            return key.Modifiers.HasFlag(Modifiers) && key.Key == Key;
+            return (Character == null || key.KeyChar == Character)
+                && (Key == null || key.Key == Key)
+                && key.Modifiers.HasFlag(Modifiers);
         }
     }
     

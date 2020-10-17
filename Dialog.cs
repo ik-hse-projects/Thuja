@@ -7,7 +7,7 @@ namespace FileManager
     public class Dialog<T>
     {
         public string Question { get; set; }
-        public T[] Answers { get; set; }
+        public (string text, T obj)[] Answers { get; set; }
         public Action<T> OnAnswered { get; set; }
         public Action OnCancelled { get; set; }
 
@@ -22,12 +22,12 @@ namespace FileManager
 
             stack.Add(new Label(""));
 
-            foreach (var answer in Answers)
+            foreach (var (text, obj) in Answers)
             {
-                stack.Add(new Button(answer?.ToString() ?? "(null)", 70)
+                stack.Add(new Button(text ?? "(null)", 70)
                     .AsIKeyHandler()
                     .Add(new[] {new KeySelector(ConsoleKey.Enter), new KeySelector(ConsoleKey.Spacebar)},
-                        () => Select(answer))
+                        () => Select(obj))
                 );
             }
             

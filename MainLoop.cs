@@ -14,7 +14,7 @@ namespace Thuja
         
         public Action? OnPaused { get; set; }
 
-        private Action? OnStop { get; set; }
+        public Action? OnStop { get; set; }
 
         public MainLoop(IWidget root)
         {
