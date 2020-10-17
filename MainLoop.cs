@@ -12,9 +12,9 @@ namespace Thuja
         private readonly List<IWidget> widgets = new List<IWidget>();
         private Display? display;
         
-        public bool Paused { get; set; }
+        public Action? OnPaused { get; set; }
 
-        private bool running;
+        private Action? OnStop { get; set; }
 
         public MainLoop(IWidget root)
         {
@@ -30,10 +30,12 @@ namespace Thuja
 
         public void Start()
         {
-            running = true;
+            OnStop = null;
             display = new Display();
             if (root is IFocusable focusable) focusable.FocusChange(true);
-            while (running)
+            
+            display.Clear();
+            while (OnStop == null)
             {
                 var fps = FindFps();
                 var delay = Stopwatch.Frequency / fps;
@@ -42,8 +44,8 @@ namespace Thuja
                 do
                 {
                     var end = Stopwatch.GetTimestamp() + delay;
-                    
-                    if (!Paused)
+
+                    if (OnPaused == null)
                     {
                         counter++;
 
@@ -53,6 +55,13 @@ namespace Thuja
                             maxCounter = newMaxCounter;
                         }
                     }
+                    else
+                    {
+                        display.Clear();
+                        OnPaused?.Invoke();
+                        OnPaused = null;
+                        display.Clear();
+                    }
 
                     while (Stopwatch.GetTimestamp() < end)
                     {
@@ -61,12 +70,8 @@ namespace Thuja
                 } while (counter <= maxCounter);
             }
 
-            // ReSharper disable once FunctionNeverReturns
-        }
-
-        public void Stop()
-        {
-            running = false;
+            display.Clear();
+            OnStop?.Invoke();
         }
 
         private int Tick(int fps, int counter)

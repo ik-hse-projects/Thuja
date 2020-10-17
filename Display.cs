@@ -15,7 +15,7 @@ namespace Thuja
 
         public Canvas CurrentScreen { get; private set; }
 
-        private void Clear()
+        public void Clear()
         {
             Console.Clear();
             prev = new Canvas(CurrentScreen.Size.width, CurrentScreen.Size.height);
