@@ -11,20 +11,31 @@ namespace Thuja.Widgets
         public static CharRange Digits = new CharRange('0', '9');
         public static CharRange Letters = new CharRange('A', 'z');
 
+        public static CharRange FilenameChars = new CharRange(char.MinValue, char.MaxValue,
+            System.IO.Path.GetInvalidFileNameChars()
+                .Select(ch => new CharRange(ch))
+                .ToHashSet());
+
         private readonly char start;
         private readonly char end;
+        private readonly HashSet<CharRange> denied;
 
-        private CharRange(char start, char end)
+        private CharRange(char only) : this(only, only)
+        {
+        }
+
+        private CharRange(char start, char end, HashSet<CharRange>? denied = null)
         {
             if (start > end) throw new ArgumentException("start > end");
 
             this.start = start;
             this.end = end;
+            this.denied = denied ?? new HashSet<CharRange>();
         }
 
         public bool Check(char ch)
         {
-            return start <= ch && ch <= end;
+            return start <= ch && ch <= end && !denied.Any(i => i.Check(ch));
         }
     }
 
@@ -51,8 +62,9 @@ namespace Thuja.Widgets
         public Style InactiveStyle { get; set; } = Style.Inactive;
         public StringBuilder Text { get; } = new StringBuilder();
         public Placeholder? Placeholder { get; set; }
-        
-        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new Dictionary<HashSet<KeySelector>, Action>();
+
+        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
+            new Dictionary<HashSet<KeySelector>, Action>();
 
         public IKeyHandler AsIKeyHandler() => this;
 
@@ -98,7 +110,7 @@ namespace Thuja.Widgets
             {
                 return true;
             }
-            
+
             switch (key.Key)
             {
                 case ConsoleKey.LeftArrow:
