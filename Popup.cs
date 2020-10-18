@@ -31,6 +31,12 @@ namespace Thuja
             label.MaxWidth = maxWidth;
             return Add((IWidget) label);
         }
+
+        public Popup Add(InputField field)
+        {
+            field.MaxLength = maxWidth;
+            return Add((IWidget) field);
+        }
         
         public Popup Add(IWidget widget)
         {

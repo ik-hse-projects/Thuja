@@ -40,7 +40,7 @@ namespace Thuja.Widgets
         }
     }
 
-    public class InputField : IFocusable
+    public class InputField : IKeyHandler
     {
         private int cursorLeft;
 
@@ -51,6 +51,10 @@ namespace Thuja.Widgets
         public Style InactiveStyle { get; set; } = Style.Inactive;
         public StringBuilder Text { get; } = new StringBuilder();
         public Placeholder? Placeholder { get; set; }
+        
+        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new Dictionary<HashSet<KeySelector>, Action>();
+
+        public IKeyHandler AsIKeyHandler() => this;
 
         private int CursorLeft
         {
@@ -90,6 +94,11 @@ namespace Thuja.Widgets
 
         public bool BubbleDown(ConsoleKeyInfo key)
         {
+            if (AsIKeyHandler().TryHandleKey(key))
+            {
+                return true;
+            }
+            
             switch (key.Key)
             {
                 case ConsoleKey.LeftArrow:
@@ -114,7 +123,7 @@ namespace Thuja.Widgets
             }
 
             var ch = key.KeyChar;
-            if (AllowedChars.Any(range => range.Check(ch)))
+            if (AllowedChars.Count == 0 || AllowedChars.Any(range => range.Check(ch)))
             {
                 if (Text.Length < MaxLength)
                 {
