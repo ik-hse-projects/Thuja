@@ -3,33 +3,33 @@ using System;
 namespace Thuja
 {
     /// <summary>
-    /// Вспомогательный класс для отрисовки.
+    ///     Вспомогательный класс для отрисовки.
     /// </summary>
     public class RenderContext
     {
         /// <summary>
-        /// Положение начала кординат контекста относительно глобального начала координат.
+        ///     Положение начала кординат контекста относительно глобального начала координат.
         /// </summary>
         private readonly (int x, int y, int layer) absoluteOffset;
-        
+
         /// <summary>
-        /// Холст, на который происходит отрисовка.
+        ///     Холст, на который происходит отрисовка.
         /// </summary>
         private readonly Canvas canvas;
 
         /// <summary>
-        /// Ссылка на родительский контекст, если такой есть.
+        ///     Ссылка на родительский контекст, если такой есть.
         /// </summary>
         private readonly ParentRef? parentRef;
-        
+
         /// <summary>
-        /// Текущий размер содержимого.
-        /// Начианется с нуля, т.е. (0, 0) соответсвует виджету размером 1x1.
+        ///     Текущий размер содержимого.
+        ///     Начианется с нуля, т.е. (0, 0) соответсвует виджету размером 1x1.
         /// </summary>
         private (int x, int y) size;
-        
+
         /// <summary>
-        /// Приватный конструктор, который позволяет установить все поля.
+        ///     Приватный конструктор, который позволяет установить все поля.
         /// </summary>
         private RenderContext((int x, int y, int layer) absoluteOffset, Canvas canvas, ParentRef parentRef) : this(
             absoluteOffset, canvas)
@@ -38,7 +38,7 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Создаёт новый корневой контекст с заданным положением и используя данный холст.
+        ///     Создаёт новый корневой контекст с заданным положением и используя данный холст.
         /// </summary>
         public RenderContext((int x, int y, int layer) absoluteOffset, Canvas canvas)
         {
@@ -48,12 +48,12 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Размер содержимого внутри этого контекста.
+        ///     Размер содержимого внутри этого контекста.
         /// </summary>
         public (int x, int y) Size => (size.x + 1, size.y + 1);
 
         /// <summary>
-        /// Помещает символ по указанным координатам.
+        ///     Помещает символ по указанным координатам.
         /// </summary>
         public ColoredChar this[int x, int y]
         {
@@ -62,7 +62,7 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Устаналивает положение курсора консоли.
+        ///     Устаналивает положение курсора консоли.
         /// </summary>
         public (int x, int y) CursorPosition
         {
@@ -78,8 +78,8 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Возвращает символ по указанным координатам,
-        /// если они не превышают размер холста после пересчета в абсолютные.
+        ///     Возвращает символ по указанным координатам,
+        ///     если они не превышают размер холста после пересчета в абсолютные.
         /// </summary>
         public ColoredChar? Get(int x, int y)
         {
@@ -87,7 +87,7 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Устаналивает данный символ по указанным относительным координатам.
+        ///     Устаналивает данный символ по указанным относительным координатам.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">Если переданные координаты отрицательны</exception>
         public void Set(int x, int y, ColoredChar ch)
@@ -112,8 +112,8 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Перерасчитывает свой <see cref="Size"/> и размеры всех родителбских контекстов,
-        /// если считать, что указанные координаты используются содержимым.
+        ///     Перерасчитывает свой <see cref="Size" /> и размеры всех родителбских контекстов,
+        ///     если считать, что указанные координаты используются содержимым.
         /// </summary>
         private void UpdateSize(int x, int y)
         {
@@ -135,8 +135,8 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Создает новый контекст на основе существующего,
-        /// отрисовывая всё его содержимое с заданным отступом относительно содержимого текщуго.
+        ///     Создает новый контекст на основе существующего,
+        ///     отрисовывая всё его содержимое с заданным отступом относительно содержимого текщуго.
         /// </summary>
         public RenderContext Derive((int x, int y, int layer) offset)
         {
@@ -149,33 +149,33 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Отрисовывает в начале координат контекста строку, используя указанный стиль.
+        ///     Отрисовывает в начале координат контекста строку, используя указанный стиль.
         /// </summary>
         public void PlaceString(string str, Style style)
         {
             for (var i = 0; i < str.Length; i++)
             {
-                this[i, 0] = new ColoredChar(style, str[i], 0);
+                this[i, 0] = new ColoredChar(style, str[i]);
             }
         }
 
         /// <summary>
-        /// Вспомогательная структура: содержит ссылку на родителя и информаию о смещении относительно его.
+        ///     Вспомогательная структура: содержит ссылку на родителя и информаию о смещении относительно его.
         /// </summary>
         private readonly struct ParentRef
         {
             /// <summary>
-            /// Ссылка на родителя.
+            ///     Ссылка на родителя.
             /// </summary>
             public readonly RenderContext Parent;
-            
+
             /// <summary>
-            /// Информаиця о смещении относительно его.
+            ///     Информаиця о смещении относительно его.
             /// </summary>
             public readonly (int x, int y, int layer) RelativeOffset;
 
             /// <summary>
-            /// Создает структуру, заполняя все поля.
+            ///     Создает структуру, заполняя все поля.
             /// </summary>
             public ParentRef(RenderContext parent, (int x, int y, int layer) relativeOffset)
             {

@@ -4,22 +4,22 @@ using System.Collections.Generic;
 namespace Thuja.Widgets
 {
     /// <summary>
-    /// Обычная кнопка с текстом, которую можно нажимать.
+    ///     Обычная кнопка с текстом, которую можно нажимать.
     /// </summary>
     public class Button : Label, IKeyHandler
     {
         private bool isFocused;
 
         /// <summary>
-        /// Создаёт новую кнопку с указаным текстом и, возможно, максимальной шириной. 
+        ///     Создаёт новую кнопку с указаным текстом и, возможно, максимальной шириной.
         /// </summary>
         public Button(string text, int maxWidth = int.MaxValue) : base(text, maxWidth)
         {
         }
 
         /// <summary>
-        /// Стиль, с которым на данный момент отображается кнопка.
-        /// Зависит от сфокусированности, менять смысла нет.
+        ///     Стиль, с которым на данный момент отображается кнопка.
+        ///     Зависит от сфокусированности, менять смысла нет.
         /// </summary>
         public override Style CurrentStyle => isFocused ? Style.Active : Style.Inactive;
 
@@ -49,11 +49,14 @@ namespace Thuja.Widgets
         {
             this.isFocused = isFocused;
         }
-        
+
         /// <summary>
-        /// Преобразовывает этот контейнер в экземпляр <see cref="IKeyHandler"/>
+        ///     Преобразовывает этот контейнер в экземпляр <see cref="IKeyHandler" />
         /// </summary>
-        /// <returns>Объект типа <see cref="IKeyHandler"/>, который может быть преобразован в <see cref="Button"/>.</returns>
-        public IKeyHandler AsIKeyHandler() => this;
+        /// <returns>Объект типа <see cref="IKeyHandler" />, который может быть преобразован в <see cref="Button" />.</returns>
+        public IKeyHandler AsIKeyHandler()
+        {
+            return this;
+        }
     }
 }

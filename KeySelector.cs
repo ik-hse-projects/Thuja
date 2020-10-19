@@ -3,12 +3,12 @@ using System;
 namespace Thuja
 {
     /// <summary>
-    /// Комбинация клавиш.
+    ///     Комбинация клавиш.
     /// </summary>
     public readonly struct KeySelector
     {
         /// <summary>
-        /// Набор комбинаций для выбора текущего элемента.
+        ///     Набор комбинаций для выбора текущего элемента.
         /// </summary>
         public static readonly KeySelector[] SelectItem =
         {
@@ -17,22 +17,22 @@ namespace Thuja
         };
 
         /// <summary>
-        /// Модификаторы нажатой клавиши.
+        ///     Модификаторы нажатой клавиши.
         /// </summary>
         public readonly ConsoleModifiers Modifiers;
-        
+
         /// <summary>
-        /// Вид нажатой клавиши. Null, если это не важно.
+        ///     Вид нажатой клавиши. Null, если это не важно.
         /// </summary>
         public readonly ConsoleKey? Key;
-        
+
         /// <summary>
-        /// Нажатый символ. Null, если это не важно.
+        ///     Нажатый символ. Null, если это не важно.
         /// </summary>
         public readonly char? Character;
 
         /// <summary>
-        /// Создаёт новый KeySelector на основании вида клавиши и, возможно, модификаторов.
+        ///     Создаёт новый KeySelector на основании вида клавиши и, возможно, модификаторов.
         /// </summary>
         /// <param name="key">Вид клавиши.</param>
         /// <param name="modifiers">Модификаторы.</param>
@@ -44,7 +44,7 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Создаёт новый KeySelector на основании нажатого символа и, возможно, модификаторов.
+        ///     Создаёт новый KeySelector на основании нажатого символа и, возможно, модификаторов.
         /// </summary>
         /// <param name="character">Нажатый символ.</param>
         /// <param name="modifiers">Модификаторы.</param>
@@ -56,7 +56,7 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Проверяет соответсвует ли переданное нажатие этой комбинации.
+        ///     Проверяет соответсвует ли переданное нажатие этой комбинации.
         /// </summary>
         /// <param name="key">Информация о нажатой клавише.</param>
         /// <returns>True, если нажатие соответсвует этой клавише.</returns>

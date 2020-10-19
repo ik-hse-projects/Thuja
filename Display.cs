@@ -4,17 +4,17 @@ using System.Linq;
 namespace Thuja
 {
     /// <summary>
-    /// Класс, который занмается отрисовкой холста на экран консоли.
+    ///     Класс, который занмается отрисовкой холста на экран консоли.
     /// </summary>
     public class Display
     {
         /// <summary>
-        /// Предыдущий холст.
+        ///     Предыдущий холст.
         /// </summary>
         private Canvas? prev;
 
         /// <summary>
-        /// Создаёт новый, пустой дисплей.
+        ///     Создаёт новый, пустой дисплей.
         /// </summary>
         public Display()
         {
@@ -23,12 +23,12 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Текущий холст, на котором следует рисовать.
+        ///     Текущий холст, на котором следует рисовать.
         /// </summary>
         public Canvas CurrentScreen { get; private set; }
 
         /// <summary>
-        /// Сбраасывает настройки консоли и очищает её.
+        ///     Сбраасывает настройки консоли и очищает её.
         /// </summary>
         public void Clear()
         {
@@ -38,7 +38,7 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Отрисовывает текущий слой на экран.
+        ///     Отрисовывает текущий слой на экран.
         /// </summary>
         public void Draw()
         {
@@ -62,7 +62,7 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Подготавливает дисплей к отрисовке нового содержимого.
+        ///     Подготавливает дисплей к отрисовке нового содержимого.
         /// </summary>
         private void Swap()
         {
@@ -82,7 +82,7 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Отрисовывает ровно одно отличие.
+        ///     Отрисовывает ровно одно отличие.
         /// </summary>
         /// <param name="difference">Отличие, которое должно быть отрисовано.</param>
         private static void DrawDifference(Difference difference)
@@ -97,7 +97,7 @@ namespace Thuja
         }
 
         /// <summary>
-        /// Отрисовывает строку текста со стилем.
+        ///     Отрисовывает строку текста со стилем.
         /// </summary>
         /// <param name="style">Стиль символов строки.</param>
         /// <param name="str">Символы строки</param>

@@ -5,7 +5,7 @@ using System.Linq;
 namespace Thuja.Widgets
 {
     /// <summary>
-    /// Расположение <see cref="StackContainer"/>.
+    ///     Расположение <see cref="StackContainer" />.
     /// </summary>
     public enum Orientation
     {
@@ -14,14 +14,14 @@ namespace Thuja.Widgets
     }
 
     /// <summary>
-    /// Контейнер, который располагает другие виджиты рядом друг с другом.
+    ///     Контейнер, который располагает другие виджиты рядом друг с другом.
     /// </summary>
     public class StackContainer : BaseContainer, IWidget
     {
         private IFocusable? lastFocused;
         private int position;
 
-        /// <param name="orientation">Ориентация <see cref="StackContainer"/>.</param>
+        /// <param name="orientation">Ориентация <see cref="StackContainer" />.</param>
         /// <param name="margin">Промежуток между виджетами.</param>
         /// <param name="maxVisibleCount">Максимальное количество отрисовываемых виджетов.</param>
         public StackContainer(Orientation orientation = Orientation.Vertical, int margin = 0,
@@ -33,17 +33,17 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        /// Ориентация.
+        ///     Ориентация.
         /// </summary>
         public Orientation Orientation { get; set; }
 
         /// <summary>
-        /// Промежуток между виджетами.
+        ///     Промежуток между виджетами.
         /// </summary>
         public int Margin { get; set; }
 
         /// <summary>
-        /// Максимальное количество отрисовываемых виджетов.
+        ///     Максимальное количество отрисовываемых виджетов.
         /// </summary>
         public int MaxVisibleCount { get; set; }
 
@@ -77,7 +77,7 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        /// Находит виджеты, которые должны быть видны.
+        ///     Находит виджеты, которые должны быть видны.
         /// </summary>
         private IEnumerable<IWidget> FindVisible()
         {
@@ -110,16 +110,18 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        /// Находит виджеты, которые могут быть сфокусированы, и их индексы среди всех виджетов.
+        ///     Находит виджеты, которые могут быть сфокусированы, и их индексы среди всех виджетов.
         /// </summary>
-        private List<(IFocusable?, int index)> FindFocusable() =>
-            Widgets
+        private List<(IFocusable?, int index)> FindFocusable()
+        {
+            return Widgets
                 .Select((widget, index) => (widget as IFocusable, index))
                 .Where(w => w.Item1?.CanFocus ?? false)
                 .ToList();
+        }
 
         /// <summary>
-        /// Передивагет фокус на указанное количество элементов.
+        ///     Передивагет фокус на указанное количество элементов.
         /// </summary>
         /// <returns>Удалось ли передвинуть.</returns>
         private bool MoveSelection(int direction)
