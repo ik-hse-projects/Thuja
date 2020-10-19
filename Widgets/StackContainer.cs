@@ -85,12 +85,15 @@ namespace Thuja.Widgets
             return Widgets.GetRange(start, end - start);
         }
 
+        private List<(IFocusable?, int index)> FindFocusable() =>
+            Widgets
+                .Select((widget, index) => (widget as IFocusable, index))
+                .Where(w => w.Item1?.CanFocus ?? false)
+                .ToList();
+
         private bool MoveSelection(int direction)
         {
-            var focusable = Widgets
-                .Select((widget, index) => (widget as IFocusable, index))
-                .Where(w => w.Item1?.CanFocus ?? default)
-                .ToList();
+            var focusable = FindFocusable();
             if (focusable.Count == 0)
             {
                 return false;
@@ -137,6 +140,30 @@ namespace Thuja.Widgets
                 case ConsoleKey.DownArrow when Orientation == Orientation.Vertical:
                 case ConsoleKey.RightArrow when Orientation == Orientation.Horizontal:
                     return MoveSelection(+1);
+                case ConsoleKey.End:
+                case ConsoleKey.PageDown:
+                {
+                    var focusable = FindFocusable();
+                    if (focusable.Count == 0)
+                    {
+                        return false;
+                    }
+
+                    (Focused, position) = focusable.Last();
+                    return true;
+                }
+                case ConsoleKey.Home:
+                case ConsoleKey.PageUp:
+                {
+                    var focusable = FindFocusable();
+                    if (focusable.Count == 0)
+                    {
+                        return false;
+                    }
+
+                    (Focused, position) = focusable.First();
+                    return true;
+                }
                 default:
                     return false;
             }
