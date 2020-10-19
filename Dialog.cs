@@ -1,8 +1,7 @@
 using System;
-using Thuja;
 using Thuja.Widgets;
 
-namespace FileManager
+namespace Thuja
 {
     public class Dialog<T>
     {

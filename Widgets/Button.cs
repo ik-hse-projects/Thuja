@@ -13,9 +13,6 @@ namespace Thuja.Widgets
 
         public override Style CurrentStyle => isFocused ? Style.Active : Style.Inactive;
 
-        public Style FocusedStyle { get; set; } = Style.Active;
-        public Style UnfocusedStyle { get; set; } = Style.Inactive;
-
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
             new Dictionary<HashSet<KeySelector>, Action>();
 

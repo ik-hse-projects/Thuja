@@ -13,8 +13,9 @@ namespace Thuja.Widgets
 
         public MultilineLabel(string text, int maxWidth = int.MaxValue)
         {
-            Text = text ?? throw new ArgumentNullException(nameof(text));
-            MaxWidth = maxWidth;
+            this.text = text ?? throw new ArgumentNullException(nameof(text));
+            this.maxWidth = maxWidth;
+            Recalculate();
         }
 
         public Style Style { get; set; } = Style.Default;

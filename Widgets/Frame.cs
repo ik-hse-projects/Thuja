@@ -18,7 +18,7 @@ namespace Thuja.Widgets
         public override void Render(RenderContext context)
         {
             var ctx = context.Derive((1, 1, 1));
-            foreach (var widget in widgets)
+            foreach (var widget in Widgets)
             {
                 widget.Render(ctx);
             }

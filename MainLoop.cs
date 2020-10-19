@@ -91,9 +91,8 @@ namespace Thuja
             }
 
             var maxCounter = 0;
-            for (var index = 0; index < widgets.Count; index++)
+            foreach (var widget in widgets)
             {
-                var widget = widgets[index];
                 var scaled = widget.Fps == 0 ? 1 : fps / widget.Fps;
                 if (scaled > maxCounter)
                 {

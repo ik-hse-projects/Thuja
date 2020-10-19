@@ -32,7 +32,7 @@ namespace Thuja
                 Clear();
             }
 
-            foreach (var difference in CurrentScreen.FindDifferences(prev))
+            foreach (var difference in CurrentScreen.FindDifferences(prev!))
             {
                 DrawDifference(difference);
             }

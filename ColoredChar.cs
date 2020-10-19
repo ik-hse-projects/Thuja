@@ -48,10 +48,6 @@ namespace Thuja
             Layer = layer;
         }
 
-        public ColoredChar(char c) : this(new Style(MyColor.Default, MyColor.Default), c)
-        {
-        }
-
         public bool FlatEquals(ColoredChar other)
         {
             return Style.Equals(other.Style) && Char == other.Char;

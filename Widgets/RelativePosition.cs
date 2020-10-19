@@ -15,7 +15,7 @@ namespace Thuja.Widgets
 
         public override void Render(RenderContext context)
         {
-            foreach (var widget in widgets)
+            foreach (var widget in Widgets)
             {
                 var newPosition = (X, Y, Layer);
                 widget.Render(context.Derive(newPosition));

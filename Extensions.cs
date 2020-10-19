@@ -27,7 +27,8 @@ namespace Thuja
             {
                 var current = enumerator.Current;
                 var currentKey = selector(current);
-                if (currentKey == null && key == null || currentKey != null && currentKey.Equals(key))
+                if (currentKey is null && key is null
+                    || !(currentKey is null) && currentKey.Equals(key))
                 {
                     group.Add(current);
                 }

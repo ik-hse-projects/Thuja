@@ -8,10 +8,6 @@ namespace Thuja.Widgets
 {
     public readonly struct CharRange
     {
-        public static CharRange Ascii = new CharRange(' ', '~');
-        public static CharRange Digits = new CharRange('0', '9');
-        public static CharRange Letters = new CharRange('A', 'z');
-
         public static CharRange FilenameChars = new CharRange(char.MinValue, char.MaxValue,
             Path.GetInvalidFileNameChars()
                 .Select(ch => new CharRange(ch))

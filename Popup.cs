@@ -55,12 +55,7 @@ namespace Thuja
             return this;
         }
 
-        public BaseContainer InnerContent()
-        {
-            return stack;
-        }
-
-        public Popup Show(BaseContainer root)
+        public void Show(BaseContainer root)
         {
             container = root;
             oldFocus = root.Focused;
@@ -69,8 +64,6 @@ namespace Thuja
             );
 
             root.AddFocused(wrapped);
-
-            return this;
         }
 
         public void Close()

@@ -5,7 +5,7 @@ namespace Thuja
 {
     public class BaseContainer : IKeyHandler
     {
-        protected readonly List<IWidget> widgets = new List<IWidget>();
+        protected readonly List<IWidget> Widgets = new List<IWidget>();
 
         private IFocusable? focused;
 
@@ -32,7 +32,7 @@ namespace Thuja
 
         public void OnRegistered(MainLoop loop)
         {
-            foreach (var widget in widgets)
+            foreach (var widget in Widgets)
             {
                 loop.Register(widget);
             }
@@ -42,7 +42,7 @@ namespace Thuja
 
         public virtual void Render(RenderContext context)
         {
-            foreach (var widget in widgets)
+            foreach (var widget in Widgets)
             {
                 widget.Render(context);
             }
@@ -69,7 +69,7 @@ namespace Thuja
         public void Clear()
         {
             Focused = null;
-            widgets.Clear();
+            Widgets.Clear();
         }
 
         public BaseContainer Add(IWidget widget)
@@ -80,7 +80,7 @@ namespace Thuja
             }
 
             Loop?.Register(widget);
-            widgets.Add(widget);
+            Widgets.Add(widget);
             return this;
         }
 
@@ -94,7 +94,7 @@ namespace Thuja
         public bool Remove(IWidget widget)
         {
             Loop?.Unregister(widget);
-            var isRemoved = widgets.Remove(widget);
+            var isRemoved = Widgets.Remove(widget);
             if (isRemoved && Focused == widget)
             {
                 Focused = null;
@@ -103,7 +103,7 @@ namespace Thuja
             return isRemoved;
         }
 
-        public virtual bool BubbleUp(ConsoleKeyInfo key)
+        protected virtual bool BubbleUp(ConsoleKeyInfo key)
         {
             return AsIKeyHandler().TryHandleKey(key);
         }

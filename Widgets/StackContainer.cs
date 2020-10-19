@@ -57,9 +57,9 @@ namespace Thuja.Widgets
 
         private IEnumerable<IWidget> FindVisible()
         {
-            if (widgets.Count <= MaxVisibleCount)
+            if (Widgets.Count <= MaxVisibleCount)
             {
-                return widgets;
+                return Widgets;
             }
 
             var offsetBefore = MaxVisibleCount / 2;
@@ -74,20 +74,20 @@ namespace Thuja.Widgets
 
             if (start < 0)
             {
-                return widgets.GetRange(0, MaxVisibleCount);
+                return Widgets.GetRange(0, MaxVisibleCount);
             }
 
-            if (end > widgets.Count)
+            if (end > Widgets.Count)
             {
-                return widgets.GetRange(widgets.Count - MaxVisibleCount, MaxVisibleCount);
+                return Widgets.GetRange(Widgets.Count - MaxVisibleCount, MaxVisibleCount);
             }
 
-            return widgets.GetRange(start, end - start);
+            return Widgets.GetRange(start, end - start);
         }
 
         private bool MoveSelection(int direction)
         {
-            var focusable = widgets
+            var focusable = Widgets
                 .Select((widget, index) => (widget as IFocusable, index))
                 .Where(w => w.Item1?.CanFocus ?? default)
                 .ToList();
@@ -119,7 +119,7 @@ namespace Thuja.Widgets
             return true;
         }
 
-        public override bool BubbleUp(ConsoleKeyInfo key)
+        protected override bool BubbleUp(ConsoleKeyInfo key)
         {
             if (base.BubbleUp(key))
             {
