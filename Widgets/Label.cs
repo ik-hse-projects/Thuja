@@ -29,13 +29,16 @@ namespace Thuja.Widgets
 
         public int MaxWidth { get; set; }
 
+        /// <inheritdoc />
         public int Fps => 2;
 
+        /// <inheritdoc />
         public void Update()
         {
             position = (position + 1) % withSeparator.Length;
         }
 
+        /// <inheritdoc />
         public virtual void Render(RenderContext context)
         {
             if (MaxWidth >= Text.Length)

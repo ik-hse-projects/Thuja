@@ -3,18 +3,33 @@ using System.Linq;
 
 namespace Thuja
 {
+    /// <summary>
+    /// Класс, который занмается отрисовкой холста на экран консоли.
+    /// </summary>
     public class Display
     {
+        /// <summary>
+        /// Предыдущий холст.
+        /// </summary>
         private Canvas? prev;
 
+        /// <summary>
+        /// Создаёт новый, пустой дисплей.
+        /// </summary>
         public Display()
         {
             prev = null;
             CurrentScreen = new Canvas(Console.WindowWidth, Console.WindowHeight);
         }
 
+        /// <summary>
+        /// Текущий холст, на котором следует рисовать.
+        /// </summary>
         public Canvas CurrentScreen { get; private set; }
 
+        /// <summary>
+        /// Сбраасывает настройки консоли и очищает её.
+        /// </summary>
         public void Clear()
         {
             Console.ResetColor();
@@ -22,6 +37,9 @@ namespace Thuja
             prev = new Canvas(CurrentScreen.Size.width, CurrentScreen.Size.height);
         }
 
+        /// <summary>
+        /// Отрисовывает текущий слой на экран.
+        /// </summary>
         public void Draw()
         {
             var (cursorLeft, cursorTop) = (Console.CursorLeft, Console.CursorTop);
@@ -43,6 +61,9 @@ namespace Thuja
             Swap();
         }
 
+        /// <summary>
+        /// Подготавливает дисплей к отрисовке нового содержимого.
+        /// </summary>
         private void Swap()
         {
             var width = Console.WindowWidth;
@@ -60,6 +81,10 @@ namespace Thuja
             }
         }
 
+        /// <summary>
+        /// Отрисовывает ровно одно отличие.
+        /// </summary>
+        /// <param name="difference">Отличие, которое должно быть отрисовано.</param>
         private static void DrawDifference(Difference difference)
         {
             Console.SetCursorPosition(difference.Column, difference.Line);
@@ -71,15 +96,18 @@ namespace Thuja
             }
         }
 
+        /// <summary>
+        /// Отрисовывает строку текста со стилем.
+        /// </summary>
+        /// <param name="style">Стиль символов строки.</param>
+        /// <param name="str">Символы строки</param>
         private static void WriteString(Style style, string str)
         {
-            // Draw transparent foreground as whitespace.
             if (style.Foreground == MyColor.Transparent)
             {
                 str = new string(' ', str.Length);
             }
 
-            // Treat transparent background as default.
             var background = style.Background == MyColor.Transparent
                 ? MyColor.Default
                 : style.Background;

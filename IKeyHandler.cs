@@ -4,61 +4,55 @@ using System.Linq;
 
 namespace Thuja
 {
-    public readonly struct KeySelector
-    {
-        public static readonly KeySelector[] SelectItem =
-        {
-            new KeySelector(ConsoleKey.Enter),
-            new KeySelector(ConsoleKey.Spacebar)
-        };
-
-        public readonly ConsoleModifiers Modifiers;
-        public readonly ConsoleKey? Key;
-        public readonly char? Character;
-
-        public KeySelector(ConsoleKey key, ConsoleModifiers modifiers = 0)
-        {
-            Modifiers = modifiers;
-            Key = key;
-            Character = null;
-        }
-
-        public KeySelector(char character, ConsoleModifiers modifiers = 0)
-        {
-            Modifiers = modifiers;
-            Key = null;
-            Character = character;
-        }
-
-        public bool Match(in ConsoleKeyInfo key)
-        {
-            return (Character == null || key.KeyChar == Character)
-                   && (Key == null || key.Key == Key)
-                   && key.Modifiers.HasFlag(Modifiers);
-        }
-    }
-
+    /// <summary>
+    /// Обработчик нажатия клавиш.
+    /// </summary>
     public interface IKeyHandler : IFocusable
     {
+        /// <summary>
+        /// Возможные действия при нажатии тех или иных комбинаций
+        /// </summary>
         Dictionary<HashSet<KeySelector>, Action> Actions { get; }
 
-        // Builder pattern
+        /// <summary>
+        /// Добавляет новое действие для указанной комбинации. 
+        /// </summary>
+        /// <param name="selector">Комбинация клавиш.</param>
+        /// <param name="action">Действие, которое необходимо выполнить.</param>
+        /// <returns>Возвращает себя же.</returns>
         IKeyHandler Add(KeySelector selector, Action action)
         {
             return Add(new HashSet<KeySelector> {selector}, action);
         }
-
+        
+        /// <summary>
+        /// Добавляет новое действие для указанных комбинаций. 
+        /// </summary>
+        /// <param name="selectors">Комбинации клавиш.</param>
+        /// <param name="action">Действие, которое необходимо выполнить.</param>
+        /// <returns>Возвращает себя же.</returns>
         IKeyHandler Add(IEnumerable<KeySelector> selectors, Action action)
         {
             return Add(selectors.ToHashSet(), action);
         }
 
+        /// <summary>
+        /// Добавляет новое действие для множества комбинаций. 
+        /// </summary>
+        /// <param name="selectors">Множество комбинаций клавиш.</param>
+        /// <param name="action">Действие, которое необходимо выполнить.</param>
+        /// <returns>Возвращает себя же.</returns>
         IKeyHandler Add(HashSet<KeySelector> selectors, Action action)
         {
             Actions.Add(selectors, action);
             return this;
         }
 
+        /// <summary>
+        /// Обрабатывает нажатие клавиши и вызывает необходимые действия.
+        /// </summary>
+        /// <param name="key">Информация о нажатой клавиша.</param>
+        /// <returns>true, если такая комбинация была обработана хотя бы одним обработчиком.</returns>
         bool TryHandleKey(ConsoleKeyInfo key)
         {
             var result = false;

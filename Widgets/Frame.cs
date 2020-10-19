@@ -1,20 +1,38 @@
 namespace Thuja.Widgets
 {
+    /// <summary>
+    /// Рамка и фон вокруг всего содержимого.
+    /// </summary>
     public class Frame : BaseContainer
     {
+        /// <summary>
+        /// Создаёт рамку с опциональным цветом фона.
+        /// По-умолчанию в качестве стиля самой рамки используется <see cref="Thuja.Style.Decoration"/>. 
+        /// </summary>
         public Frame(MyColor background = MyColor.Default) : this(Style.Decoration, background)
         {
         }
 
+        /// <summary>
+        /// Создаёт рамку со стилем символов и опциональным цветом фона.
+        /// </summary>
         public Frame(Style style, MyColor background = MyColor.Default)
         {
             Style = style;
             Background = background;
         }
 
+        /// <summary>
+        /// Стиль символов рамки.
+        /// </summary>
         public Style Style { get; set; }
+        
+        /// <summary>
+        /// Цвет фона под содержимым рамки.
+        /// </summary>
         public MyColor Background { get; set; }
 
+        /// <inheritdoc />
         public override void Render(RenderContext context)
         {
             var ctx = context.Derive((1, 1, 1));

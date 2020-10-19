@@ -18,8 +18,14 @@ namespace Thuja.Widgets
             Recalculate();
         }
 
+        /// <summary>
+        /// Стиль текста.
+        /// </summary>
         public Style Style { get; set; } = Style.Default;
 
+        /// <summary>
+        /// Текст.
+        /// </summary>
         public string Text
         {
             get => text;
@@ -30,6 +36,9 @@ namespace Thuja.Widgets
             }
         }
 
+        /// <summary>
+        /// Максимальная ширина.
+        /// </summary>
         public int MaxWidth
         {
             get => maxWidth;
@@ -40,6 +49,7 @@ namespace Thuja.Widgets
             }
         }
 
+        /// <inheritdoc />
         public void Render(RenderContext context)
         {
             for (var i = 0; i < lines.Length; i++)
@@ -50,6 +60,9 @@ namespace Thuja.Widgets
             }
         }
 
+        /// <summary>
+        /// Разбивает текст на строки, не превышающие максимальную ширину.
+        /// </summary>
         private void Recalculate()
         {
             var words = text.Split();

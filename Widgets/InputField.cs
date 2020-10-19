@@ -6,21 +6,43 @@ using System.Text;
 
 namespace Thuja.Widgets
 {
+    /// <summary>
+    /// Диапазон разрешённых для ввода символов.
+    /// </summary>
     public readonly struct CharRange
     {
+        /// <summary>
+        /// Символы, которые допустимы в путях.
+        /// </summary>
         public static CharRange FilenameChars = new CharRange(char.MinValue, char.MaxValue,
             Path.GetInvalidFileNameChars()
                 .Select(ch => new CharRange(ch))
                 .ToHashSet());
 
+        /// <summary>
+        /// Первый разрешённый символ диапазона.
+        /// </summary>
         private readonly char start;
+        /// <summary>
+        /// Последний разрешённый символ диапазона.
+        /// </summary>
         private readonly char end;
+        
+        /// <summary>
+        /// Диапазоны, символы в которых исключены из этого диапазона.
+        /// </summary>
         private readonly HashSet<CharRange> denied;
 
+        /// <summary>
+        /// Создаёт диапазон из единственного символа.
+        /// </summary>
         private CharRange(char only) : this(only, only)
         {
         }
 
+        /// <summary>
+        /// Создаёт диапазон символов.
+        /// </summary>
         private CharRange(char start, char end, HashSet<CharRange>? denied = null)
         {
             if (start > end)
@@ -33,17 +55,33 @@ namespace Thuja.Widgets
             this.denied = denied ?? new HashSet<CharRange>();
         }
 
+        /// <summary>
+        /// Проверяет, входит ли символ в диапазон.
+        /// </summary>
         public bool Check(char ch)
         {
             return start <= ch && ch <= end && !denied.Any(i => i.Check(ch));
         }
     }
 
+    /// <summary>
+    /// Текст, который отображается в <see cref="InputField"/>, если на нём не стоит фокус.
+    /// </summary>
     public readonly struct Placeholder
     {
+        /// <summary>
+        /// Стиль текста.
+        /// </summary>
         public readonly Style Style;
+        
+        /// <summary>
+        /// Текст.
+        /// </summary>
         public readonly string Text;
-
+        
+        /// <summary>
+        /// Создаёт <see cref="Placeholder"/> с указанными параметрами.
+        /// </summary>
         public Placeholder(Style style, string text)
         {
             Style = style;
@@ -51,18 +89,51 @@ namespace Thuja.Widgets
         }
     }
 
+    /// <summary>
+    /// Поле для ввода текста пользователем.
+    /// </summary>
     public class InputField : IKeyHandler
     {
+        /// <summary>
+        /// Положение курсора.
+        /// </summary>
         private int cursorLeft;
-
+        
         private bool isFocused;
+        
+        /// <summary>
+        /// Максимальная длина текста.
+        /// </summary>
         public int MaxLength { get; set; } = int.MaxValue;
+        
+        /// <summary>
+        /// Символы, разрешённые для ввода.
+        /// </summary>
         public HashSet<CharRange> AllowedChars { get; } = new HashSet<CharRange>();
+        
+        /// <summary>
+        /// Стиль текста, когда поле сфокусировано.
+        /// </summary>
         public Style ActiveStyle { get; set; } = Style.Active;
+        
+        /// <summary>
+        /// Стиль текста, когда поле не сфокусировано.
+        /// </summary>
         public Style InactiveStyle { get; set; } = Style.Inactive;
+        
+        /// <summary>
+        /// Введённый пользователем текст.
+        /// </summary>
         public StringBuilder Text { get; } = new StringBuilder();
+        
+        /// <summary>
+        /// Текст, который отображается, когда поле не сфокусировано и ничего ещё не введено.
+        /// </summary>
         public Placeholder? Placeholder { get; set; }
 
+        /// <summary>
+        /// Устанавливает положение курсора, совершая все необходимые проверки.
+        /// </summary>
         private int CursorLeft
         {
             get => cursorLeft;
@@ -83,9 +154,11 @@ namespace Thuja.Widgets
             }
         }
 
+        /// <inheritdoc />
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
             new Dictionary<HashSet<KeySelector>, Action>();
 
+        /// <inheritdoc />
         public void Render(RenderContext context)
         {
             if (isFocused)
@@ -114,6 +187,7 @@ namespace Thuja.Widgets
             context.PlaceString(text, style);
         }
 
+        /// <inheritdoc />
         public bool BubbleDown(ConsoleKeyInfo key)
         {
             if (AsIKeyHandler().TryHandleKey(key))
@@ -159,16 +233,21 @@ namespace Thuja.Widgets
             return false;
         }
 
+        /// <inheritdoc />
         public void FocusChange(bool isFocused)
         {
             this.isFocused = isFocused;
         }
 
-        public IKeyHandler AsIKeyHandler()
-        {
-            return this;
-        }
+        /// <summary>
+        /// Преобразовывает этот контейнер в экземпляр <see cref="IKeyHandler"/>
+        /// </summary>
+        /// <returns>Объект типа <see cref="IKeyHandler"/>, который может быть преобразован в <see cref="InputField"/>.</returns>
+        public IKeyHandler AsIKeyHandler() => this;
 
+        /// <summary>
+        /// Удаляет один символ позади курсора.
+        /// </summary>
         private void Del()
         {
             if (cursorLeft < Text.Length)

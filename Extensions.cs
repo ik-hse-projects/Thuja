@@ -3,17 +3,34 @@ using System.Collections.Generic;
 
 namespace Thuja
 {
+    /// <summary>
+    /// Некоторые вспомогательные методы для удобства.
+    /// </summary>
     public static class Extensions
     {
-        public static void RemoveLast<T>(this List<T> self, int count = 1)
+        /// <summary>
+        /// Удаляет из переданного списка последние <paramref name="count"/> элементов.
+        /// </summary>
+        /// <param name="list">Список, из которого нужно удалить элементы.</param>
+        /// <param name="count">Количество элементов, которые нужно удалить.</param>
+        /// <typeparam name="T">Тип элементов списка.</typeparam>
+        public static void RemoveLast<T>(this List<T> list, int count = 1)
         {
-            self.RemoveRange(self.Count - count, count);
+            list.RemoveRange(list.Count - count, count);
         }
 
-        public static IEnumerable<(TKey, List<TSource>)> MakeGroups<TSource, TKey>(this IEnumerable<TSource> self,
+        /// <summary>
+        /// Группирует подряд идущие элементы в итераторе по некотрому ключу.
+        /// </summary>
+        /// <param name="enumerable">Итератор с элементами.</param>
+        /// <param name="selector">Функция получения ключа элемента.</param>
+        /// <typeparam name="TSource">Тип элемента.</typeparam>
+        /// <typeparam name="TKey">Тип ключа.</typeparam>
+        /// <returns>Возвращает итератор групп элементов.</returns>
+        public static IEnumerable<(TKey, List<TSource>)> MakeGroups<TSource, TKey>(this IEnumerable<TSource> enumerable,
             Func<TSource, TKey> selector)
         {
-            using var enumerator = self.GetEnumerator();
+            using var enumerator = enumerable.GetEnumerator();
             if (!enumerator.MoveNext())
             {
                 yield break;
@@ -43,6 +60,13 @@ namespace Thuja
             yield return (key, group);
         }
 
+        /// <summary>
+        /// Находит минимальный элемент итератора по некоторому ключу.
+        /// </summary>
+        /// <param name="enumerable">Итератор элементов.</param>
+        /// <param name="keySelector">Функция получения ключа.</param>
+        /// <typeparam name="T">Тип элемента.</typeparam>
+        /// <returns>Минимальный элемент, либо null, если итератор пуст.</returns>
         public static T? MinBy<T>(this IEnumerable<T> enumerable, Func<T, int> keySelector) where T : struct
         {
             (int key, T item)? result = null;

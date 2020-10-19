@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Thuja
 {
+    /// <summary>
+    /// Цвета консоли.
+    /// </summary>
     public enum MyColor : byte
     {
         Black = 0,
@@ -25,13 +28,22 @@ namespace Thuja
         Transparent = 17
     }
 
+    /// <summary>
+    /// Функции над цветами консоли.
+    /// </summary>
     public static class MyColorExt
     {
+        /// <summary>
+        /// Кэш преобразования <see cref="MyColor"/> в <see cref="ConsoleColor"/>.
+        /// </summary>
         private static readonly Dictionary<MyColor, ConsoleColor> Mapping = new Dictionary<MyColor, ConsoleColor>();
 
+        /// <summary>
+        /// Преобразует число в цвет. Если это невозможно, то возвращает цвет по-умолчанию.
+        /// </summary>
         public static MyColor FromInt(int b)
         {
-            if (b <= 17)
+            if (0 <= b && b <= 17)
             {
                 return (MyColor) b;
             }
@@ -39,6 +51,9 @@ namespace Thuja
             return MyColor.Default;
         }
 
+        /// <summary>
+        /// Преобразует <see cref="MyColor"/> в <see cref="ConsoleColor"/>.
+        /// </summary>
         public static ConsoleColor ToConsoleColor(this MyColor color)
         {
             if (color == MyColor.Default || color == MyColor.Transparent)
@@ -51,14 +66,14 @@ namespace Thuja
                 return cached;
             }
 
-            // Slow, but robust
+            // Довольно медленно, но это только пока не заполнится кэш.
             if (Enum.TryParse<ConsoleColor>(color.ToString(), out var parsed))
             {
                 Mapping.Add(color, parsed);
                 return parsed;
             }
 
-            // Should not be here, but we do not want to crash because of colors
+            // Не должно доходить до этого места, но на всякий случай не кидаем исключение.
             return default;
         }
     }
