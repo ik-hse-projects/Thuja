@@ -14,7 +14,10 @@ namespace Thuja
             Func<TSource, TKey> selector)
         {
             using var enumerator = self.GetEnumerator();
-            if (!enumerator.MoveNext()) yield break;
+            if (!enumerator.MoveNext())
+            {
+                yield break;
+            }
 
             var first = enumerator.Current;
             var key = selector(first);
@@ -39,7 +42,7 @@ namespace Thuja
             yield return (key, group);
         }
 
-        public static T? MinBy<T>(this IEnumerable<T> enumerable, Func<T, int> keySelector) where T: struct
+        public static T? MinBy<T>(this IEnumerable<T> enumerable, Func<T, int> keySelector) where T : struct
         {
             (int key, T item)? result = null;
             foreach (var item in enumerable)

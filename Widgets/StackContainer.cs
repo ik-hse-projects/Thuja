@@ -12,6 +12,9 @@ namespace Thuja.Widgets
 
     public class StackContainer : BaseContainer, IWidget
     {
+        private IFocusable? lastFocused;
+        private int position;
+
         public StackContainer(Orientation orientation = Orientation.Vertical, int margin = 0,
             int maxVisibleCount = int.MaxValue)
         {
@@ -24,38 +27,6 @@ namespace Thuja.Widgets
         public int Margin { get; set; }
 
         public int MaxVisibleCount { get; set; }
-        private int position;
-        private IFocusable? lastFocused;
-
-        private IEnumerable<IWidget> FindVisible()
-        {
-            if (widgets.Count <= MaxVisibleCount)
-            {
-                return widgets;
-            }
-            
-            var offsetBefore = MaxVisibleCount / 2;
-            var offsetAfter = MaxVisibleCount / 2;
-            if (MaxVisibleCount % 2 != 0)
-            {
-                offsetAfter++;
-            }
-
-            var start = position - offsetBefore;
-            var end = position + offsetAfter;
-
-            if (start < 0)
-            {
-                return widgets.GetRange(0, MaxVisibleCount);
-            }
-
-            if (end > widgets.Count)
-            {
-                return widgets.GetRange(widgets.Count - MaxVisibleCount, MaxVisibleCount);
-            }
-
-            return widgets.GetRange(start, end - start);
-        }
 
         public void Update()
         {
@@ -84,13 +55,46 @@ namespace Thuja.Widgets
             }
         }
 
+        private IEnumerable<IWidget> FindVisible()
+        {
+            if (widgets.Count <= MaxVisibleCount)
+            {
+                return widgets;
+            }
+
+            var offsetBefore = MaxVisibleCount / 2;
+            var offsetAfter = MaxVisibleCount / 2;
+            if (MaxVisibleCount % 2 != 0)
+            {
+                offsetAfter++;
+            }
+
+            var start = position - offsetBefore;
+            var end = position + offsetAfter;
+
+            if (start < 0)
+            {
+                return widgets.GetRange(0, MaxVisibleCount);
+            }
+
+            if (end > widgets.Count)
+            {
+                return widgets.GetRange(widgets.Count - MaxVisibleCount, MaxVisibleCount);
+            }
+
+            return widgets.GetRange(start, end - start);
+        }
+
         private bool MoveSelection(int direction)
         {
             var focusable = widgets
                 .Select((widget, index) => (widget as IFocusable, index))
                 .Where(w => w.Item1?.CanFocus ?? default)
                 .ToList();
-            if (focusable.Count == 0) return false;
+            if (focusable.Count == 0)
+            {
+                return false;
+            }
 
             var currentlySelected = focusable.FindIndex(x => ReferenceEquals(x.Item1, Focused));
             if (currentlySelected == -1)
@@ -104,8 +108,12 @@ namespace Thuja.Widgets
 
                 currentlySelected = nearest.Value.index;
             }
+
             var newSelected = currentlySelected + direction;
-            if (newSelected < 0 || newSelected >= focusable.Count) return false;
+            if (newSelected < 0 || newSelected >= focusable.Count)
+            {
+                return false;
+            }
 
             (Focused, position) = focusable[newSelected];
             return true;
@@ -117,6 +125,7 @@ namespace Thuja.Widgets
             {
                 return true;
             }
+
             switch (key.Key)
             {
                 case ConsoleKey.Tab when key.Modifiers.HasFlag(ConsoleModifiers.Shift):

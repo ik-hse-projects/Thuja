@@ -6,11 +6,12 @@ namespace Thuja
 {
     public readonly struct KeySelector
     {
-        public static KeySelector[] SelectItem = {
+        public static KeySelector[] SelectItem =
+        {
             new KeySelector(ConsoleKey.Enter),
-            new KeySelector(ConsoleKey.Spacebar),
+            new KeySelector(ConsoleKey.Spacebar)
         };
-        
+
         public readonly ConsoleModifiers Modifiers;
         public readonly ConsoleKey? Key;
         public readonly char? Character;
@@ -21,14 +22,14 @@ namespace Thuja
             Key = key;
             Character = null;
         }
-        
+
         public KeySelector(char character, ConsoleModifiers modifiers = 0)
         {
             Modifiers = modifiers;
             Key = null;
             Character = character;
         }
-        
+
         public KeySelector(ConsoleKey? key = null, char? character = null, ConsoleModifiers modifiers = 0)
         {
             Modifiers = modifiers;
@@ -39,12 +40,12 @@ namespace Thuja
         public bool Match(in ConsoleKeyInfo key)
         {
             return (Character == null || key.KeyChar == Character)
-                && (Key == null || key.Key == Key)
-                && key.Modifiers.HasFlag(Modifiers);
+                   && (Key == null || key.Key == Key)
+                   && key.Modifiers.HasFlag(Modifiers);
         }
     }
-    
-    public interface IKeyHandler: IFocusable
+
+    public interface IKeyHandler : IFocusable
     {
         Dictionary<HashSet<KeySelector>, Action> Actions { get; }
 
@@ -53,12 +54,12 @@ namespace Thuja
         {
             return Add(new HashSet<KeySelector> {selector}, action);
         }
-        
+
         IKeyHandler Add(IEnumerable<KeySelector> selectors, Action action)
         {
             return Add(selectors.ToHashSet(), action);
         }
-        
+
         IKeyHandler Add(HashSet<KeySelector> selectors, Action action)
         {
             Actions.Add(selectors, action);

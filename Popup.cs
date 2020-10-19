@@ -4,15 +4,15 @@ namespace Thuja
 {
     public class Popup
     {
-        private readonly StackContainer stack = new StackContainer();
         private readonly int maxWidth;
         private readonly (int x, int y, int layer) position;
-        
-        private IWidget? last;
-        
+        private readonly StackContainer stack = new StackContainer();
+
         private BaseContainer? container;
-        private BaseContainer? wrapped;
+
+        private IWidget? last;
         private IFocusable? oldFocus;
+        private BaseContainer? wrapped;
 
         public Popup(int maxWidth = 70, int x = 5, int y = 5, int layer = 10)
         {
@@ -25,7 +25,7 @@ namespace Thuja
             label.MaxWidth = maxWidth;
             return Add((IWidget) label);
         }
-        
+
         public Popup Add(MultilineLabel label)
         {
             label.MaxWidth = maxWidth;
@@ -37,7 +37,7 @@ namespace Thuja
             field.MaxLength = maxWidth;
             return Add((IWidget) field);
         }
-        
+
         public Popup Add(IWidget widget)
         {
             stack.Add(widget);
@@ -72,7 +72,7 @@ namespace Thuja
 
             return this;
         }
-        
+
         public void Close()
         {
             if (wrapped == null)

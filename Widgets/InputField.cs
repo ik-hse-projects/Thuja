@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -12,7 +13,7 @@ namespace Thuja.Widgets
         public static CharRange Letters = new CharRange('A', 'z');
 
         public static CharRange FilenameChars = new CharRange(char.MinValue, char.MaxValue,
-            System.IO.Path.GetInvalidFileNameChars()
+            Path.GetInvalidFileNameChars()
                 .Select(ch => new CharRange(ch))
                 .ToHashSet());
 
@@ -26,7 +27,10 @@ namespace Thuja.Widgets
 
         private CharRange(char start, char end, HashSet<CharRange>? denied = null)
         {
-            if (start > end) throw new ArgumentException("start > end");
+            if (start > end)
+            {
+                throw new ArgumentException("start > end");
+            }
 
             this.start = start;
             this.end = end;
@@ -63,28 +67,35 @@ namespace Thuja.Widgets
         public StringBuilder Text { get; } = new StringBuilder();
         public Placeholder? Placeholder { get; set; }
 
-        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
-            new Dictionary<HashSet<KeySelector>, Action>();
-
-        public IKeyHandler AsIKeyHandler() => this;
-
         private int CursorLeft
         {
             get => cursorLeft;
             set
             {
                 if (value < 0)
+                {
                     cursorLeft = 0;
+                }
                 else if (value > Text.Length)
+                {
                     cursorLeft = Text.Length;
+                }
                 else
+                {
                     cursorLeft = value;
+                }
             }
         }
 
+        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
+            new Dictionary<HashSet<KeySelector>, Action>();
+
         public void Render(RenderContext context)
         {
-            if (isFocused) context.CursorPosition = (cursorLeft, 0);
+            if (isFocused)
+            {
+                context.CursorPosition = (cursorLeft, 0);
+            }
 
             string text;
             Style style;
@@ -99,7 +110,10 @@ namespace Thuja.Widgets
                 style = isFocused ? ActiveStyle : InactiveStyle;
             }
 
-            if (MaxLength != int.MaxValue && text.Length < MaxLength) text += new string('_', MaxLength - text.Length);
+            if (MaxLength != int.MaxValue && text.Length < MaxLength)
+            {
+                text += new string('_', MaxLength - text.Length);
+            }
 
             context.PlaceString(text, style);
         }
@@ -154,9 +168,17 @@ namespace Thuja.Widgets
             this.isFocused = isFocused;
         }
 
+        public IKeyHandler AsIKeyHandler()
+        {
+            return this;
+        }
+
         private void Del()
         {
-            if (cursorLeft < Text.Length) Text.Remove(cursorLeft, 1);
+            if (cursorLeft < Text.Length)
+            {
+                Text.Remove(cursorLeft, 1);
+            }
         }
     }
 }

@@ -27,9 +27,15 @@ namespace Thuja
             var (cursorLeft, cursorTop) = (Console.CursorLeft, Console.CursorTop);
 
             Console.CursorVisible = false;
-            if (prev == null || prev.Size != CurrentScreen.Size) Clear();
+            if (prev == null || prev.Size != CurrentScreen.Size)
+            {
+                Clear();
+            }
 
-            foreach (var difference in CurrentScreen.FindDifferences(prev)) DrawDifference(difference);
+            foreach (var difference in CurrentScreen.FindDifferences(prev))
+            {
+                DrawDifference(difference);
+            }
 
             Console.SetCursorPosition(cursorLeft, cursorTop);
             Console.CursorVisible = true;
@@ -93,7 +99,10 @@ namespace Thuja
 
             Console.Write(str);
 
-            if (changed) Console.ResetColor();
+            if (changed)
+            {
+                Console.ResetColor();
+            }
         }
     }
 }

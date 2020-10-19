@@ -31,16 +31,26 @@ namespace Thuja
 
         public static MyColor FromInt(int b)
         {
-            if (b <= 17) return (MyColor) b;
+            if (b <= 17)
+            {
+                return (MyColor) b;
+            }
 
             return MyColor.Default;
         }
 
         public static ConsoleColor ToConsoleColor(this MyColor color)
         {
-            if (color == MyColor.Default || color == MyColor.Transparent) return default;
+            if (color == MyColor.Default || color == MyColor.Transparent)
+            {
+                return default;
+            }
 
-            if (Mapping.TryGetValue(color, out var cached)) return cached;
+            if (Mapping.TryGetValue(color, out var cached))
+            {
+                return cached;
+            }
+
             // Slow, but robust
             if (Enum.TryParse<ConsoleColor>(color.ToString(), out var parsed))
             {

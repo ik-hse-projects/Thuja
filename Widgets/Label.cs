@@ -46,7 +46,10 @@ namespace Thuja.Widgets
 
             var scroll = new char[MaxWidth];
 
-            for (var i = 0; i < MaxWidth; i++) scroll[i] = withSeparator[(position + i) % withSeparator.Length];
+            for (var i = 0; i < MaxWidth; i++)
+            {
+                scroll[i] = withSeparator[(position + i) % withSeparator.Length];
+            }
 
             context.PlaceString(new string(scroll), CurrentStyle);
         }

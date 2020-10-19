@@ -16,11 +16,15 @@ namespace Thuja.Widgets
         public Style FocusedStyle { get; set; } = Style.Active;
         public Style UnfocusedStyle { get; set; } = Style.Inactive;
 
-        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new Dictionary<HashSet<KeySelector>, Action>();
+        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
+            new Dictionary<HashSet<KeySelector>, Action>();
 
         public override void Render(RenderContext context)
         {
-            if (isFocused) context.CursorPosition = (0, 0);
+            if (isFocused)
+            {
+                context.CursorPosition = (0, 0);
+            }
 
             base.Render(context);
         }
@@ -35,6 +39,9 @@ namespace Thuja.Widgets
             this.isFocused = isFocused;
         }
 
-        public IKeyHandler AsIKeyHandler() => this;
+        public IKeyHandler AsIKeyHandler()
+        {
+            return this;
+        }
     }
 }

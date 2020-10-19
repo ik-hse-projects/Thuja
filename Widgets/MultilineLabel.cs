@@ -5,18 +5,18 @@ using System.Text;
 
 namespace Thuja.Widgets
 {
-    public class MultilineLabel: IWidget
+    public class MultilineLabel : IWidget
     {
-        private string text;
-        private int maxWidth;
         private string[] lines;
+        private int maxWidth;
+        private string text;
 
         public MultilineLabel(string text, int maxWidth = int.MaxValue)
         {
             Text = text ?? throw new ArgumentNullException(nameof(text));
             MaxWidth = maxWidth;
         }
-        
+
         public Style Style { get; set; } = Style.Default;
 
         public string Text
@@ -28,7 +28,7 @@ namespace Thuja.Widgets
                 Recalculate();
             }
         }
-        
+
         public int MaxWidth
         {
             get => maxWidth;
@@ -36,6 +36,16 @@ namespace Thuja.Widgets
             {
                 maxWidth = value;
                 Recalculate();
+            }
+        }
+
+        public void Render(RenderContext context)
+        {
+            for (var i = 0; i < lines.Length; i++)
+            {
+                context
+                    .Derive((0, i, 0))
+                    .PlaceString(lines[i], Style);
             }
         }
 
@@ -47,6 +57,7 @@ namespace Thuja.Widgets
                 lines = new string[0];
                 return;
             }
+
             var lastLine = new StringBuilder(words[0]);
             var result = new List<string>();
             foreach (var word in words.Skip(1))
@@ -62,18 +73,9 @@ namespace Thuja.Widgets
                     lastLine.Append(' ').Append(word);
                 }
             }
+
             result.Add(lastLine.ToString());
             lines = result.ToArray();
-        }
-        
-        public void Render(RenderContext context)
-        {
-            for (var i = 0; i < lines.Length; i++)
-            {
-                context
-                    .Derive((0, i, 0))
-                    .PlaceString(lines[i], Style);
-            }
         }
     }
 }

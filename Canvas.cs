@@ -28,27 +28,41 @@ namespace Thuja
         {
             for (var x = 0; x < Size.width; x++)
             for (var y = 0; y < Size.height; y++)
+            {
                 Content[x, y] = filler;
+            }
         }
 
         public ColoredChar? Get(int x, int y)
         {
             var (width, height) = Size;
-            if (x >= width || x < 0 || y >= height || y < 0) return null;
+            if (x >= width || x < 0 || y >= height || y < 0)
+            {
+                return null;
+            }
+
             return Content[x, y];
         }
 
         public bool TrySet(int x, int y, ColoredChar character)
         {
             var (width, height) = Size;
-            if (x >= width || x < 0 || y >= height || y < 0) return false;
+            if (x >= width || x < 0 || y >= height || y < 0)
+            {
+                return false;
+            }
 
             if (character.Style.Foreground == MyColor.Transparent &&
                 character.Style.Background == MyColor.Transparent)
+            {
                 return true;
+            }
 
             var old = Content[x, y];
-            if (old.Layer > character.Layer) return true;
+            if (old.Layer > character.Layer)
+            {
+                return true;
+            }
 
             if (character.Style.Foreground == MyColor.Transparent)
             {
@@ -75,11 +89,20 @@ namespace Thuja
 
         public IEnumerable<Difference> FindDifferences(Canvas other)
         {
-            if (other.Size != Size) throw new ArgumentException("Переданный экран имеет не тот размер", nameof(other));
+            if (other.Size != Size)
+            {
+                throw new ArgumentException("Переданный экран имеет не тот размер", nameof(other));
+            }
 
-            if (ReferenceEquals(Content, other.Content)) yield break;
+            if (ReferenceEquals(Content, other.Content))
+            {
+                yield break;
+            }
 
-            if (Content.Equals(other.Content)) yield break;
+            if (Content.Equals(other.Content))
+            {
+                yield break;
+            }
 
             for (var y = 0; y < Size.height; y++)
             {
@@ -109,7 +132,10 @@ namespace Thuja
                     diff?.Chars.Add(thisChar);
                 }
 
-                if (diff != null) yield return (Difference) diff;
+                if (diff != null)
+                {
+                    yield return (Difference) diff;
+                }
             }
         }
     }

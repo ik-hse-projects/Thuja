@@ -11,17 +11,17 @@ namespace Thuja
         private readonly IWidget root;
         private readonly List<IWidget> widgets = new List<IWidget>();
         private Display? display;
-        
-        public Action? OnPaused { get; set; }
-
-        public Action? OnStop { get; set; }
 
         public MainLoop(IWidget root)
         {
             Register(root);
             this.root = root;
         }
-        
+
+        public Action? OnPaused { get; set; }
+
+        public Action? OnStop { get; set; }
+
         public void Unregister(IWidget widget)
         {
             widgets.Remove(widget);
@@ -37,8 +37,11 @@ namespace Thuja
         {
             OnStop = null;
             display = new Display();
-            if (root is IFocusable focusable) focusable.FocusChange(true);
-            
+            if (root is IFocusable focusable)
+            {
+                focusable.FocusChange(true);
+            }
+
             display.Clear();
             while (OnStop == null)
             {
@@ -130,10 +133,16 @@ namespace Thuja
         private static int Euclid(int a, int b)
         {
             while (a != 0 && b != 0)
+            {
                 if (a > b)
+                {
                     a %= b;
+                }
                 else
+                {
                     b %= a;
+                }
+            }
 
             return a + b;
         }

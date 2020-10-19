@@ -51,19 +51,36 @@ namespace Thuja
 
         public void Set(int x, int y, ColoredChar ch)
         {
-            if (x < 0) throw new ArgumentOutOfRangeException(nameof(x));
-            if (y < 0) throw new ArgumentOutOfRangeException(nameof(x));
+            if (x < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(x));
+            }
+
+            if (y < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(x));
+            }
 
             UpdateSize(x, y);
-            if (absoluteOffset.layer != 0) ch = new ColoredChar(ch.Style, ch.Char, ch.Layer + absoluteOffset.layer);
+            if (absoluteOffset.layer != 0)
+            {
+                ch = new ColoredChar(ch.Style, ch.Char, ch.Layer + absoluteOffset.layer);
+            }
 
             canvas.TrySet(x + absoluteOffset.x, y + absoluteOffset.y, ch);
         }
 
         private void UpdateSize(int x, int y)
         {
-            if (x > size.x) size.x = x;
-            if (y > size.y) size.y = y;
+            if (x > size.x)
+            {
+                size.x = x;
+            }
+
+            if (y > size.y)
+            {
+                size.y = y;
+            }
 
             if (parentRef != null)
             {
@@ -84,7 +101,10 @@ namespace Thuja
 
         public void PlaceString(string str, Style style, int layer = 0)
         {
-            for (var i = 0; i < str.Length; i++) this[i, 0] = new ColoredChar(style, str[i], layer);
+            for (var i = 0; i < str.Length; i++)
+            {
+                this[i, 0] = new ColoredChar(style, str[i], layer);
+            }
         }
 
         private readonly struct ParentRef

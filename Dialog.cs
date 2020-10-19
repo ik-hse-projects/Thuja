@@ -6,12 +6,11 @@ namespace FileManager
 {
     public class Dialog<T>
     {
+        private readonly Popup popup = new Popup();
         public string? Question { get; set; }
         public (string text, T obj)[] Answers { get; set; } = new (string, T)[0];
         public Action<T>? OnAnswered { get; set; }
         public Action? OnCancelled { get; set; }
-
-        private Popup popup = new Popup();
 
         public void Show(BaseContainer root)
         {

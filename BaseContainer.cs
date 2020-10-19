@@ -27,24 +27,25 @@ namespace Thuja
             }
         }
 
-        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new Dictionary<HashSet<KeySelector>, Action>();
-
-        public void Clear()
-        {
-            Focused = null;
-            widgets.Clear();
-        }
+        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
+            new Dictionary<HashSet<KeySelector>, Action>();
 
         public void OnRegistered(MainLoop loop)
         {
-            foreach (var widget in widgets) loop.Register(widget);
+            foreach (var widget in widgets)
+            {
+                loop.Register(widget);
+            }
 
-            this.Loop = loop;
+            Loop = loop;
         }
 
         public virtual void Render(RenderContext context)
         {
-            foreach (var widget in widgets) widget.Render(context);
+            foreach (var widget in widgets)
+            {
+                widget.Render(context);
+            }
         }
 
         public bool CanFocus => Focused?.CanFocus ?? false;
@@ -57,14 +58,27 @@ namespace Thuja
 
         public bool BubbleDown(ConsoleKeyInfo key)
         {
-            if (focused != null && focused.BubbleDown(key)) return true;
+            if (focused != null && focused.BubbleDown(key))
+            {
+                return true;
+            }
 
             return BubbleUp(key);
         }
 
+        public void Clear()
+        {
+            Focused = null;
+            widgets.Clear();
+        }
+
         public BaseContainer Add(IWidget widget)
         {
-            if (Focused == null && widget is IFocusable focusable) Focused = focusable;
+            if (Focused == null && widget is IFocusable focusable)
+            {
+                Focused = focusable;
+            }
+
             Loop?.Register(widget);
             widgets.Add(widget);
             return this;
@@ -84,7 +98,8 @@ namespace Thuja
             if (isRemoved && Focused == widget)
             {
                 Focused = null;
-            } 
+            }
+
             return isRemoved;
         }
 
@@ -92,7 +107,10 @@ namespace Thuja
         {
             return AsIKeyHandler().TryHandleKey(key);
         }
-        
-        public IKeyHandler AsIKeyHandler() => this;
+
+        public IKeyHandler AsIKeyHandler()
+        {
+            return this;
+        }
     }
 }
