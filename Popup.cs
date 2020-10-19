@@ -14,10 +14,11 @@ namespace Thuja
         private IFocusable? oldFocus;
         private BaseContainer? wrapped;
 
-        public Popup(int maxWidth = 70, int x = 5, int y = 5, int layer = 10)
+        public Popup(int maxWidth = 70, int maxHeight = 19, int x = 5, int y = 5, int layer = 10)
         {
             position = (x, y, layer);
             this.maxWidth = maxWidth;
+            stack.MaxVisibleCount = maxHeight;
         }
 
         public Popup Add(Label label)
@@ -53,6 +54,13 @@ namespace Thuja
             }
 
             return this;
+        }
+
+        public Popup AddClose(string text)
+        {
+            var button = new Button(text);
+            button.AsIKeyHandler().Add(KeySelector.SelectItem, Close);
+            return Add(button);
         }
 
         public void Show(BaseContainer root)
