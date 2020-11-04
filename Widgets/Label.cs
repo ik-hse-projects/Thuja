@@ -8,9 +8,10 @@ namespace Thuja.Widgets
         private string text;
         private string withSeparator;
 
-        public Label(string text)
+        public Label(string text, int maxWidth = int.MaxValue)
         {
             Text = text ?? throw new ArgumentNullException(nameof(text));
+            MaxWidth = maxWidth;
         }
 
         public string Text
@@ -19,22 +20,25 @@ namespace Thuja.Widgets
             set
             {
                 position = 0;
-                withSeparator = $"{value} | ";
+                withSeparator = $"{value}   ";
                 text = value;
             }
         }
 
         public virtual Style CurrentStyle { get; set; } = Style.Default;
 
-        public int MaxWidth { get; set; } = 30;
+        public int MaxWidth { get; set; }
 
+        /// <inheritdoc />
         public int Fps => 2;
 
+        /// <inheritdoc />
         public void Update()
         {
             position = (position + 1) % withSeparator.Length;
         }
 
+        /// <inheritdoc />
         public virtual void Render(RenderContext context)
         {
             if (MaxWidth >= Text.Length)
@@ -45,7 +49,10 @@ namespace Thuja.Widgets
 
             var scroll = new char[MaxWidth];
 
-            for (var i = 0; i < MaxWidth; i++) scroll[i] = withSeparator[(position + i) % withSeparator.Length];
+            for (var i = 0; i < MaxWidth; i++)
+            {
+                scroll[i] = withSeparator[(position + i) % withSeparator.Length];
+            }
 
             context.PlaceString(new string(scroll), CurrentStyle);
         }
