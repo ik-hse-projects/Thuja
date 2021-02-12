@@ -57,6 +57,15 @@ namespace Thuja.Widgets
         /// </summary>
         public event Action? FocusedChanged;
 
+        /// <summary>
+        ///     Создаёт <see cref="ListOf{T}"/> на основе этого списка.
+        /// </summary>
+        /// <param name="converter">Функция, которая превращает элементы списка в элементы интерфейса.</param>
+        public ListOf<T> ListOf<T>(Func<T, IWidget> converter)
+        {
+            return new ListOf<T>(this, converter);
+        }
+
         /// <inheritdoc />
         public void Update()
         {

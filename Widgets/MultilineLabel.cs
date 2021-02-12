@@ -65,30 +65,34 @@ namespace Thuja.Widgets
         /// </summary>
         private void Recalculate()
         {
-            var words = text.Split();
-            if (words.Length == 0)
+            if (text.Length == 0)
             {
                 lines = new string[0];
                 return;
             }
 
-            var lastLine = new StringBuilder(words[0]);
             var result = new List<string>();
-            foreach (var word in words.Skip(1))
+            foreach (var paragraph in text.Split('\n'))
             {
-                var newLength = lastLine.Length + word.Length + 1;
-                if (newLength > maxWidth)
+                var words = paragraph.Split();
+                var lastLine = new StringBuilder(words[0]);
+                foreach (var word in words.Skip(1))
                 {
-                    result.Add(lastLine.ToString());
-                    lastLine = new StringBuilder(word);
+                    var newLength = lastLine.Length + word.Length + 1;
+                    if (newLength > maxWidth)
+                    {
+                        result.Add(lastLine.ToString());
+                        lastLine = new StringBuilder(word);
+                    }
+                    else
+                    {
+                        lastLine.Append(' ').Append(word);
+                    }
                 }
-                else
-                {
-                    lastLine.Append(' ').Append(word);
-                }
+
+                result.Add(lastLine.ToString());
             }
 
-            result.Add(lastLine.ToString());
             lines = result.ToArray();
         }
     }

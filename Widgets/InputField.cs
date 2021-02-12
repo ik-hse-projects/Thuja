@@ -20,6 +20,11 @@ namespace Thuja.Widgets
                 .ToHashSet());
 
         /// <summary>
+        ///     Все символы, кроме непечатных ASCII.
+        /// </summary>
+        public static CharRange Printable = new CharRange(' ', char.MaxValue);
+
+        /// <summary>
         ///     Первый разрешённый символ диапазона.
         /// </summary>
         private readonly char start;
@@ -110,7 +115,7 @@ namespace Thuja.Widgets
         /// <summary>
         ///     Символы, разрешённые для ввода.
         /// </summary>
-        public HashSet<CharRange> AllowedChars { get; } = new HashSet<CharRange>();
+        public HashSet<CharRange> AllowedChars { get; } = new() {CharRange.Printable};
 
         /// <summary>
         ///     Стиль текста, когда поле сфокусировано.
@@ -220,7 +225,7 @@ namespace Thuja.Widgets
             }
 
             var ch = key.KeyChar;
-            if (AllowedChars.Count == 0 || AllowedChars.Any(range => range.Check(ch)))
+            if (ch != '\0' && (AllowedChars.Count == 0 || AllowedChars.Any(range => range.Check(ch))))
             {
                 if (Text.Length < MaxLength)
                 {

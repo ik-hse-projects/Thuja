@@ -22,15 +22,24 @@ namespace Thuja.Widgets
         ///     Зависит от сфокусированности, менять смысла нет.
         /// </summary>
         public override Style CurrentStyle => OverrideStyle ?? (isFocused ? Style.Active : Style.Inactive);
-        
+
         /// <summary>
         ///     Стиль кнопки, который будт использововаться, независимо от её сфокусированности.
         /// </summary>
         public Style? OverrideStyle { get; set; }
 
         /// <inheritdoc />
-        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
-            new Dictionary<HashSet<KeySelector>, Action>();
+        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
+
+        /// <summary>
+        ///     Добавляет обработчик нажатия на кнопку.
+        /// </summary>
+        /// <returns>Возвращает эту же самую кнопку.</returns>
+        public Button OnClick(Action clicked)
+        {
+            AsIKeyHandler().Add(KeySelector.SelectItem, clicked);
+            return this;
+        }
 
         /// <inheritdoc />
         public override void Render(RenderContext context)

@@ -1,3 +1,4 @@
+using System;
 using Thuja.Widgets;
 
 namespace Thuja
@@ -110,6 +111,16 @@ namespace Thuja
             }
 
             return this;
+        }
+
+        /// <summary>
+        ///     Создаёт виджет при помощи переданной функции и добавляет его.
+        ///     Удобно, когда не хочется помещать попап в переменную.
+        /// </summary>
+        /// <returns>Возвращает это же всплывающее окно.</returns>
+        public Popup AddWith(Func<Popup, IWidget> func)
+        {
+            return Add(func(this));
         }
 
         /// <summary>

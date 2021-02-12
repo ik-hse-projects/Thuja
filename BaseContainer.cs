@@ -105,6 +105,23 @@ namespace Thuja
         }
 
         /// <summary>
+        ///     Помещает виджет в указанное место, сдвигая другие при необходимости.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Выбрасывает исключение, если position меньше 0 или больше Widgets.Count</exception>
+        /// <returns>Возвращает этот же контейнер.</returns>
+        public BaseContainer Insert(int position, IWidget widget)
+        {
+            if (Widgets.Count == 0 && position == 0)
+            {
+                return Add(widget);
+            }
+
+            Widgets.Insert(position, widget);
+            Loop?.Register(widget);
+            return this;
+        }
+
+        /// <summary>
         ///     Добавляет новый виджет в контейнер.
         /// </summary>
         /// <param name="widget">Новый виджет.</param>
@@ -148,6 +165,21 @@ namespace Thuja
             }
 
             return isRemoved;
+        }
+
+        /// <summary>
+        ///     Удаляет виджет из контейнера и из цикла.
+        /// </summary>
+        /// <param name="index">Индекс виджета, который необходимо удалить.</param>
+        /// <returns>Возвращает, удалось ли его удалить. Например, вернёт false, если передан некорректный индекс.</returns>
+        public bool RemoveAt(int index)
+        {
+            if (index < 0 || index > Widgets.Count)
+            {
+                return false;
+            }
+
+            return Remove(Widgets[index]);
         }
 
         /// <summary>
