@@ -19,7 +19,11 @@ namespace Thuja.Widgets
     public class StackContainer : BaseContainer, IWidget
     {
         private IFocusable? lastFocused;
-        private int position;
+        
+        /// <summary>
+        ///     Индекс элемента, который на данный момент сфокусирован.
+        /// </summary>
+        public int Position { get; private set; }
 
         /// <param name="orientation">Ориентация <see cref="StackContainer" />.</param>
         /// <param name="margin">Промежуток между виджетами.</param>
@@ -46,6 +50,12 @@ namespace Thuja.Widgets
         ///     Максимальное количество отрисовываемых виджетов.
         /// </summary>
         public int MaxVisibleCount { get; set; }
+
+        /// <summary>
+        ///     Вызывается, когда меняется текущий сфокусированный элемент.
+        ///     Поля Position и Focused могут быть особенно полезны.
+        /// </summary>
+        public event Action? FocusedChanged;
 
         /// <inheritdoc />
         public void Update()
@@ -93,8 +103,8 @@ namespace Thuja.Widgets
                 offsetAfter++;
             }
 
-            var start = position - offsetBefore;
-            var end = position + offsetAfter;
+            var start = Position - offsetBefore;
+            var end = Position + offsetAfter;
 
             if (start < 0)
             {
@@ -135,10 +145,11 @@ namespace Thuja.Widgets
             var currentlySelected = focusable.FindIndex(x => ReferenceEquals(x.Item1, Focused));
             if (currentlySelected == -1)
             {
-                var nearest = focusable.MinBy(i => Math.Abs(i.index - position));
+                var nearest = focusable.MinBy(i => Math.Abs(i.index - Position));
                 if (nearest == null)
                 {
-                    (Focused, position) = (null, 0);
+                    (Focused, Position) = (null, 0);
+                    FocusedChanged?.Invoke();
                     return false;
                 }
 
@@ -151,7 +162,8 @@ namespace Thuja.Widgets
                 return false;
             }
 
-            (Focused, position) = focusable[newSelected];
+            (Focused, Position) = focusable[newSelected];
+            FocusedChanged?.Invoke();
             return true;
         }
 
@@ -183,7 +195,8 @@ namespace Thuja.Widgets
                         return false;
                     }
 
-                    (Focused, position) = focusable.Last();
+                    (Focused, Position) = focusable.Last();
+                    FocusedChanged?.Invoke();
                     return true;
                 }
                 case ConsoleKey.Home:
@@ -195,7 +208,8 @@ namespace Thuja.Widgets
                         return false;
                     }
 
-                    (Focused, position) = focusable.First();
+                    (Focused, Position) = focusable.First();
+                    FocusedChanged?.Invoke();
                     return true;
                 }
                 default:

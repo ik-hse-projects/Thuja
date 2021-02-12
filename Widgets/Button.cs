@@ -21,7 +21,12 @@ namespace Thuja.Widgets
         ///     Стиль, с которым на данный момент отображается кнопка.
         ///     Зависит от сфокусированности, менять смысла нет.
         /// </summary>
-        public override Style CurrentStyle => isFocused ? Style.Active : Style.Inactive;
+        public override Style CurrentStyle => OverrideStyle ?? (isFocused ? Style.Active : Style.Inactive);
+        
+        /// <summary>
+        ///     Стиль кнопки, который будт использововаться, независимо от её сфокусированности.
+        /// </summary>
+        public Style? OverrideStyle { get; set; }
 
         /// <inheritdoc />
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
