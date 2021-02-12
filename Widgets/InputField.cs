@@ -161,8 +161,7 @@ namespace Thuja.Widgets
         }
 
         /// <inheritdoc />
-        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
-            new Dictionary<HashSet<KeySelector>, Action>();
+        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
 
         /// <inheritdoc />
         public void Render(RenderContext context)

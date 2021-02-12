@@ -75,7 +75,6 @@ namespace Thuja.Widgets
             widgets.RemoveAt(index);
         }
 
-
         /// <inheritdoc />
         public IEnumerator<T> GetEnumerator()
         {

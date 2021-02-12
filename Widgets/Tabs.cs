@@ -4,22 +4,48 @@ using System.Linq;
 
 namespace Thuja.Widgets
 {
+    /// <summary>
+    ///     Нетипизированная вкладка внутри <see cref="Tabs"/>.
+    ///     Если возможно, то лучше использовать <see cref="TabPage{T}"/>.
+    /// </summary>
     public abstract class TabPage
     {
+        /// <summary>
+        ///     Заголовок вкладки.
+        /// </summary>
         public abstract Button Button { get; }
+
+        /// <summary>
+        ///     Содержимое вкладки.
+        /// </summary>
         public abstract IWidget Widget { get; }
     }
 
+    /// <summary>
+    ///     Вкладка внутри <see cref="Tabs"/>.
+    /// </summary>
+    /// <typeparam name="T">Тип её содержимого.</typeparam>
     public class TabPage<T> : TabPage where T : IWidget
     {
+        /// <summary>
+        ///     Типизированое содержимое вкладки.
+        /// </summary>
         public T SpecificWidget { get; }
+
+        /// <inheritdoc />
         public override IWidget Widget => SpecificWidget;
+
+        /// <inheritdoc />
         public override Button Button { get; }
 
         internal TabPage(Button button, T widget)
         {
             Button = button;
             SpecificWidget = widget;
+        }
+
+        internal TabPage(string title, T widget) : this(new Button(title) {OverrideStyle = Style.Inactive}, widget)
+        {
         }
     }
 
@@ -63,27 +89,38 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Добавляет новую вкладку.
-        /// </summary>
-        /// <param name="title">Заголовок вкладки.</param>
-        /// <param name="widget">Содержимое вкладки.</param>
-        /// <returns>Возвращает добавленную вкладку.</returns>
-        public TabPage<T> Add<T>(string title, T widget) where T : IWidget
-        {
-            var button = new Button(title) {OverrideStyle = Style.Inactive};
-            titles.Add(button);
-            var page = new TabPage<T>(button, widget);
-            button.AsIKeyHandler().Add(KeySelector.SelectItem, () => Focus(page));
-            Pages.Add(page);
-            return page;
-        }
-
-        /// <summary>
         ///     Удаляет вкладку из списка. Но не сбрасывает с неё фокус!
         /// </summary>
         public void Remove(TabPage page)
         {
+            Pages.Remove(page);
             titles.Remove(page.Button);
+        }
+
+        /// <summary>
+        ///     Создаёт новую вкладку и помещает её заголовок на указанное место.
+        /// </summary>
+        /// <param name="i">Индекс вкладки.</param>
+        /// <param name="title">Её заголовок.</param>
+        /// <param name="widget">Содержимое вкладки.</param>
+        /// <typeparam name="T">Тип содержимого</typeparam>
+        public TabPage<T> Insert<T>(int i, string title, T widget) where T : IWidget
+        {
+            var tab = new TabPage<T>(title, widget);
+            titles.Insert(i, tab.Button);
+            Pages.Insert(i, tab);
+            return tab;
+        }
+
+        /// <summary>
+        ///     Добавляет новую вкладку.
+        /// </summary>
+        /// <param name="title">Заголовок вкладки.</param>
+        /// <param name="widget">Содержимое вкладки.</param>
+        /// <returns>Возвращает этот же самый объект.</returns>
+        public Tabs Add<T>(string title, T widget) where T : IWidget
+        {
+            return Add(title, widget, out _);
         }
 
         /// <summary>
@@ -92,10 +129,13 @@ namespace Thuja.Widgets
         /// <param name="title">Заголовок вкладки.</param>
         /// <param name="widget">Содержимое вкладки.</param>
         /// <param name="page">Свежедобавленная вкладка.</param>
-        /// <returns>Возвращает этот же самый объект (builder pattern).</returns>
+        /// <returns>Возвращает этот же самый объект.</returns>
         public Tabs Add<T>(string title, T widget, out TabPage<T> page) where T : IWidget
         {
-            page = Add(title, widget);
+            var tab = new TabPage<T>(title, widget);
+            titles.Add(tab.Button);
+            Pages.Add(tab);
+            page = tab;
             return this;
         }
 

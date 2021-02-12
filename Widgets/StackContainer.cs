@@ -77,6 +77,16 @@ namespace Thuja.Widgets
         }
 
         /// <inheritdoc />
+        public override void FocusChange(bool isFocused)
+        {
+            base.FocusChange(isFocused);
+            if (isFocused)
+            {
+                MoveSelection(0);
+            }
+        }
+
+        /// <inheritdoc />
         public override void Render(RenderContext context)
         {
             var offsetY = 0;

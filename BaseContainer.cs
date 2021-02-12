@@ -75,7 +75,7 @@ namespace Thuja
         public bool CanFocus => Focused?.CanFocus ?? false;
 
         /// <inheritdoc />
-        public void FocusChange(bool isFocused)
+        public virtual void FocusChange(bool isFocused)
         {
             this.isFocused = isFocused;
             focused?.FocusChange(isFocused);
