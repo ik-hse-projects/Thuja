@@ -8,7 +8,7 @@ namespace Thuja.Widgets
     {
         private StackContainer container;
         private Func<T, IWidget> converter;
-        private List<T> items = new();
+        private IList<T> items;
         private List<IWidget> widgets = new();
 
         /// <summary>
@@ -20,11 +20,24 @@ namespace Thuja.Widgets
         ///     Создаёт пустой ListOf{T}, который конвертирует элементы при помощи converter и помещает их в container.  
         /// </summary>
         internal ListOf(StackContainer container, Func<T, IWidget> converter)
+            : this(container, new List<T>(), converter)
         {
+        }
+
+        /// <summary>
+        ///     Создаёт ListOf{T} с элементами из items.  
+        /// </summary>
+        internal ListOf(StackContainer container, IList<T> items, Func<T, IWidget> converter)
+        {
+            this.items = items;
             this.container = container;
             this.converter = converter;
+            foreach (var item in items)
+            {
+                this.container.Add(converter(item));
+            }
         }
-        
+
         // Дальнейшие функции — реализиация IList<T> через list. Оставлю их без документации.
 
         /// <inheritdoc />

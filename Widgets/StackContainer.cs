@@ -66,6 +66,17 @@ namespace Thuja.Widgets
             return new ListOf<T>(this, converter);
         }
 
+        /// <summary>
+        ///     Создаёт <see cref="ListOf{T}"/>, на основе items и этого списка.
+        ///     Все элементы из items будут добавлены в контейнер.
+        /// </summary>
+        /// <param name="items">Список нескорвертированных объектов.</param>
+        /// <param name="converter">Функция, которая превращает элементы списка в элементы интерфейса.</param>
+        public ListOf<T> FromList<T>(IList<T> items, Func<T, IWidget> converter)
+        {
+            return new ListOf<T>(this, items, converter);
+        }
+
         /// <inheritdoc />
         public void Update()
         {
