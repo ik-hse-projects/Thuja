@@ -19,7 +19,7 @@ namespace Thuja.Widgets
     public class StackContainer : BaseContainer
     {
         private IFocusable? lastFocused;
-        
+
         /// <summary>
         ///     Индекс элемента, который на данный момент сфокусирован.
         /// </summary>
@@ -152,11 +152,13 @@ namespace Thuja.Widgets
         /// <summary>
         ///     Находит виджеты, которые могут быть сфокусированы, и их индексы среди всех виджетов.
         /// </summary>
-        private List<(IFocusable?, int index)> FindFocusable()
+        private List<(IFocusable, int index)> FindFocusable()
         {
             return Widgets
                 .Select((widget, index) => (widget as IFocusable, index))
-                .Where(w => w.Item1?.CanFocus ?? false)
+                .Where(w => w.Item1 != null)
+                .Select(w => (w.Item1!, w.index))
+                .Where(w => w.Item1.CanFocus)
                 .ToList();
         }
 
@@ -175,7 +177,10 @@ namespace Thuja.Widgets
             var currentlySelected = focusable.FindIndex(x => ReferenceEquals(x.Item1, Focused));
             if (currentlySelected == -1)
             {
-                var nearest = focusable.MinBy(i => Math.Abs(i.index - Position));
+                // Ранее сфокусированный эл-т больше не может быть сфокусированным.
+                // Поэтому _вместо_ движения фокуса, просто установим его на ближайший возможный к желаемому.
+                var wanted = Position + direction;
+                var nearest = focusable.MinBy(i => Math.Abs(i.index - wanted));
                 if (nearest == null)
                 {
                     (Focused, Position) = (null, 0);
@@ -183,16 +188,19 @@ namespace Thuja.Widgets
                     return false;
                 }
 
-                currentlySelected = nearest.Value.index;
+                (Focused, Position) = nearest.Value;
             }
-
-            var newSelected = currentlySelected + direction;
-            if (newSelected < 0 || newSelected >= focusable.Count)
+            else
             {
-                return false;
+                var newSelected = currentlySelected + direction;
+                if (newSelected < 0 || newSelected >= focusable.Count)
+                {
+                    return false;
+                }
+
+                (Focused, Position) = focusable[newSelected];
             }
 
-            (Focused, Position) = focusable[newSelected];
             FocusedChanged?.Invoke();
             return true;
         }

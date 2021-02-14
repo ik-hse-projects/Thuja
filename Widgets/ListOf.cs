@@ -154,7 +154,14 @@ namespace Thuja.Widgets
         public T this[int index]
         {
             get => items[index];
-            set => items[index] = value;
+            set
+            {
+                var widget = converter(value);
+                container.RemoveAt(index);
+                container.Insert(index, widget);
+                widgets[index] = widget;
+                items[index] = value;
+            }
         }
     }
 }
