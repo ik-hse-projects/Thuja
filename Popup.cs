@@ -22,6 +22,11 @@ namespace Thuja
         ///     Внутреннее содержимое окна.
         /// </summary>
         private readonly StackContainer stack = new StackContainer();
+        
+        /// <summary>
+        ///     Контейнер, в котором находится содержимое окна.
+        /// </summary>
+        public BaseContainer Container => stack;
 
         /// <summary>
         ///     Контейнер, в котором находится это окно.
@@ -83,6 +88,16 @@ namespace Thuja
         /// </summary>
         /// <returns>Возвращает это же всплывающее окно.</returns>
         public Popup Add(InputField field)
+        {
+            field.MaxLength = maxWidth;
+            return Add((IWidget) field);
+        }
+        
+        /// <summary>
+        ///     Добавляет виджет в окно и настривает его ширину.
+        /// </summary>
+        /// <returns>Возвращает это же всплывающее окно.</returns>
+        public Popup Add<T>(FuzzySearch<T> field)
         {
             field.MaxLength = maxWidth;
             return Add((IWidget) field);

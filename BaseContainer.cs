@@ -7,7 +7,7 @@ namespace Thuja
     /// <summary>
     ///     Простейший контейнер, который просто объединяет несколько других виджетов в один.
     /// </summary>
-    public class BaseContainer : IKeyHandler
+    public class BaseContainer : AssertRegistered, IKeyHandler
     {
         /// <summary>
         ///     Список виджетов внутри этого контейнера.
@@ -48,8 +48,7 @@ namespace Thuja
         }
 
         /// <inheritdoc />
-        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
-            new Dictionary<HashSet<KeySelector>, Action>();
+        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
 
         /// <inheritdoc />
         public void OnRegistered(MainLoop loop)
@@ -63,7 +62,13 @@ namespace Thuja
         }
 
         /// <inheritdoc />
-        public virtual void Render(RenderContext context)
+        public void OnUnregistered()
+        {
+            Clear();
+        }
+
+        /// <inheritdoc />
+        public override void Render(RenderContext context)
         {
             foreach (var widget in Widgets)
             {
@@ -116,8 +121,8 @@ namespace Thuja
                 return Add(widget);
             }
 
-            Widgets.Insert(position, widget);
             Loop?.Register(widget);
+            Widgets.Insert(position, widget);
             return this;
         }
 

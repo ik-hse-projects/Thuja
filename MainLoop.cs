@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace Thuja
@@ -19,7 +20,7 @@ namespace Thuja
         /// <summary>
         ///     Список виджетов, привязанных к этому циклу.
         /// </summary>
-        private readonly List<IWidget> widgets = new List<IWidget>();
+        private List<IWidget> widgets = new List<IWidget>();
 
         /// <summary>
         ///     Дисплей, на котором происходит отрисовка.
@@ -54,11 +55,7 @@ namespace Thuja
         /// <param name="widget">Виджет, который будет отвязан от цикла.</param>
         public void Unregister(IWidget widget)
         {
-            if (widget is BaseContainer container)
-            {
-                container.Clear();
-            }
-
+            widget.OnUnregistered();
             widgets.Remove(widget);
         }
 
@@ -138,8 +135,12 @@ namespace Thuja
                 focusable.BubbleDown(key);
             }
 
+            // Виджеты могут быть добавлены во время Update. Всех таких обновим уже в следующий тик. 
+            var oldWidgets = widgets;
+            widgets = new List<IWidget>();
+
             var maxCounter = 0;
-            foreach (var widget in widgets)
+            foreach (var widget in oldWidgets)
             {
                 var scaled = widget.Fps == 0 ? 1 : fps / widget.Fps;
                 if (scaled > maxCounter)
@@ -152,6 +153,10 @@ namespace Thuja
                     widget.Update();
                 }
             }
+
+            // Добавляем добавленные.
+            oldWidgets.AddRange(widgets);
+            widgets = oldWidgets;
 
             var context = display!.CurrentScreen.BeginRender();
             root.Render(context);

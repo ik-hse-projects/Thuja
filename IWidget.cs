@@ -45,6 +45,13 @@ namespace Thuja
         public void OnRegistered(MainLoop loop)
         {
         }
+        
+        /// <summary>
+        ///     Вызывается в тот момент, когда виджет отвязывается от цикла.
+        /// </summary>
+        public void OnUnregistered()
+        {
+        }
 
         /// <summary>
         ///     Отрисовывает виджет в переданном контексте.

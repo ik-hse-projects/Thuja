@@ -16,7 +16,7 @@ namespace Thuja.Widgets
     /// <summary>
     ///     Контейнер, который располагает другие виджиты рядом друг с другом.
     /// </summary>
-    public class StackContainer : BaseContainer, IWidget
+    public class StackContainer : BaseContainer
     {
         private IFocusable? lastFocused;
         

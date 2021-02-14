@@ -98,7 +98,7 @@ namespace Thuja.Widgets
     /// <summary>
     ///     Поле для ввода текста пользователем.
     /// </summary>
-    public class InputField : IKeyHandler
+    public class InputField : AssertRegistered, IKeyHandler
     {
         /// <summary>
         ///     Положение курсора.
@@ -160,11 +160,28 @@ namespace Thuja.Widgets
             }
         }
 
+        public InputField()
+        {
+        }
+
+        /// <summary>
+        ///     Создаёт InputField с уже написнным текстом.
+        /// </summary>
+        public InputField(string initialText)
+        {
+            Text.Append(initialText);
+        }
+        
+        /// <summary>
+        ///     Событие срабатывает, когда меняется текст в поле.
+        /// </summary>
+        public event Action? TextChanged;
+
         /// <inheritdoc />
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
 
         /// <inheritdoc />
-        public void Render(RenderContext context)
+        public override void Render(RenderContext context)
         {
             if (isFocused)
             {
@@ -182,6 +199,11 @@ namespace Thuja.Widgets
             {
                 text = Text.ToString();
                 style = isFocused ? ActiveStyle : InactiveStyle;
+            }
+
+            if (string.IsNullOrEmpty(text))
+            {
+                text = "_";
             }
 
             if (MaxLength != int.MaxValue && text.Length < MaxLength)
@@ -229,6 +251,7 @@ namespace Thuja.Widgets
                 if (Text.Length < MaxLength)
                 {
                     Text.Insert(CursorLeft, ch);
+                    TextChanged?.Invoke();
                     CursorLeft++;
                 }
 
@@ -261,6 +284,7 @@ namespace Thuja.Widgets
             if (cursorLeft < Text.Length)
             {
                 Text.Remove(cursorLeft, 1);
+                TextChanged?.Invoke();
             }
         }
     }

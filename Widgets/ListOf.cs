@@ -14,7 +14,7 @@ namespace Thuja.Widgets
         /// <summary>
         ///     Виджет, который содержит элементы этого списка.
         /// </summary>
-        public IWidget Widget => container;
+        public StackContainer Widget => container;
 
         /// <summary>
         ///     Создаёт пустой ListOf{T}, который конвертирует элементы при помощи converter и помещает их в container.  
@@ -34,8 +34,34 @@ namespace Thuja.Widgets
             this.converter = converter;
             foreach (var item in items)
             {
-                this.container.Add(converter(item));
+                var converted = converter(item);
+                this.container.Add(converted);
+                widgets.Add(converted);
             }
+        }
+
+        /// <summary>
+        ///     Заново конвертирует все объекты в виджеты. Удобно, если данные изменились.
+        /// </summary>
+        /// <remarks>Могут быть неожиданные результаты, если вдруг изначально `container` не был пуст.</remarks>
+        public void Update()
+        {
+            for (var i = 0; i < items.Count; i++)
+            {
+                Update(i);
+            }
+        }
+
+        /// <summary>
+        ///     Заново конвертирует указанный элемент. Работает быстрее, чем <see cref="Update()"/>.
+        /// </summary>
+        /// <remarks>Могут быть неожиданные результаты, если вдруг изначально `container` не был пуст.</remarks>
+        public void Update(int i)
+        {
+            var updated = converter(items[i]);
+            container.RemoveAt(i);
+            container.Insert(i, updated);
+            widgets[i] = updated;
         }
 
         // Дальнейшие функции — реализиация IList<T> через list. Оставлю их без документации.

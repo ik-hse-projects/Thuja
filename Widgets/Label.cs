@@ -2,7 +2,7 @@ using System;
 
 namespace Thuja.Widgets
 {
-    public class Label : IWidget
+    public class Label : AssertRegistered
     {
         private int position;
         private string text;
@@ -39,8 +39,14 @@ namespace Thuja.Widgets
         }
 
         /// <inheritdoc />
-        public virtual void Render(RenderContext context)
+        public override void Render(RenderContext context)
         {
+            if (Text.Length == 0)
+            {
+                context.PlaceString(" ", CurrentStyle);
+                return;
+            }
+            
             if (MaxWidth >= Text.Length)
             {
                 context.PlaceString(Text, CurrentStyle);

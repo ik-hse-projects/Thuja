@@ -4,7 +4,7 @@ using System.IO.Compression;
 
 namespace Thuja.Video
 {
-    public class VideoPlayer : IWidget
+    public class VideoPlayer : AssertRegistered
     {
         private readonly FileStream fileStream;
         private ColoredChar[,] frame;
@@ -17,7 +17,7 @@ namespace Thuja.Video
             Reset();
         }
 
-        public void Render(RenderContext context)
+        public override void Render(RenderContext context)
         {
             for (var x = 0; x < reader.Info.Width; x++)
             for (var y = 0; y < reader.Info.Height; y++)
