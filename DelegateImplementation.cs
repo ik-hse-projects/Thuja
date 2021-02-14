@@ -7,8 +7,6 @@ namespace Thuja
     {
         protected abstract IWidget WidgetImplementation { get; }
 
-        public virtual int Fps => WidgetImplementation.Fps;
-
         public override void OnRegistered(MainLoop loop)
         {
             WidgetImplementation.OnRegistered(loop);

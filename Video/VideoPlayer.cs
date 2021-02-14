@@ -1,10 +1,11 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 
 namespace Thuja.Video
 {
-    public class VideoPlayer : AssertRegistered
+    public class VideoPlayer : AssertRegistered, IWidget
     {
         private readonly FileStream fileStream;
         private ColoredChar[,] frame;
@@ -24,10 +25,17 @@ namespace Thuja.Video
                 context[x, y] = frame[x, y];
         }
 
-        public int Fps => reader.Info.Fps;
+        private long lastFrame;
+        private long delay;
 
         public void Update()
         {
+            var now = Stopwatch.GetTimestamp();
+            if (now - lastFrame < delay)
+            {
+                return;
+            }
+
             if (!reader.MoveNext())
             {
                 Reset();
@@ -35,6 +43,7 @@ namespace Thuja.Video
             }
 
             frame = reader.Current;
+            lastFrame = now;
         }
 
         public bool BubbleDown(ConsoleKeyInfo key)
@@ -46,6 +55,7 @@ namespace Thuja.Video
         {
             fileStream.Seek(0, SeekOrigin.Begin);
             reader = VideoReader.Init(new BufferedStream(new BrotliStream(fileStream, CompressionMode.Decompress)));
+            delay = Stopwatch.Frequency / reader.Info.Fps;
         }
     }
 }

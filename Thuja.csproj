@@ -10,4 +10,19 @@
       <DocumentationFile>bin\Debug\Thuja.xml</DocumentationFile>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Compile Remove="VideoConvertingTool\**" />
+      <Compile Remove="work\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="VideoConvertingTool\**" />
+      <EmbeddedResource Remove="work\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="VideoConvertingTool\**" />
+      <None Remove="work\**" />
+    </ItemGroup>
+
 </Project>

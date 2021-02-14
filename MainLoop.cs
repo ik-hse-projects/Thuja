@@ -82,39 +82,28 @@ namespace Thuja
             }
 
             display.Clear();
+            const int fps = 60;
+            var delay = Stopwatch.Frequency / fps;
             while (OnStop == null)
             {
-                var fps = FindFps();
-                var delay = Stopwatch.Frequency / fps;
-                var maxCounter = 0;
-                var counter = 0;
-                do
+                var end = Stopwatch.GetTimestamp() + delay;
+
+                if (OnPaused == null)
                 {
-                    var end = Stopwatch.GetTimestamp() + delay;
+                    Tick();
+                }
+                else
+                {
+                    display.Clear();
+                    OnPaused?.Invoke();
+                    OnPaused = null;
+                    display.Clear();
+                }
 
-                    if (OnPaused == null)
-                    {
-                        counter++;
-
-                        var newMaxCounter = Tick(fps, counter);
-                        if (newMaxCounter > maxCounter)
-                        {
-                            maxCounter = newMaxCounter;
-                        }
-                    }
-                    else
-                    {
-                        display.Clear();
-                        OnPaused?.Invoke();
-                        OnPaused = null;
-                        display.Clear();
-                    }
-
-                    while (Stopwatch.GetTimestamp() < end)
-                    {
-                        Thread.Sleep(1);
-                    }
-                } while (counter <= maxCounter);
+                while (Stopwatch.GetTimestamp() < end)
+                {
+                    Thread.Sleep(1);
+                }
             }
 
             display.Clear();
@@ -124,10 +113,7 @@ namespace Thuja
         /// <summary>
         ///     Вспомогательная функция, которая обновляет и отрисовывает все виджеты.
         /// </summary>
-        /// <param name="fps">Текущая частота обновлений в секунду.</param>
-        /// <param name="counter">Номер обновления.</param>
-        /// <returns>Новое необходимое количество обновлений.</returns>
-        private int Tick(int fps, int counter)
+        private void Tick()
         {
             if (Console.KeyAvailable && root is IFocusable focusable)
             {
@@ -139,19 +125,9 @@ namespace Thuja
             var oldWidgets = widgets;
             widgets = new List<IWidget>();
 
-            var maxCounter = 0;
             foreach (var widget in oldWidgets)
             {
-                var scaled = widget.Fps == 0 ? 1 : fps / widget.Fps;
-                if (scaled > maxCounter)
-                {
-                    maxCounter = scaled;
-                }
-
-                if (counter % scaled == 0)
-                {
-                    widget.Update();
-                }
+                widget.Update();
             }
 
             // Добавляем добавленные.
@@ -162,48 +138,6 @@ namespace Thuja
             root.Render(context);
 
             display!.Draw();
-
-            return maxCounter;
-        }
-
-        /// <summary>
-        ///     Вычисляет FPS, чтобы иметь возможность обновлять каждый виджет так часто, как он этого хочет.
-        /// </summary>
-        /// <returns>Возвращает вычисленный FPS.</returns>
-        private int FindFps()
-        {
-            static int Lcm(int a, int b)
-            {
-                return a * b / Euclid(a, b);
-            }
-
-            // Find lowest common divisor of all widgets 
-            const double minimum = 20;
-            var calculated = widgets
-                .Select(w => w.Fps)
-                .Where(fps => fps != 0)
-                .Aggregate(1, Lcm);
-            return calculated * (int) Math.Ceiling(minimum / calculated);
-        }
-
-        /// <summary>
-        ///     Алгоритм Евклида для поиска НОД делением.
-        /// </summary>
-        private static int Euclid(int a, int b)
-        {
-            while (a != 0 && b != 0)
-            {
-                if (a > b)
-                {
-                    a %= b;
-                }
-                else
-                {
-                    b %= a;
-                }
-            }
-
-            return a + b;
         }
     }
 }
