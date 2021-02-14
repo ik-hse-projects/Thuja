@@ -56,7 +56,7 @@ namespace Thuja
         /// <param name="x">Отступ слева.</param>
         /// <param name="y">Остутп сверху.</param>
         /// <param name="layer">Слой, на котором отрисовывается окно.</param>
-        public Popup(int maxWidth = 70, int maxHeight = 19, int x = 5, int y = 5, int layer = 10)
+        public Popup(int maxWidth = 70, int maxHeight = 19, int x = 2, int y = 1, int layer = 5)
         {
             position = (x, y, layer);
             this.maxWidth = maxWidth;
