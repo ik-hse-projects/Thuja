@@ -115,7 +115,6 @@ namespace Thuja.Widgets
         /// <typeparam name="T">Тип содержимого.</typeparam>
         public TabPage<T> Insert<T>(int i, string title, T widget) where T : IWidget
         {
-            mainLoop?.Register(widget);
             var tab = new TabPage<T>(title, widget);
             titles.Insert(i, tab.Button);
             Pages.Insert(i, tab);
@@ -142,7 +141,6 @@ namespace Thuja.Widgets
         /// <returns>Возвращает этот же самый объект.</returns>
         public Tabs Add<T>(string title, T widget, out TabPage<T> page) where T : IWidget
         {
-            mainLoop?.Register(widget);
             var tab = new TabPage<T>(title, widget);
             titles.Add(tab.Button);
             Pages.Add(tab);
@@ -205,33 +203,6 @@ namespace Thuja.Widgets
             return AsIKeyHandler().TryHandleKey(key)
                    || content.BubbleDown(key)
                    || titles.BubbleDown(key);
-        }
-
-        /// <inheritdoc />
-        public override void OnRegistered(MainLoop loop)
-        {
-            mainLoop = loop;
-            loop.Register(titles);
-            // Пропускаем content, мы всё сделаем сами как надо:
-            content.IgnoreAssertRegistered();
-            foreach (var page in Pages)
-            {
-                loop.Register(page.Widget);
-            }
-        }
-
-        public override void OnUnregistered()
-        {
-            if (mainLoop == null)
-            {
-                return;
-            }
-
-            mainLoop.Unregister(titles);
-            foreach (var page in Pages)
-            {
-                mainLoop.Unregister(page.Widget);
-            }
         }
 
         /// <inheritdoc />

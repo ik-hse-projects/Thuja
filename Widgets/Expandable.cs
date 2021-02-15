@@ -2,7 +2,7 @@ using System;
 
 namespace Thuja.Widgets
 {
-    public class Expandable : AssertRegistered, IFocusable
+    public class Expandable : IFocusable
     {
         public IWidget Collapsed { get; set; }
         public IWidget Expanded { get; set; }
@@ -17,20 +17,7 @@ namespace Thuja.Widgets
             Expanded = expanded;
         }
 
-        public override void OnRegistered(MainLoop loop)
-        {
-            loop.Register(Collapsed);
-            loop.Register(Expanded);
-            mainLoop = loop;
-        }
-
-        public override void OnUnregistered()
-        {
-            mainLoop?.Unregister(Collapsed);
-            mainLoop?.Unregister(Expanded);
-        }
-
-        public override void Render(RenderContext context)
+        public void Render(RenderContext context)
         {
             Current.Render(context);
         }

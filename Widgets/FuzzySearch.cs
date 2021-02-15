@@ -94,10 +94,11 @@ namespace Thuja.Widgets
         }
 
         /// <inheritdoc />
-        public override void Update()
+        public void Render(RenderContext context)
         {
             if (!isTextChanged)
             {
+                base.Render(context);
                 return;
             }
 
@@ -112,6 +113,8 @@ namespace Thuja.Widgets
             }
 
             isTextChanged = false;
+
+            base.Render(context);
         }
 
         /// <inheritdoc />

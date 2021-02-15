@@ -3,28 +3,13 @@ using System.Collections.Generic;
 
 namespace Thuja
 {
-    public abstract class DelegateIWidget : AssertRegistered
+    public abstract class DelegateIWidget : IWidget
     {
         protected abstract IWidget WidgetImplementation { get; }
 
-        public override void OnRegistered(MainLoop loop)
-        {
-            WidgetImplementation.OnRegistered(loop);
-        }
-
-        public override void OnUnregistered()
-        {
-            WidgetImplementation.OnUnregistered();
-        }
-
-        public override void Render(RenderContext context)
+        public void Render(RenderContext context)
         {
             WidgetImplementation.Render(context);
-        }
-
-        public virtual void Update()
-        {
-            WidgetImplementation.Update();
         }
     }
 

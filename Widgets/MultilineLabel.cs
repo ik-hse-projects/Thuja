@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Thuja.Widgets
 {
-    public class MultilineLabel : AssertRegistered
+    public class MultilineLabel : IWidget
     {
         private string[] lines;
         private int maxWidth;
@@ -50,7 +50,7 @@ namespace Thuja.Widgets
         }
 
         /// <inheritdoc />
-        public override void Render(RenderContext context)
+        public void Render(RenderContext context)
         {
             for (var i = 0; i < lines.Length; i++)
             {

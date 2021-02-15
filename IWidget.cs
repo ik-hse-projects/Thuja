@@ -32,33 +32,9 @@ namespace Thuja
     public interface IWidget
     {
         /// <summary>
-        ///     Вызывается в тот момент, когда виджет привязывается к определенному циклу.
-        ///     С этого момента может быть вызыван Update или Draw.
-        /// </summary>
-        /// <param name="loop">Цикл, к которому привязан виджет.</param>
-        public void OnRegistered(MainLoop loop)
-        {
-        }
-        
-        /// <summary>
-        ///     Вызывается в тот момент, когда виджет отвязывается от цикла.
-        /// </summary>
-        public void OnUnregistered()
-        {
-        }
-
-        /// <summary>
         ///     Отрисовывает виджет в переданном контексте.
         /// </summary>
         /// <param name="context">Конекст, в котором будет отрисован данный виджет.</param>
         void Render(RenderContext context);
-
-        /// <summary>
-        ///     Обновляет состояние виджета.
-        ///     Вызывается циклом примерно <see cref="Fps" /> раз в секунду (по возможности).
-        /// </summary>
-        public void Update()
-        {
-        }
     }
 }

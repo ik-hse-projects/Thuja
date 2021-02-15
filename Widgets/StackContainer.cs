@@ -78,16 +78,6 @@ namespace Thuja.Widgets
         }
 
         /// <inheritdoc />
-        public void Update()
-        {
-            if (Focused != lastFocused)
-            {
-                lastFocused = Focused;
-                MoveSelection(0);
-            }
-        }
-
-        /// <inheritdoc />
         public override void FocusChange(bool isFocused)
         {
             base.FocusChange(isFocused);
@@ -100,6 +90,12 @@ namespace Thuja.Widgets
         /// <inheritdoc />
         public override void Render(RenderContext context)
         {
+            if (Focused != lastFocused)
+            {
+                lastFocused = Focused;
+                MoveSelection(0);
+            }
+
             var offsetY = 0;
             var offsetX = 0;
             foreach (var widget in FindVisible())

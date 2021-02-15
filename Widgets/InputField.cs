@@ -98,7 +98,7 @@ namespace Thuja.Widgets
     /// <summary>
     ///     Поле для ввода текста пользователем.
     /// </summary>
-    public class InputField : AssertRegistered, IKeyHandler
+    public class InputField : IKeyHandler
     {
         /// <summary>
         ///     Положение курсора.
@@ -191,7 +191,7 @@ namespace Thuja.Widgets
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
 
         /// <inheritdoc />
-        public override void Render(RenderContext context)
+        public void Render(RenderContext context)
         {
             if (isFocused)
             {

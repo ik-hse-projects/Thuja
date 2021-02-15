@@ -7,12 +7,12 @@ namespace Thuja
     /// <summary>
     ///     Простейший контейнер, который просто объединяет несколько других виджетов в один.
     /// </summary>
-    public class BaseContainer : AssertRegistered, IKeyHandler
+    public class BaseContainer : IKeyHandler
     {
         /// <summary>
         ///     Список виджетов внутри этого контейнера.
         /// </summary>
-        protected readonly List<IWidget> Widgets = new List<IWidget>();
+        protected readonly List<IWidget> Widgets = new();
 
         /// <summary>
         ///     Сфокусированный на данный момент виджет среди всех виджетов внутри этого контейнера.
@@ -23,11 +23,6 @@ namespace Thuja
         ///     Является ли этот контейнер сфокусированным.
         /// </summary>
         private bool isFocused;
-
-        /// <summary>
-        ///     Главный цикл, к которому принадлежит этот контейнер и все его виджеты.
-        /// </summary>
-        public MainLoop? Loop { get; private set; }
 
         /// <summary>
         ///     Сфокусированный на данный момент виджет среди всех виджетов внутри этого контейнера.
@@ -51,24 +46,7 @@ namespace Thuja
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
 
         /// <inheritdoc />
-        public void OnRegistered(MainLoop loop)
-        {
-            foreach (var widget in Widgets)
-            {
-                loop.Register(widget);
-            }
-
-            Loop = loop;
-        }
-
-        /// <inheritdoc />
-        public void OnUnregistered()
-        {
-            Clear();
-        }
-
-        /// <inheritdoc />
-        public override void Render(RenderContext context)
+        public virtual void Render(RenderContext context)
         {
             foreach (var widget in Widgets)
             {
@@ -121,7 +99,6 @@ namespace Thuja
                 return Add(widget);
             }
 
-            Loop?.Register(widget);
             Widgets.Insert(position, widget);
             return this;
         }
@@ -138,7 +115,6 @@ namespace Thuja
                 Focused = focusable;
             }
 
-            Loop?.Register(widget);
             Widgets.Add(widget);
             return this;
         }
@@ -162,7 +138,6 @@ namespace Thuja
         /// <returns>Возвращает был ли такой виджет внутри этого контейнера.</returns>
         public bool Remove(IWidget widget)
         {
-            Loop?.Unregister(widget);
             var isRemoved = Widgets.Remove(widget);
             if (isRemoved && Focused == widget)
             {

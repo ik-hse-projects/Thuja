@@ -18,11 +18,6 @@ namespace Thuja
         private readonly IWidget root;
 
         /// <summary>
-        ///     Список виджетов, привязанных к этому циклу.
-        /// </summary>
-        private List<IWidget> widgets = new List<IWidget>();
-
-        /// <summary>
         ///     Дисплей, на котором происходит отрисовка.
         /// </summary>
         private Display? display;
@@ -33,7 +28,6 @@ namespace Thuja
         /// <param name="root">Виджет, который будет корневым в новом цикле.</param>
         public MainLoop(IWidget root)
         {
-            Register(root);
             this.root = root;
         }
 
@@ -48,26 +42,6 @@ namespace Thuja
         ///     после чего завершит работу.
         /// </summary>
         public Action? OnStop { get; set; }
-
-        /// <summary>
-        ///     Отвязывает виджет от цикла.
-        /// </summary>
-        /// <param name="widget">Виджет, который будет отвязан от цикла.</param>
-        public void Unregister(IWidget widget)
-        {
-            widget.OnUnregistered();
-            widgets.Remove(widget);
-        }
-
-        /// <summary>
-        ///     Привязывает новый виджет к этому циклу.
-        /// </summary>
-        /// <param name="widget">Виджет, который будет привязан к циклу.</param>
-        public void Register(IWidget widget)
-        {
-            widget.OnRegistered(this);
-            widgets.Add(widget);
-        }
 
         /// <summary>
         ///     Запускает цикл отрисовки и обновления виджетов.
@@ -111,7 +85,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Вспомогательная функция, которая обновляет и отрисовывает все виджеты.
+        ///     Вспомогательная функция, которая отрисовывает все виджеты.
         /// </summary>
         private void Tick()
         {
@@ -121,22 +95,9 @@ namespace Thuja
                 focusable.BubbleDown(key);
             }
 
-            // Виджеты могут быть добавлены во время Update. Всех таких обновим уже в следующий тик. 
-            var oldWidgets = widgets;
-            widgets = new List<IWidget>();
-
-            foreach (var widget in oldWidgets)
-            {
-                widget.Update();
-            }
-
-            // Добавляем добавленные.
-            oldWidgets.AddRange(widgets);
-            widgets = oldWidgets;
-
+            // Виджеты могут быть добавлены во время отрисовки. Всех таких обновим уже в следующий тик. 
             var context = display!.CurrentScreen.BeginRender();
             root.Render(context);
-
             display!.Draw();
         }
     }

@@ -2,7 +2,7 @@ using System;
 
 namespace Thuja.Widgets
 {
-    public class Label : AssertRegistered
+    public class Label : LimitFps, IWidget
     {
         private int position;
         private string text;
@@ -10,6 +10,7 @@ namespace Thuja.Widgets
 
         public Label(string text, int maxWidth = int.MaxValue)
         {
+            Fps = 2;
             Text = text ?? throw new ArgumentNullException(nameof(text));
             MaxWidth = maxWidth;
         }
@@ -30,23 +31,20 @@ namespace Thuja.Widgets
         public int MaxWidth { get; set; }
 
         /// <inheritdoc />
-        public int Fps => 2;
-
-        /// <inheritdoc />
-        public void Update()
+        public virtual void Render(RenderContext context)
         {
-            position = (position + 1) % withSeparator.Length;
-        }
+            // Прокрутка:
+            if (IsTimeToDraw())
+            {
+                position = (position + 1) % withSeparator.Length;
+            }
 
-        /// <inheritdoc />
-        public override void Render(RenderContext context)
-        {
             if (Text.Length == 0)
             {
                 context.PlaceString(" ", CurrentStyle);
                 return;
             }
-            
+
             if (MaxWidth >= Text.Length)
             {
                 context.PlaceString(Text, CurrentStyle);
