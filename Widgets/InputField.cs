@@ -171,11 +171,21 @@ namespace Thuja.Widgets
         {
             Text.Append(initialText);
         }
-        
+
         /// <summary>
         ///     Событие срабатывает, когда меняется текст в поле.
         /// </summary>
         public event Action? TextChanged;
+
+        /// <summary>
+        ///     Добавляет переданную функцию к <see cref="TextChanged"/> и возвращает себя.
+        ///     Удобно, что в функцию будет передан этот же самый InputField, в отличии от обычного события.
+        /// </summary>
+        public InputField OnChanged(Action<InputField> handler)
+        {
+            TextChanged += () => handler(this);
+            return this;
+        }
 
         /// <inheritdoc />
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
