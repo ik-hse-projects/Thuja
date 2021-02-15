@@ -20,6 +20,11 @@ namespace Thuja.Widgets
         ///     Содержимое вкладки.
         /// </summary>
         public abstract IWidget Widget { get; }
+
+        /// <summary>
+        ///     Вызывается, когда эта вкладка становится сфокусированной.
+        /// </summary>
+        public Action? Focused;
     }
 
     /// <summary>
@@ -174,6 +179,7 @@ namespace Thuja.Widgets
 
             // Готово!
             current = page;
+            page.Focused?.Invoke();
         }
 
         /// <summary>
