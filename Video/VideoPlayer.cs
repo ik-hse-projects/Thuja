@@ -7,11 +7,11 @@ namespace Thuja.Video
 {
     public class VideoPlayer : AssertRegistered, IWidget
     {
-        private readonly FileStream fileStream;
+        private readonly Stream fileStream;
         private ColoredChar[,] frame;
         private VideoReader reader;
 
-        public VideoPlayer(FileStream file)
+        public VideoPlayer(Stream file)
         {
             fileStream = file;
             frame = new ColoredChar[0, 0];
@@ -20,6 +20,12 @@ namespace Thuja.Video
 
         public override void Render(RenderContext context)
         {
+            if (frame.GetLength(0) != reader.Info.Width
+                || frame.GetLength(1) != reader.Info.Height)
+            {
+                return;
+            }
+
             for (var x = 0; x < reader.Info.Width; x++)
             for (var y = 0; y < reader.Info.Height; y++)
                 context[x, y] = frame[x, y];
@@ -44,11 +50,6 @@ namespace Thuja.Video
 
             frame = reader.Current;
             lastFrame = now;
-        }
-
-        public bool BubbleDown(ConsoleKeyInfo key)
-        {
-            return false;
         }
 
         private void Reset()
