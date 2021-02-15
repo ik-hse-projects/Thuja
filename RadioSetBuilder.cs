@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Thuja.Widgets;
 
 namespace Thuja
@@ -9,19 +11,21 @@ namespace Thuja
     /// <typeparam name="T">Тип выбираемого значения.</typeparam>
     public class RadioSetBuilder<T>
     {
-        private List<Button> buttons = new();
+        private List<(T, Button)> buttons = new();
 
         /// <summary>
         ///     Выбранное значение.
         /// </summary>
         public T? Checked { get; private set; }
 
+        public event Action<T>? OnChecked;
+
         /// <summary>
         ///     Снимает выделение со всех кнопок.
         /// </summary>
         private void UncheckAll()
         {
-            foreach (var button in buttons)
+            foreach (var (_, button) in buttons)
             {
                 var prefix = "[ ] ";
                 var text = button.Text.Substring(prefix.Length);
@@ -43,10 +47,34 @@ namespace Thuja
                 UncheckAll();
                 button.Text = $"[x] {text}";
                 Checked = value;
+                OnChecked?.Invoke(value);
             });
-            buttons.Add(button);
+            buttons.Add((value, button));
             widget = button;
             return this;
+        }
+
+        /// <summary>
+        ///     Отмечает переданный вариант как выбранный.
+        ///     Если подходящих кнопок несколько, то отмечает ранее добавленную.
+        ///     Важно, что событие <see cref="OnChecked"/> всё равно будет вызвано.
+        /// </summary>
+        public void Check(T value)
+        {
+            var button = buttons
+                .Where(i => i.Item1!.Equals(value))
+                .Select(i => i.Item2)
+                .FirstOrDefault();
+            UncheckAll();
+            if (button == null)
+            {
+                return;
+            }
+
+            var prefix = "[x] ";
+            var text = button.Text.Substring(prefix.Length);
+            button.Text = $"{prefix}{text}";
+            OnChecked?.Invoke(value);
         }
 
         /// <summary>
@@ -62,7 +90,7 @@ namespace Thuja
         public StackContainer ToStack()
         {
             var result = new StackContainer();
-            foreach (var button in buttons)
+            foreach (var (_, button) in buttons)
             {
                 result.Add(button);
             }

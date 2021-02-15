@@ -56,12 +56,19 @@ namespace Thuja.Widgets
         ///     Заново конвертирует указанный элемент. Работает быстрее, чем <see cref="Update()"/>.
         /// </summary>
         /// <remarks>Могут быть неожиданные результаты, если вдруг изначально `container` не был пуст.</remarks>
-        public void Update(int i)
+        /// <returns>false, если был передан некорректный индекс.</returns>
+        public bool Update(int i)
         {
+            if (i < 0 || i >= items.Count)
+            {
+                return false;
+            }
+
             var updated = converter(items[i]);
             container.RemoveAt(i);
             container.Insert(i, updated);
             widgets[i] = updated;
+            return true;
         }
 
         // Дальнейшие функции — реализиация IList<T> через list. Оставлю их без документации.

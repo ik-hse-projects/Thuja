@@ -32,6 +32,15 @@ namespace Thuja.Widgets
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
 
         /// <summary>
+        ///     Добавляет обработчик нажатия на кнопку. В обработчик будет передана эта кнопка.
+        /// </summary>
+        /// <returns>Возвращает эту же самую кнопку.</returns>
+        public Button OnClick(Action<Button> clicked)
+        {
+            return OnClick(() => clicked(this));
+        }
+
+        /// <summary>
         ///     Добавляет обработчик нажатия на кнопку.
         /// </summary>
         /// <returns>Возвращает эту же самую кнопку.</returns>
