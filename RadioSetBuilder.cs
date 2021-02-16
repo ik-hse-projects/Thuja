@@ -11,7 +11,7 @@ namespace Thuja
     /// <typeparam name="T">Тип выбираемого значения.</typeparam>
     public class RadioSetBuilder<T>
     {
-        private List<(T, Button)> buttons = new();
+        private List<(T, Checkbox)> variants = new();
 
         /// <summary>
         ///     Выбранное значение.
@@ -25,11 +25,9 @@ namespace Thuja
         /// </summary>
         private void UncheckAll()
         {
-            foreach (var (_, button) in buttons)
+            foreach (var (_, button) in variants)
             {
-                var prefix = "[ ] ";
-                var text = button.Text.Substring(prefix.Length);
-                button.Text = $"{prefix}{text}";
+                button.Checked = false;
             }
         }
 
@@ -41,16 +39,19 @@ namespace Thuja
         /// <param name="widget">Виджет, который оттвечает за выбор этого варианта.</param>
         public RadioSetBuilder<T> Add(string text, T value, out IFocusable widget)
         {
-            var button = new Button($"[ ] {text}");
-            button.OnClick(() =>
+            var checkbox = new Checkbox(text)
+            {
+                Marker = 'o'
+            };
+            checkbox.OnClick(() =>
             {
                 UncheckAll();
-                button.Text = $"[x] {text}";
+                checkbox.Checked = true;
                 Checked = value;
                 OnChecked?.Invoke(value);
             });
-            buttons.Add((value, button));
-            widget = button;
+            variants.Add((value, checkbox));
+            widget = checkbox;
             return this;
         }
 
@@ -61,19 +62,17 @@ namespace Thuja
         /// </summary>
         public void Check(T value)
         {
-            var button = buttons
+            var checkbox = variants
                 .Where(i => i.Item1!.Equals(value))
                 .Select(i => i.Item2)
                 .FirstOrDefault();
             UncheckAll();
-            if (button == null)
+            if (checkbox == null)
             {
                 return;
             }
 
-            var prefix = "[x] ";
-            var text = button.Text.Substring(prefix.Length);
-            button.Text = $"{prefix}{text}";
+            checkbox.Checked = true;
             OnChecked?.Invoke(value);
         }
 
@@ -90,7 +89,7 @@ namespace Thuja
         public StackContainer ToStack()
         {
             var result = new StackContainer();
-            foreach (var (_, button) in buttons)
+            foreach (var (_, button) in variants)
             {
                 result.Add(button);
             }
