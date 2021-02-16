@@ -139,9 +139,9 @@ namespace Thuja.Widgets
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
 
         /// <summary>
-        ///     Преобразовывает этот виджет в экземпляр <see cref="IKeyHandler" />
+        ///     Преобразовывает этот виджет в экземпляр <see cref="IKeyHandler" />.
         /// </summary>
-        /// <returns>Объект типа <see cref="IKeyHandler" />, который может быть преобразован в <see cref="InputField" />.</returns>
+        /// <returns>Объект типа <see cref="IKeyHandler" />, который может быть преобразован в <see cref="FuzzySearch{T}" />.</returns>
         public IKeyHandler AsIKeyHandler()
         {
             return this;
