@@ -16,15 +16,15 @@ namespace Thuja
         /// <summary>
         ///     Размер холста.
         /// </summary>
-        public readonly (int width, int height) Size;
+        public readonly Cooridantes Size;
 
         /// <summary>
         ///     Создаёт новый холст указанного размера.
         /// </summary>
-        public Canvas(int width, int height)
+        public Canvas(Cooridantes size)
         {
-            Size = (width, height);
-            Content = new ColoredChar[width, height];
+            Size = size;
+            Content = new ColoredChar[size.Width, size.Height];
             Clear();
         }
 
@@ -46,8 +46,8 @@ namespace Thuja
         /// <param name="filler">Символ, которым будет заполнен весь холст.</param>
         public void Clear(ColoredChar filler)
         {
-            for (var x = 0; x < Size.width; x++)
-            for (var y = 0; y < Size.height; y++)
+            for (var x = 0; x < Size.Width; x++)
+            for (var y = 0; y < Size.Height; y++)
             {
                 Content[x, y] = filler;
             }
@@ -58,8 +58,7 @@ namespace Thuja
         /// </summary>
         public ColoredChar? Get(int x, int y)
         {
-            var (width, height) = Size;
-            if (x >= width || x < 0 || y >= height || y < 0)
+            if (x >= Size.Width || x < 0 || y >= Size.Height || y < 0)
             {
                 return null;
             }
@@ -73,8 +72,7 @@ namespace Thuja
         /// <returns>Возвращает true, если координаты не больше размера холста.</returns>
         public bool TrySet(int x, int y, ColoredChar character)
         {
-            var (width, height) = Size;
-            if (x >= width || x < 0 || y >= height || y < 0)
+            if (x >= Size.Width || x < 0 || y >= Size.Height || y < 0)
             {
                 return false;
             }
@@ -112,9 +110,9 @@ namespace Thuja
         /// <summary>
         ///     Создаёт новый контекст для отрисовки.
         /// </summary>
-        public RenderContext BeginRender()
+        public RenderContext BeginRender(IRenderer renderer)
         {
-            return new RenderContext((0, 0, 0), this);
+            return new RenderContext((0, 0, 0), this, renderer);
         }
 
         /// <summary>
@@ -140,12 +138,12 @@ namespace Thuja
                 yield break;
             }
 
-            for (var y = 0; y < Size.height; y++)
+            for (var y = 0; y < Size.Height; y++)
             {
                 var distanceFromLastDifference = 0;
                 const int distanceThreshold = 8;
                 Difference? diff = null;
-                for (var x = 0; x < Size.width; x++)
+                for (var x = 0; x < Size.Width; x++)
                 {
                     var thisChar = Content[x, y];
                     var otherChar = other.Content[x, y];
@@ -162,7 +160,7 @@ namespace Thuja
                     else
                     {
                         distanceFromLastDifference = 0;
-                        diff ??= new Difference(y, x);
+                        diff ??= new Difference(new Cooridantes(x, y));
                     }
 
                     diff?.Chars.Add(thisChar);
@@ -182,14 +180,9 @@ namespace Thuja
     public readonly struct Difference
     {
         /// <summary>
-        ///     Строка, на которой начинается отличие.
+        ///     Координаты буквы, на которой начинается отличие.
         /// </summary>
-        public readonly int Line;
-
-        /// <summary>
-        ///     Колонка, на которой начинается отличие.
-        /// </summary>
-        public readonly int Column;
+        public readonly Cooridantes Position;
 
         /// <summary>
         ///     Массив символов на которые они изменилиись.
@@ -199,10 +192,9 @@ namespace Thuja
         /// <summary>
         ///     Создаёт отличие без символов по указанным координатам.
         /// </summary>
-        public Difference(int line, int column) : this()
+        public Difference(Cooridantes position) : this()
         {
-            Line = line;
-            Column = column;
+            Position = position;
             Chars = new List<ColoredChar>();
         }
     }

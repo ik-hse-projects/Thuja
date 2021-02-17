@@ -18,6 +18,11 @@ namespace Thuja
         private readonly Canvas canvas;
 
         /// <summary>
+        ///     Необходимая часть, чтобы двигать курсор.
+        /// </summary>
+        private readonly IRenderer renderer;
+
+        /// <summary>
         ///     Ссылка на родительский контекст, если такой есть.
         /// </summary>
         private readonly ParentRef? parentRef;
@@ -29,21 +34,25 @@ namespace Thuja
         private (int x, int y) size;
 
         /// <summary>
-        ///     Приватный конструктор, который позволяет установить все поля.
+        ///     Приватный конструктор, который используется в <see cref="Derive"/>.
         /// </summary>
-        private RenderContext((int x, int y, int layer) absoluteOffset, Canvas canvas, ParentRef parentRef) : this(
-            absoluteOffset, canvas)
+        private RenderContext((int x, int y, int layer) offset, ParentRef parentRef)
         {
+            absoluteOffset = offset;
+            canvas = parentRef.Parent.canvas;
+            renderer = parentRef.Parent.renderer;
             this.parentRef = parentRef;
+            size = (-1, -1);
         }
 
         /// <summary>
         ///     Создаёт новый корневой контекст с заданным положением и используя данный холст.
         /// </summary>
-        public RenderContext((int x, int y, int layer) absoluteOffset, Canvas canvas)
+        public RenderContext((int x, int y, int layer) absoluteOffset, Canvas canvas, IRenderer renderer)
         {
             this.absoluteOffset = absoluteOffset;
             this.canvas = canvas;
+            this.renderer = renderer;
             size = (-1, -1);
         }
 
@@ -62,19 +71,18 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Устаналивает положение курсора консоли.
+        ///     Устаналивает положение курсора.
         /// </summary>
         public (int x, int y) CursorPosition
         {
             get => (
-                Console.CursorLeft - absoluteOffset.x,
-                Console.CursorTop - absoluteOffset.y
+                renderer.Cursor.Column - absoluteOffset.x,
+                renderer.Cursor.Height - absoluteOffset.y
             );
-            set
-            {
-                Console.CursorLeft = absoluteOffset.x + value.x;
-                Console.CursorTop = absoluteOffset.y + value.y;
-            }
+            set => renderer.Cursor = new Cooridantes(
+                absoluteOffset.x + value.x,
+                absoluteOffset.y + value.y
+            );
         }
 
         /// <summary>
@@ -145,7 +153,7 @@ namespace Thuja
                 absoluteOffset.y + offset.y,
                 absoluteOffset.layer + offset.layer
             );
-            return new RenderContext(newOffset, canvas, new ParentRef(this, offset));
+            return new RenderContext(newOffset, new ParentRef(this, offset));
         }
 
         /// <summary>
