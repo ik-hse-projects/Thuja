@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>9</LangVersion>
+        <OutputType>WinExe</OutputType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DocumentationFile>bin\Debug\Thuja.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="System.Windows.Forms">
+          <HintPath>/usr/lib/mono/4.8-api/System.Windows.Forms.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Thuja.Core\Thuja.csproj" />
+    </ItemGroup>
+
+</Project>
