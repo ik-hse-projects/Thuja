@@ -10,6 +10,11 @@ namespace Thuja
     public interface IRenderer
     {
         /// <summary>
+        ///     Вызывается при запуске MainLoop.
+        /// </summary>
+        void Start();
+        
+        /// <summary>
         ///     Вызывается перед началом отрисовки.
         /// </summary>
         void BeginShow();

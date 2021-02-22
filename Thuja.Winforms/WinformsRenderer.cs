@@ -1,33 +1,53 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Threading;
+using System.Windows.Forms;
 
-namespace Thuja
+namespace Thuja.Winforms
 {
-    public class WinformsRenderer: IRenderer
+    public class WinformsRenderer : IRenderer
     {
-        public WinformsRenderer()
+        private MainForm form;
+        private bool needRedraw;
+
+        public void Start()
         {
-            
+            form = new MainForm();
+            new Thread(() => Application.Run(form)).Start();
         }
-        
+
         public void BeginShow()
         {
-            throw new NotImplementedException();
+            needRedraw = false;
         }
 
         public void ShowString(Style style, string str)
         {
-            throw new NotImplementedException();
+            form.actions.Add((Cursor, style, str));
+            needRedraw = true;
         }
 
         public void EndShow()
         {
-            throw new NotImplementedException();
+            if (needRedraw)
+            {
+                form.Invoke((MethodInvoker) delegate
+                {
+                    foreach (var (cooridantes, _, str) in form.actions)
+                    {
+                        form.Invalidate(MainForm.GetRectangleForText(cooridantes, str));
+                    }
+
+                    form.Update();
+                });
+            }
         }
 
         public void Reset()
         {
-            throw new NotImplementedException();
+            form.clear = true;
+            needRedraw = true;
         }
 
         public IEnumerable<ConsoleKeyInfo> GetKeys()

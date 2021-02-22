@@ -66,6 +66,8 @@ namespace Thuja
             {
                 focusable.FocusChange(true);
             }
+            
+            renderer.Start();
 
             display.Clear();
             const int fps = 60;

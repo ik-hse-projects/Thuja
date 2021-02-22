@@ -6,6 +6,10 @@ namespace Thuja
 {
     public class ConsoleRenderer : IRenderer
     {
+        public void Start()
+        {
+        }
+
         public void BeginShow()
         {
             Console.CursorVisible = false;

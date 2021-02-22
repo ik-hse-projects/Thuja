@@ -12,13 +12,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Reference Include="System.Windows.Forms">
-          <HintPath>/usr/lib/mono/4.8-api/System.Windows.Forms.dll</HintPath>
-      </Reference>
+        <Reference Include="System.Drawing">
+            <HintPath>/usr/lib/mono/4.8-api/System.Drawing.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Drawing.Common">
+          <HintPath>/usr/share/dotnet/sdk/5.0.102/System.Drawing.Common.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Windows.Forms">
+            <HintPath>/usr/lib/mono/4.8-api/System.Windows.Forms.dll</HintPath>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Thuja.Core\Thuja.csproj" />
+        <ProjectReference Include="..\Thuja.Core\Thuja.csproj" />
     </ItemGroup>
 
 </Project>
