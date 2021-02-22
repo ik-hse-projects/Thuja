@@ -22,25 +22,13 @@ namespace Thuja
         /// </summary>
         private Display? display;
 
-        private IRenderer renderer;
-
         /// <summary>
         ///     Создает новый цикл с данным виджетом в качестве корневого.
         /// </summary>
         /// <param name="root">Виджет, который будет корневым в новом цикле.</param>
-        public MainLoop(IWidget root): this(root, new ConsoleRenderer())
-        {
-        }
-        
-        /// <summary>
-        ///     Создает новый цикл с данным виджетом в качестве корневого и способом отрисовки на экран.
-        /// </summary>
-        /// <param name="root">Виджет, который будет корневым в новом цикле.</param>
-        /// <param name="renderer">При помощи чего нужнео взаимодействовать с пользователем.</param>
-        public MainLoop(IWidget root, IRenderer renderer)
+        public MainLoop(IWidget root)
         {
             this.root = root;
-            this.renderer = renderer;
         }
 
         /// <summary>
@@ -61,13 +49,11 @@ namespace Thuja
         public void Start()
         {
             OnStop = null;
-            display = new Display(renderer);
+            display = new Display();
             if (root is IFocusable focusable)
             {
                 focusable.FocusChange(true);
             }
-            
-            renderer.Start();
 
             display.Clear();
             const int fps = 60;
@@ -103,16 +89,14 @@ namespace Thuja
         /// </summary>
         private void Tick()
         {
-            if (root is IFocusable focusable)
+            if (Console.KeyAvailable && root is IFocusable focusable)
             {
-                foreach (var key in renderer.GetKeys())
-                {
-                    focusable.BubbleDown(key);
-                }
+                var key = Console.ReadKey(true);
+                focusable.BubbleDown(key);
             }
 
             // Виджеты могут быть добавлены во время отрисовки. Всех таких обновим уже в следующий тик. 
-            var context = display!.CurrentScreen.BeginRender(renderer);
+            var context = display!.CurrentScreen.BeginRender();
             root.Render(context);
             display!.Draw();
         }
