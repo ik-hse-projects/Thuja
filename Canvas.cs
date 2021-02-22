@@ -4,22 +4,22 @@ using System.Collections.Generic;
 namespace Thuja
 {
     /// <summary>
-    ///     Объект, который содержит информацию о текущем состоянии экрана.
+    /// Объект, который содержит информацию о текущем состоянии экрана.
     /// </summary>
     public class Canvas
     {
         /// <summary>
-        ///     Содержит все символы, отображающиеся на экране.
+        /// Содержит все символы, отображающиеся на экране.
         /// </summary>
         public readonly ColoredChar[,] Content;
 
         /// <summary>
-        ///     Размер холста.
+        /// Размер холста.
         /// </summary>
         public readonly (int width, int height) Size;
 
         /// <summary>
-        ///     Создаёт новый холст указанного размера.
+        /// Создаёт новый холст указанного размера.
         /// </summary>
         public Canvas(int width, int height)
         {
@@ -29,7 +29,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Очищает холст.
+        /// Очищает холст.
         /// </summary>
         public void Clear()
         {
@@ -41,7 +41,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Заполняет весь холст данным символом.
+        /// Заполняет весь холст данным символом.
         /// </summary>
         /// <param name="filler">Символ, которым будет заполнен весь холст.</param>
         public void Clear(ColoredChar filler)
@@ -54,7 +54,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Возвращает символ по указанным координатам, если они не превосходят размер холста. Иначе возвращает null.
+        /// Возвращает символ по указанным координатам, если они не превосходят размер холста. Иначе возвращает null.
         /// </summary>
         public ColoredChar? Get(int x, int y)
         {
@@ -68,7 +68,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Помещает переданный символ на указанные координаты. Правильно обрабатывает прозрачность и следит за слоями.
+        /// Помещает переданный символ на указанные координаты. Правильно обрабатывает прозрачность и следит за слоями.
         /// </summary>
         /// <returns>Возвращает true, если координаты не больше размера холста.</returns>
         public bool TrySet(int x, int y, ColoredChar character)
@@ -110,15 +110,15 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Создаёт новый контекст для отрисовки.
+        /// Создаёт новый контекст для отрисовки.
         /// </summary>
         public RenderContext BeginRender()
         {
-            return new RenderContext((0, 0, 0), this);
+            return new((0, 0, 0), this);
         }
 
         /// <summary>
-        ///     Вычисляет отличия текущего холста по сравнению с переданным.
+        /// Вычисляет отличия текущего холста по сравнению с переданным.
         /// </summary>
         /// <param name="other">Холст, отличия с которым нужно найти.</param>
         /// <returns>Возвращает итератор по отличиям.</returns>
@@ -177,27 +177,27 @@ namespace Thuja
     }
 
     /// <summary>
-    ///     Содержит информацию об отличиях одного холста от другого.
+    /// Содержит информацию об отличиях одного холста от другого.
     /// </summary>
     public readonly struct Difference
     {
         /// <summary>
-        ///     Строка, на которой начинается отличие.
+        /// Строка, на которой начинается отличие.
         /// </summary>
         public readonly int Line;
 
         /// <summary>
-        ///     Колонка, на которой начинается отличие.
+        /// Колонка, на которой начинается отличие.
         /// </summary>
         public readonly int Column;
 
         /// <summary>
-        ///     Массив символов на которые они изменилиись.
+        /// Массив символов на которые они изменилиись.
         /// </summary>
         public readonly List<ColoredChar> Chars;
 
         /// <summary>
-        ///     Создаёт отличие без символов по указанным координатам.
+        /// Создаёт отличие без символов по указанным координатам.
         /// </summary>
         public Difference(int line, int column) : this()
         {

@@ -1,49 +1,36 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
 namespace Thuja.Widgets
 {
     /// <summary>
-    ///     Нетипизированная вкладка внутри <see cref="Tabs"/>.
-    ///     Если возможно, то лучше использовать <see cref="TabPage{T}"/>.
+    /// Нетипизированная вкладка внутри <see cref="Tabs" />.
+    /// Если возможно, то лучше использовать <see cref="TabPage{T}" />.
     /// </summary>
     public abstract class TabPage
     {
         /// <summary>
-        ///     Заголовок вкладки.
+        /// Вызывается, когда эта вкладка становится сфокусированной.
+        /// </summary>
+        public Action? Focused;
+
+        /// <summary>
+        /// Заголовок вкладки.
         /// </summary>
         public abstract Button Button { get; }
 
         /// <summary>
-        ///     Содержимое вкладки.
+        /// Содержимое вкладки.
         /// </summary>
         public abstract IWidget Widget { get; }
-
-        /// <summary>
-        ///     Вызывается, когда эта вкладка становится сфокусированной.
-        /// </summary>
-        public Action? Focused;
     }
 
     /// <summary>
-    ///     Вкладка внутри <see cref="Tabs"/>.
+    /// Вкладка внутри <see cref="Tabs" />.
     /// </summary>
     /// <typeparam name="T">Тип её содержимого.</typeparam>
     public class TabPage<T> : TabPage where T : IWidget
     {
-        /// <summary>
-        ///     Типизированое содержимое вкладки.
-        /// </summary>
-        public T SpecificWidget { get; }
-
-        /// <inheritdoc />
-        public override IWidget Widget => SpecificWidget;
-
-        /// <inheritdoc />
-        public override Button Button { get; }
-
         internal TabPage(Button button, T widget)
         {
             Button = button;
@@ -53,26 +40,34 @@ namespace Thuja.Widgets
         internal TabPage(string title, T widget) : this(new Button(title) {OverrideStyle = Style.Inactive}, widget)
         {
         }
+
+        /// <summary>
+        /// Типизированое содержимое вкладки.
+        /// </summary>
+        public T SpecificWidget { get; }
+
+        /// <inheritdoc />
+        public override IWidget Widget => SpecificWidget;
+
+        /// <inheritdoc />
+        public override Button Button { get; }
     }
 
     /// <summary>
-    ///     Виджет, который представляет из себя несколько вкладок, которые можно фокусировать.
+    /// Виджет, который представляет из себя несколько вкладок, которые можно фокусировать.
     /// </summary>
     public class Tabs : DelegateIFocusable, IKeyHandler
     {
-        protected override IFocusable FocusableImplementation => container;
+        private readonly StackContainer container = new();
+        private readonly BaseContainer content;
+        private readonly StackContainer titles = new(Orientation.Horizontal, 1);
 
         private TabPage? current;
-        private List<TabPage> Pages = new();
-        private readonly StackContainer titles = new StackContainer(Orientation.Horizontal, 1);
-        private readonly StackContainer container = new StackContainer();
-        private readonly BaseContainer content;
         private MainLoop? mainLoop;
-
-        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
+        private readonly List<TabPage> Pages = new();
 
         /// <summary>
-        ///     Создаёт виджет с вкладками. 
+        /// Создаёт виджет с вкладками.
         /// </summary>
         /// <param name="framed">Следует ли поместить содержимое в рамочку.</param>
         public Tabs(bool framed = true)
@@ -88,8 +83,10 @@ namespace Thuja.Widgets
             };
         }
 
+        protected override IFocusable FocusableImplementation => container;
+
         /// <summary>
-        ///     Максимальное число видимых заголовков.
+        /// Максимальное число видимых заголовков.
         /// </summary>
         public int MaxLabelsVisible
         {
@@ -97,8 +94,33 @@ namespace Thuja.Widgets
             set => titles.MaxVisibleCount = value;
         }
 
+        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
+
+        public override bool BubbleDown(ConsoleKeyInfo key)
+        {
+            // Нажатия обрабатывааются в следюущем порядке:
+            // 1. Те обработчики, которые были привязаны напрямую к этому объекту;
+            // 2. Содержимое текущей вкладки;
+            // 3. Список вкладок.
+            return AsIKeyHandler().TryHandleKey(key)
+                   || content.BubbleDown(key)
+                   || titles.BubbleDown(key);
+        }
+
+        /// <inheritdoc />
+        public void Render(RenderContext context)
+        {
+            container.Render(context);
+        }
+
+        /// <inheritdoc />
+        public void FocusChange(bool isFocused)
+        {
+            content.FocusChange(isFocused);
+        }
+
         /// <summary>
-        ///     Удаляет вкладку из списка. Но не сбрасывает с неё фокус!
+        /// Удаляет вкладку из списка. Но не сбрасывает с неё фокус!
         /// </summary>
         public void Remove(TabPage page)
         {
@@ -107,7 +129,7 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Создаёт новую вкладку и помещает её заголовок на указанное место.
+        /// Создаёт новую вкладку и помещает её заголовок на указанное место.
         /// </summary>
         /// <param name="i">Индекс вкладки.</param>
         /// <param name="title">Её заголовок.</param>
@@ -122,7 +144,7 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Добавляет новую вкладку.
+        /// Добавляет новую вкладку.
         /// </summary>
         /// <param name="title">Заголовок вкладки.</param>
         /// <param name="widget">Содержимое вкладки.</param>
@@ -133,7 +155,7 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Добавляет новую вкладку.
+        /// Добавляет новую вкладку.
         /// </summary>
         /// <param name="title">Заголовок вкладки.</param>
         /// <param name="widget">Содержимое вкладки.</param>
@@ -149,7 +171,7 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Фокусируется на выбранной вкладке.
+        /// Фокусируется на выбранной вкладке.
         /// </summary>
         /// <param name="page"></param>
         public void Focus(TabPage page)
@@ -181,7 +203,7 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Фокусируется на последней добавленной вкладке.
+        /// Фокусируется на последней добавленной вкладке.
         /// </summary>
         /// <returns>Возвращает этот же самый объект.</returns>
         public Tabs AndFocus()
@@ -194,31 +216,8 @@ namespace Thuja.Widgets
             return this;
         }
 
-        public override bool BubbleDown(ConsoleKeyInfo key)
-        {
-            // Нажатия обрабатывааются в следюущем порядке:
-            // 1. Те обработчики, которые были привязаны напрямую к этому объекту;
-            // 2. Содержимое текущей вкладки;
-            // 3. Список вкладок.
-            return AsIKeyHandler().TryHandleKey(key)
-                   || content.BubbleDown(key)
-                   || titles.BubbleDown(key);
-        }
-
-        /// <inheritdoc />
-        public void Render(RenderContext context)
-        {
-            container.Render(context);
-        }
-
-        /// <inheritdoc />
-        public void FocusChange(bool isFocused)
-        {
-            content.FocusChange(isFocused);
-        }
-
         /// <summary>
-        ///     Преобразовывает этот контейнер в экземпляр <see cref="IKeyHandler" />
+        /// Преобразовывает этот контейнер в экземпляр <see cref="IKeyHandler" />
         /// </summary>
         /// <returns>Объект типа <see cref="IKeyHandler" />, который может быть преобразован в <see cref="Tabs" />.</returns>
         public IKeyHandler AsIKeyHandler()

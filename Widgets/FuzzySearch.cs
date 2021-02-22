@@ -4,33 +4,24 @@ using System.Collections.Generic;
 namespace Thuja.Widgets
 {
     /// <summary>
-    ///     Виджет, который позволяет искать и выбирать строки из списка.
+    /// Виджет, который позволяет искать и выбирать строки из списка.
     /// </summary>
     public class FuzzySearch<T> : DelegateIFocusable, IKeyHandler
     {
-        protected override IFocusable FocusableImplementation => container;
-
-        private readonly InputField inputField;
-
-        private bool isTextChanged;
-
-        private readonly Func<T, string> converter;
-
         private readonly IList<T> choices;
-
-        private readonly ListOf<T> list;
 
         private readonly BaseContainer container;
 
-        public event Action<FuzzySearch<T>>? Chosen;
+        private readonly Func<T, string> converter;
+
+        private readonly InputField inputField;
+
+        private readonly ListOf<T> list;
+
+        private bool isTextChanged;
 
         /// <summary>
-        ///     Выбранный элемент списка.
-        /// </summary>
-        public T? Choice { get; private set; }
-
-        /// <summary>
-        ///     Создаёт новый FuzzySearch.
+        /// Создаёт новый FuzzySearch.
         /// </summary>
         /// <param name="choices">Доустпные варианты для выбора.</param>
         /// <param name="converter">Функция, проеобразовывающая элемент в строку. Вызывается очень часто.</param>
@@ -56,27 +47,15 @@ namespace Thuja.Widgets
             }
         }
 
-        /// <summary>
-        ///     Выбирает переданный элемент.
-        /// </summary>
-        private void Select(T selected)
-        {
-            Choice = selected;
-            Chosen?.Invoke(this);
-        }
+        protected override IFocusable FocusableImplementation => container;
 
         /// <summary>
-        ///     Устанавливает обработчик события <see cref="Chosen"/>
+        /// Выбранный элемент списка.
         /// </summary>
-        /// <returns>Возвращает себя.</returns>
-        public FuzzySearch<T> OnChosen(Action<FuzzySearch<T>> handler)
-        {
-            Chosen += handler;
-            return this;
-        }
+        public T? Choice { get; private set; }
 
         /// <summary>
-        ///     Число видимых вариантов.
+        /// Число видимых вариантов.
         /// </summary>
         public int MaxVisibleCount
         {
@@ -85,7 +64,7 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Максимальная длина поля для поиска.
+        /// Максимальная длина поля для поиска.
         /// </summary>
         public int MaxLength
         {
@@ -138,8 +117,29 @@ namespace Thuja.Widgets
         /// <inheritdoc />
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
 
+        public event Action<FuzzySearch<T>>? Chosen;
+
         /// <summary>
-        ///     Преобразовывает этот виджет в экземпляр <see cref="IKeyHandler" />.
+        /// Выбирает переданный элемент.
+        /// </summary>
+        private void Select(T selected)
+        {
+            Choice = selected;
+            Chosen?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Устанавливает обработчик события <see cref="Chosen" />
+        /// </summary>
+        /// <returns>Возвращает себя.</returns>
+        public FuzzySearch<T> OnChosen(Action<FuzzySearch<T>> handler)
+        {
+            Chosen += handler;
+            return this;
+        }
+
+        /// <summary>
+        /// Преобразовывает этот виджет в экземпляр <see cref="IKeyHandler" />.
         /// </summary>
         /// <returns>Объект типа <see cref="IKeyHandler" />, который может быть преобразован в <see cref="FuzzySearch{T}" />.</returns>
         public IKeyHandler AsIKeyHandler()

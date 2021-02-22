@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Thuja
 {
     /// <summary>
-    ///     Цвета консоли.
+    /// Цвета консоли.
     /// </summary>
     public enum MyColor : byte
     {
@@ -29,17 +29,17 @@ namespace Thuja
     }
 
     /// <summary>
-    ///     Функции над цветами консоли.
+    /// Функции над цветами консоли.
     /// </summary>
     public static class MyColorExt
     {
         /// <summary>
-        ///     Кэш преобразования <see cref="MyColor" /> в <see cref="ConsoleColor" />.
+        /// Кэш преобразования <see cref="MyColor" /> в <see cref="ConsoleColor" />.
         /// </summary>
-        private static readonly Dictionary<MyColor, ConsoleColor> Mapping = new Dictionary<MyColor, ConsoleColor>();
+        private static readonly Dictionary<MyColor, ConsoleColor> Mapping = new();
 
         /// <summary>
-        ///     Преобразует число в цвет. Если это невозможно, то возвращает цвет по-умолчанию.
+        /// Преобразует число в цвет. Если это невозможно, то возвращает цвет по-умолчанию.
         /// </summary>
         public static MyColor FromInt(int b)
         {
@@ -52,7 +52,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Преобразует <see cref="MyColor" /> в <see cref="ConsoleColor" />.
+        /// Преобразует <see cref="MyColor" /> в <see cref="ConsoleColor" />.
         /// </summary>
         public static ConsoleColor ToConsoleColor(this MyColor color)
         {

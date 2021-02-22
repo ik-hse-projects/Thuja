@@ -4,8 +4,8 @@ namespace Thuja
 {
     public class LimitFps
     {
-        private long lastFrame;
         private long delay;
+        private long lastFrame;
 
         public int Fps
         {

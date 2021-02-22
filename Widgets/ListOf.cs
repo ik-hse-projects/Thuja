@@ -6,18 +6,12 @@ namespace Thuja.Widgets
 {
     public class ListOf<T> : IList<T>
     {
-        private StackContainer container;
-        private Func<T, IWidget> converter;
-        private IList<T> items;
-        private List<IWidget> widgets = new();
+        private readonly Func<T, IWidget> converter;
+        private readonly IList<T> items;
+        private readonly List<IWidget> widgets = new();
 
         /// <summary>
-        ///     Виджет, который содержит элементы этого списка.
-        /// </summary>
-        public StackContainer Widget => container;
-
-        /// <summary>
-        ///     Создаёт пустой ListOf{T}, который конвертирует элементы при помощи converter и помещает их в container.  
+        /// Создаёт пустой ListOf{T}, который конвертирует элементы при помощи converter и помещает их в container.
         /// </summary>
         internal ListOf(StackContainer container, Func<T, IWidget> converter)
             : this(container, new List<T>(), converter)
@@ -25,51 +19,25 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Создаёт ListOf{T} с элементами из items.  
+        /// Создаёт ListOf{T} с элементами из items.
         /// </summary>
         internal ListOf(StackContainer container, IList<T> items, Func<T, IWidget> converter)
         {
             this.items = items;
-            this.container = container;
+            Widget = container;
             this.converter = converter;
             foreach (var item in items)
             {
                 var converted = converter(item);
-                this.container.Add(converted);
+                Widget.Add(converted);
                 widgets.Add(converted);
             }
         }
 
         /// <summary>
-        ///     Заново конвертирует все объекты в виджеты. Удобно, если данные изменились.
+        /// Виджет, который содержит элементы этого списка.
         /// </summary>
-        /// <remarks>Могут быть неожиданные результаты, если вдруг изначально `container` не был пуст.</remarks>
-        public void Update()
-        {
-            for (var i = 0; i < items.Count; i++)
-            {
-                Update(i);
-            }
-        }
-
-        /// <summary>
-        ///     Заново конвертирует указанный элемент. Работает быстрее, чем <see cref="Update()"/>.
-        /// </summary>
-        /// <remarks>Могут быть неожиданные результаты, если вдруг изначально `container` не был пуст.</remarks>
-        /// <returns>false, если был передан некорректный индекс.</returns>
-        public bool Update(int i)
-        {
-            if (i < 0 || i >= items.Count)
-            {
-                return false;
-            }
-
-            var updated = converter(items[i]);
-            container.RemoveAt(i);
-            container.Insert(i, updated);
-            widgets[i] = updated;
-            return true;
-        }
+        public StackContainer Widget { get; }
 
         // Дальнейшие функции — реализиация IList<T> через list. Оставлю их без документации.
 
@@ -77,7 +45,7 @@ namespace Thuja.Widgets
         public void Add(T item)
         {
             var widget = converter(item);
-            container.Add(widget);
+            Widget.Add(widget);
             items.Add(item);
             widgets.Add(widget);
         }
@@ -85,7 +53,7 @@ namespace Thuja.Widgets
         /// <inheritdoc />
         public void Clear()
         {
-            container.Clear();
+            Widget.Clear();
             items.Clear();
             widgets.Clear();
         }
@@ -108,7 +76,7 @@ namespace Thuja.Widgets
         public void Insert(int index, T item)
         {
             var widget = converter(item);
-            container.Insert(index, widget);
+            Widget.Insert(index, widget);
             items.Insert(index, item);
             widgets.Insert(index, widget);
         }
@@ -116,7 +84,7 @@ namespace Thuja.Widgets
         /// <inheritdoc />
         public void RemoveAt(int index)
         {
-            container.Remove(widgets[index]);
+            Widget.Remove(widgets[index]);
             items.RemoveAt(index);
             widgets.RemoveAt(index);
         }
@@ -149,7 +117,7 @@ namespace Thuja.Widgets
         public int Count => items.Count;
 
         /// <inheritdoc />
-        public bool IsReadOnly => ((IList<T>) items).IsReadOnly;
+        public bool IsReadOnly => items.IsReadOnly;
 
         /// <inheritdoc />
         public int IndexOf(T item)
@@ -164,11 +132,42 @@ namespace Thuja.Widgets
             set
             {
                 var widget = converter(value);
-                container.RemoveAt(index);
-                container.Insert(index, widget);
+                Widget.RemoveAt(index);
+                Widget.Insert(index, widget);
                 widgets[index] = widget;
                 items[index] = value;
             }
+        }
+
+        /// <summary>
+        /// Заново конвертирует все объекты в виджеты. Удобно, если данные изменились.
+        /// </summary>
+        /// <remarks>Могут быть неожиданные результаты, если вдруг изначально `container` не был пуст.</remarks>
+        public void Update()
+        {
+            for (var i = 0; i < items.Count; i++)
+            {
+                Update(i);
+            }
+        }
+
+        /// <summary>
+        /// Заново конвертирует указанный элемент. Работает быстрее, чем <see cref="Update()" />.
+        /// </summary>
+        /// <remarks>Могут быть неожиданные результаты, если вдруг изначально `container` не был пуст.</remarks>
+        /// <returns>false, если был передан некорректный индекс.</returns>
+        public bool Update(int i)
+        {
+            if (i < 0 || i >= items.Count)
+            {
+                return false;
+            }
+
+            var updated = converter(items[i]);
+            Widget.RemoveAt(i);
+            Widget.Insert(i, updated);
+            widgets[i] = updated;
+            return true;
         }
     }
 }

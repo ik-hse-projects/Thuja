@@ -4,10 +4,6 @@ namespace Thuja.Widgets
 {
     public class Expandable : IFocusable
     {
-        public IWidget Collapsed { get; set; }
-        public IWidget Expanded { get; set; }
-        public IWidget Current => isFocused ? Expanded : Collapsed;
-
         private bool isFocused;
         private MainLoop? mainLoop;
 
@@ -16,6 +12,10 @@ namespace Thuja.Widgets
             Collapsed = collapsed;
             Expanded = expanded;
         }
+
+        public IWidget Collapsed { get; set; }
+        public IWidget Expanded { get; set; }
+        public IWidget Current => isFocused ? Expanded : Collapsed;
 
         public void Render(RenderContext context)
         {

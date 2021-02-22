@@ -1,5 +1,3 @@
-using System;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 
@@ -30,7 +28,9 @@ namespace Thuja.Video
 
             for (var x = 0; x < reader.Info.Width; x++)
             for (var y = 0; y < reader.Info.Height; y++)
+            {
                 context[x, y] = frame[x, y];
+            }
         }
 
         private void Update()

@@ -6,22 +6,22 @@ using Thuja.Widgets;
 namespace Thuja
 {
     /// <summary>
-    ///     Позволяет создавать несколько связанных друг с другом radio-buttons
+    /// Позволяет создавать несколько связанных друг с другом radio-buttons
     /// </summary>
     /// <typeparam name="T">Тип выбираемого значения.</typeparam>
     public class RadioSetBuilder<T>
     {
-        private List<(T, Checkbox)> variants = new();
+        private readonly List<(T, Checkbox)> variants = new();
 
         /// <summary>
-        ///     Выбранное значение.
+        /// Выбранное значение.
         /// </summary>
         public T? Checked { get; private set; }
 
         public event Action<T>? OnChecked;
 
         /// <summary>
-        ///     Снимает выделение со всех кнопок.
+        /// Снимает выделение со всех кнопок.
         /// </summary>
         private void UncheckAll()
         {
@@ -32,7 +32,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Создаёт новую кнопку, связанную с остальными. 
+        /// Создаёт новую кнопку, связанную с остальными.
         /// </summary>
         /// <param name="text">Текст кнопки.</param>
         /// <param name="value">Значение, которые будет выбрано при выборе этой кнопки.</param>
@@ -56,9 +56,9 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Отмечает переданный вариант как выбранный.
-        ///     Если подходящих кнопок несколько, то отмечает ранее добавленную.
-        ///     Важно, что событие <see cref="OnChecked"/> всё равно будет вызвано.
+        /// Отмечает переданный вариант как выбранный.
+        /// Если подходящих кнопок несколько, то отмечает ранее добавленную.
+        /// Важно, что событие <see cref="OnChecked" /> всё равно будет вызвано.
         /// </summary>
         public void Check(T value)
         {
@@ -77,14 +77,17 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Создаёт новую кнопку, связанную с остальными. 
+        /// Создаёт новую кнопку, связанную с остальными.
         /// </summary>
         /// <param name="text">Текст кнопки.</param>
         /// <param name="value">Значение, которые будет выбрано при выборе этой кнопки.</param>
-        public RadioSetBuilder<T> Add(string text, T value) => Add(text, value, out _);
+        public RadioSetBuilder<T> Add(string text, T value)
+        {
+            return Add(text, value, out _);
+        }
 
         /// <summary>
-        ///     Собирает все виджеты в один StackContainer и возвращает его.
+        /// Собирает все виджеты в один StackContainer и возвращает его.
         /// </summary>
         public StackContainer ToStack()
         {

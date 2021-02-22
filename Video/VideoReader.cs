@@ -45,8 +45,15 @@ namespace Thuja.Video
         public bool MoveNext()
         {
             var bytesRead = stream.Read(buffer);
-            if (bytesRead == 0) return false;
-            if (bytesRead != Info.TotalLength * 5) throw new Exception("Can't read full frame");
+            if (bytesRead == 0)
+            {
+                return false;
+            }
+
+            if (bytesRead != Info.TotalLength * 5)
+            {
+                throw new Exception("Can't read full frame");
+            }
 
             var offset = 0;
             for (var y = 0; y < Info.Height; y++)
@@ -57,8 +64,15 @@ namespace Thuja.Video
                 var background = MyColorExt.FromInt((style & 0b00000_11111_000000) >> 6);
                 var flags = (byte) (style & 0b00000_00000_111111);
 
-                if (!Enum.IsDefined(typeof(MyColor), foreground)) foreground = default;
-                if (!Enum.IsDefined(typeof(MyColor), background)) background = default;
+                if (!Enum.IsDefined(typeof(MyColor), foreground))
+                {
+                    foreground = default;
+                }
+
+                if (!Enum.IsDefined(typeof(MyColor), background))
+                {
+                    background = default;
+                }
 
                 var charNumber =
                     buffer[offset + 2]
@@ -84,7 +98,10 @@ namespace Thuja.Video
         {
             var buffer = new byte[6];
             var bytesRead = stream.Read(buffer, 0, 6);
-            if (bytesRead != 6) throw new Exception("Can't read header");
+            if (bytesRead != 6)
+            {
+                throw new Exception("Can't read header");
+            }
 
             var width = BitConverter.ToInt16(buffer, 0);
             var height = BitConverter.ToInt16(buffer, 2);

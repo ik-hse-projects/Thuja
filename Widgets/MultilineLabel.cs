@@ -19,12 +19,12 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Стиль текста.
+        /// Стиль текста.
         /// </summary>
         public Style Style { get; set; } = Style.Default;
 
         /// <summary>
-        ///     Текст.
+        /// Текст.
         /// </summary>
         public string Text
         {
@@ -37,7 +37,7 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Максимальная ширина.
+        /// Максимальная ширина.
         /// </summary>
         public int MaxWidth
         {
@@ -61,7 +61,7 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Разбивает текст на строки, не превышающие максимальную ширину.
+        /// Разбивает текст на строки, не превышающие максимальную ширину.
         /// </summary>
         private void Recalculate()
         {
