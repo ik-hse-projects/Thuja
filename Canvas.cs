@@ -125,49 +125,76 @@ namespace Thuja
         /// <exception cref="ArgumentException">Если другой размер имеет размер отличный от текущего.</exception>
         public IEnumerable<Difference> FindDifferences(Canvas other)
         {
+            // Делаем ряд простых проверок:
             if (other.Size != Size)
             {
                 throw new ArgumentException("Переданный экран имеет не тот размер", nameof(other));
             }
 
-            if (ReferenceEquals(Content, other.Content))
+            // Если Content == other.Content, то отличий очевидно быть не может.
+            if (ReferenceEquals(Content, other.Content) || Content.Equals(other.Content))
             {
                 yield break;
             }
 
-            if (Content.Equals(other.Content))
-            {
-                yield break;
-            }
+            // Напоминаю, что отрисовка происходит таким образом:
+            //      1. Передвинуть курсор в нужное место;
+            //      2. Вызывать Console.Write и написать текст.
+            // В Linux передвижение курсора, вероятнее всего, реализуется при помощи [ANSI escape codes](ANSI).
+            // Если внимательно посмотреть табличку и посчитать число байт, то получается, что для перемещения
+            // курсора, необходимо "напечатать" примерно восемь символов.
+            // Представим такую ситуацию (пусть решетки — изменившиеся символы, а доллар остался прежним):
+            //      #### $ ####
+            // В такой ситации эффективнее будет не передвигать курсор на один символ вправо, а просто перерисовать
+            // тот же самый доллар поверх предыдущего, напечатав всего один символ.
+            // Константа distanceThreshold как раз определяет, сколько таких подряд идущих долларов следует считать
+            // небольшим количеством, котороое выгоднее нарисовать заново.
+            // Важное замечание: никаких сравнений и бенчмарков не делалось, поэтому далеко не факт, что это
+            // положительно влияет на производительность. Но алгоритм уже написан, убирать его было бы обидно.
+            //
+            // [ANSI]: https://en.wikipedia.org/wiki/ANSI_escape_code
+            const int distanceThreshold = 8;
 
+            // Начинаем перебирать все "пиксели" экрана:
             for (var y = 0; y < Size.height; y++)
             {
                 var distanceFromLastDifference = 0;
-                const int distanceThreshold = 8;
+
                 Difference? diff = null;
                 for (var x = 0; x < Size.width; x++)
                 {
                     var thisChar = Content[x, y];
                     var otherChar = other.Content[x, y];
+
+                    // В этот момент нас уже не интересуют слои, поэтому сравниваем через FlatEquals.
                     if (thisChar.FlatEquals(otherChar))
                     {
+                        // Мы надеялись, что скоро цепочка неизменённых прервётся, но этого не произошло.
                         distanceFromLastDifference++;
+
                         if (distanceFromLastDifference > distanceThreshold && diff != null)
                         {
+                            // Встретилось слишком много подярд идущих неизменённых символов,
+                            // поэтому  выкидываем их из хвоста списка изменений (они же не изменлись).
                             diff.Value.Chars.RemoveLast(distanceFromLastDifference - 1);
+
+                            // У нас есть полностью сформировааная разница между холстами, так вернём же её! 
                             yield return (Difference) diff;
                             diff = null;
                         }
                     }
                     else
                     {
+                        // Отлично, попались различающиеся символы!
                         distanceFromLastDifference = 0;
                         diff ??= new Difference(y, x);
                     }
 
+                    // Если мы пытаемся сформировать разницу, то добавляем туда текущий символ.
                     diff?.Chars.Add(thisChar);
                 }
 
+                // Конец строки означает, что нужно обязательно вернуть что у нас уже получилось.
                 if (diff != null)
                 {
                     yield return (Difference) diff;

@@ -92,7 +92,6 @@ namespace Thuja
                 focusable.BubbleDown(key);
             }
 
-            // Виджеты могут быть добавлены во время отрисовки. Всех таких обновим уже в следующий тик. 
             var context = display!.CurrentScreen.BeginRender();
             root.Render(context);
             display!.Draw();
