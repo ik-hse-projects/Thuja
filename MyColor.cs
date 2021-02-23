@@ -8,6 +8,7 @@ namespace Thuja
     /// </summary>
     public enum MyColor : byte
     {
+#pragma warning disable 1591
         Black = 0,
         DarkBlue = 1,
         DarkGreen = 2,
@@ -26,6 +27,7 @@ namespace Thuja
         White = 15,
         Default = 16,
         Transparent = 17
+#pragma warning restore 1591
     }
 
     /// <summary>

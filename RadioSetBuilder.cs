@@ -11,13 +11,19 @@ namespace Thuja
     /// <typeparam name="T">Тип выбираемого значения.</typeparam>
     public class RadioSetBuilder<T>
     {
-        private readonly List<(T, Checkbox)> variants = new();
+        /// <summary>
+        /// Воможные варианты: виджеты и соответсвующие им значения.
+        /// </summary>
+        private readonly List<(T value, Checkbox checkbox)> variants = new();
 
         /// <summary>
         /// Выбранное значение.
         /// </summary>
         public T? Checked { get; private set; }
 
+        /// <summary>
+        /// Вызывается, когда пользователь выбирает одну из галочек.
+        /// </summary>
         public event Action<T>? OnChecked;
 
         /// <summary>

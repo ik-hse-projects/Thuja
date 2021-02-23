@@ -31,7 +31,7 @@ namespace Thuja.Widgets
     /// <typeparam name="T">Тип её содержимого.</typeparam>
     public class TabPage<T> : TabPage where T : IWidget
     {
-        internal TabPage(Button button, T widget)
+        private TabPage(Button button, T widget)
         {
             Button = button;
             SpecificWidget = widget;
@@ -58,13 +58,30 @@ namespace Thuja.Widgets
     /// </summary>
     public class Tabs : DelegateIFocusable, IKeyHandler
     {
+        /// <summary>
+        /// Основной контейнер: содержит в себе titles и content друг под другом.
+        /// </summary>
         private readonly StackContainer container = new();
+        
+        /// <summary>
+        /// Контейнер, в котром нахдится содержимое текущей вкладки.
+        /// </summary>
         private readonly BaseContainer content;
+        
+        /// <summary>
+        /// Список заголовков вкладок.
+        /// </summary>
         private readonly StackContainer titles = new(Orientation.Horizontal, 1);
 
+        /// <summary>
+        /// Вкладка, выбранная на данный момент.
+        /// </summary>
         private TabPage? current;
-        private MainLoop? mainLoop;
-        private readonly List<TabPage> Pages = new();
+
+        /// <summary>
+        /// Список всех вкладок.
+        /// </summary>
+        private readonly List<TabPage> pages = new();
 
         /// <summary>
         /// Создаёт виджет с вкладками.
@@ -76,13 +93,14 @@ namespace Thuja.Widgets
             container.Add(titles).Add(content);
             titles.FocusedChanged += () =>
             {
-                if (titles.Focused != null && titles.Position < Pages.Count && titles.Position >= 0)
+                if (titles.Focused != null && titles.Position < pages.Count && titles.Position >= 0)
                 {
-                    Focus(Pages[titles.Position]);
+                    Focus(pages[titles.Position]);
                 }
             };
         }
 
+        /// <inheritdoc />
         protected override IFocusable FocusableImplementation => container;
 
         /// <summary>
@@ -94,8 +112,10 @@ namespace Thuja.Widgets
             set => titles.MaxVisibleCount = value;
         }
 
+        /// <inheritdoc />
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
 
+        /// <inheritdoc />
         public override bool BubbleDown(ConsoleKeyInfo key)
         {
             // Нажатия обрабатывааются в следюущем порядке:
@@ -108,13 +128,7 @@ namespace Thuja.Widgets
         }
 
         /// <inheritdoc />
-        public void Render(RenderContext context)
-        {
-            container.Render(context);
-        }
-
-        /// <inheritdoc />
-        public void FocusChange(bool isFocused)
+        public override void FocusChange(bool isFocused)
         {
             content.FocusChange(isFocused);
         }
@@ -124,7 +138,7 @@ namespace Thuja.Widgets
         /// </summary>
         public void Remove(TabPage page)
         {
-            Pages.Remove(page);
+            pages.Remove(page);
             titles.Remove(page.Button);
         }
 
@@ -139,7 +153,7 @@ namespace Thuja.Widgets
         {
             var tab = new TabPage<T>(title, widget);
             titles.Insert(i, tab.Button);
-            Pages.Insert(i, tab);
+            pages.Insert(i, tab);
             return tab;
         }
 
@@ -165,7 +179,7 @@ namespace Thuja.Widgets
         {
             var tab = new TabPage<T>(title, widget);
             titles.Add(tab.Button);
-            Pages.Add(tab);
+            pages.Add(tab);
             page = tab;
             return this;
         }
@@ -208,9 +222,9 @@ namespace Thuja.Widgets
         /// <returns>Возвращает этот же самый объект.</returns>
         public Tabs AndFocus()
         {
-            if (Pages.Count != 0)
+            if (pages.Count != 0)
             {
-                Focus(Pages[^1]);
+                Focus(pages[^1]);
             }
 
             return this;

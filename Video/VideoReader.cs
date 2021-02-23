@@ -5,10 +5,24 @@ using System.IO;
 
 namespace Thuja.Video
 {
+    /// <summary>
+    /// Метаданные видео. Не само содержимое, но тоже очень важное.
+    /// </summary>
     public readonly struct VideoInfo
     {
+        /// <summary>
+        /// Ширина кадров.
+        /// </summary>
         public readonly int Width;
+
+        /// <summary>
+        /// Высота кадров.
+        /// </summary>
         public readonly int Height;
+
+        /// <summary>
+        /// Скорость смены кадров.
+        /// </summary>
         public readonly int Fps;
 
         public VideoInfo(int width, int height, int fps)
@@ -18,13 +32,30 @@ namespace Thuja.Video
             Fps = fps;
         }
 
+        /// <summary>
+        /// Сколько символов содержится в одном кадре.
+        /// </summary>
         public int TotalLength => Width * Height;
     }
 
+    /// <summary>
+    /// Класс, который считывает кадры из файла с видео.
+    /// </summary>
     public class VideoReader : IEnumerator<ColoredChar[,]>
     {
+        /// <summary>
+        /// Место для закодированных данных одного кадра.
+        /// </summary>
         private readonly byte[] buffer;
+
+        /// <summary>
+        /// Информация о видео в целом.
+        /// </summary>
         public readonly VideoInfo Info;
+
+        /// <summary>
+        /// Поток, из которого считывается видео.
+        /// </summary>
         private readonly Stream stream;
 
         private VideoReader(VideoInfo info, Stream stream)
@@ -35,13 +66,20 @@ namespace Thuja.Video
             buffer = new byte[info.TotalLength * 5];
         }
 
+        /// <summary>
+        /// Текущий кадр (декодирован).
+        /// </summary>
         public ColoredChar[,] Current { get; }
 
+        /// <summary>
+        /// Если <see cref="stream"/> поддерживает Seek, то отматывает видео в самое начало.
+        /// </summary>
         public void Reset()
         {
             stream.Seek(6, SeekOrigin.Begin);
         }
 
+        /// <inheritdoc />
         public bool MoveNext()
         {
             var bytesRead = stream.Read(buffer);
@@ -74,6 +112,7 @@ namespace Thuja.Video
                     background = default;
                 }
 
+                // Собираем из трёх байтов один int. Порядок little-endian, старшие разряды остаются пустыми.
                 var charNumber =
                     buffer[offset + 2]
                     | (buffer[offset + 3] << 8)
@@ -87,13 +126,18 @@ namespace Thuja.Video
             return true;
         }
 
+        /// <inheritdoc />
         object IEnumerator.Current => Current;
 
+        /// <inheritdoc />
         public void Dispose()
         {
             stream.Dispose();
         }
 
+        /// <summary>
+        /// Считывает информацию о видео из потока и создаёт итератор по кадрам этог видео.
+        /// </summary>
         public static VideoReader Init(Stream stream)
         {
             var buffer = new byte[6];

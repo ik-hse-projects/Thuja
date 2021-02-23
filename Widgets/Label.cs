@@ -2,10 +2,24 @@ using System;
 
 namespace Thuja.Widgets
 {
+    /// <summary>
+    /// Простой виджет, отображающий текст. Умеет плавно прокручивать его, если текст длинный.
+    /// </summary>
     public class Label : LimitFps, IWidget
     {
+        /// <summary>
+        /// Индекс первого символа, который сейчас виден.
+        /// </summary>
         private int position;
+        
+        /// <summary>
+        /// Сама строка, которую нужно отобразить.
+        /// </summary>
         private string text;
+        
+        /// <summary>
+        /// <see cref="text"/>, но к которому в конец приписали разделитель.
+        /// </summary>
         private string withSeparator;
 
         public Label(string text, int maxWidth = int.MaxValue)
@@ -15,6 +29,9 @@ namespace Thuja.Widgets
             MaxWidth = maxWidth;
         }
 
+        /// <summary>
+        /// Строка, которую нужно отображать.
+        /// </summary>
         public string Text
         {
             get => text;
@@ -26,8 +43,15 @@ namespace Thuja.Widgets
             }
         }
 
+        /// <summary>
+        /// Стиль, с которым отображается текст.
+        /// </summary>
         public virtual Style CurrentStyle { get; set; } = Style.Default;
 
+        /// <summary>
+        /// Мксимальная ширина, которая будет использоваться для отображения строки.
+        /// Если <see cref="Text"/> длиннее, то будет медленно прокручиваться.
+        /// </summary>
         public int MaxWidth { get; set; }
 
         /// <inheritdoc />

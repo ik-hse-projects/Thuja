@@ -8,16 +8,34 @@ namespace Thuja.Widgets
     /// </summary>
     public class FuzzySearch<T> : DelegateIFocusable, IKeyHandler
     {
+        /// <summary>
+        /// Объекты, среди которых происходит поиск.
+        /// </summary>
         private readonly IList<T> choices;
 
+        /// <summary>
+        /// Контейнер, в котормом находится всё содержимое виджета.
+        /// </summary>
         private readonly BaseContainer container;
 
+        /// <summary>
+        /// Ф-ция, ктрая преобразует <typeparamref name="T"/> в строку. 
+        /// </summary>
         private readonly Func<T, string> converter;
 
+        /// <summary>
+        /// Поле, в которое вводится текс, который будет искаться.
+        /// </summary>
         private readonly InputField inputField;
 
+        /// <summary>
+        /// <see cref="choices"/>, но в UI.
+        /// </summary>
         private readonly ListOf<T> list;
 
+        /// <summary>
+        /// Изменился ли с прошлого обновления текст.
+        /// </summary>
         private bool isTextChanged;
 
         /// <summary>
@@ -47,6 +65,7 @@ namespace Thuja.Widgets
             }
         }
 
+        /// <inheritdoc />
         protected override IFocusable FocusableImplementation => container;
 
         /// <summary>
@@ -73,7 +92,7 @@ namespace Thuja.Widgets
         }
 
         /// <inheritdoc />
-        public void Render(RenderContext context)
+        public override void Render(RenderContext context)
         {
             if (!isTextChanged)
             {
@@ -117,6 +136,9 @@ namespace Thuja.Widgets
         /// <inheritdoc />
         public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
 
+        /// <summary>
+        /// Вызывается, когда пользователь выбирает элемент.
+        /// </summary>
         public event Action<FuzzySearch<T>>? Chosen;
 
         /// <summary>

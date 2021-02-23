@@ -9,7 +9,14 @@ namespace Thuja.Widgets
     /// </summary>
     public enum Orientation
     {
+        /// <summary>
+        /// Располагать виджеты вертикально, друг над другом.
+        /// </summary>
         Vertical,
+        
+        /// <summary>
+        /// Распологать виджеты горизонатльно, рядом друг с другом.
+        /// </summary>
         Horizontal
     }
 
@@ -18,6 +25,9 @@ namespace Thuja.Widgets
     /// </summary>
     public class StackContainer : BaseContainer
     {
+        /// <summary>
+        /// Виджет, который был сфокусирован в последний раз.
+        /// </summary>
         private IFocusable? lastFocused;
 
         /// <param name="orientation">Ориентация <see cref="StackContainer" />.</param>

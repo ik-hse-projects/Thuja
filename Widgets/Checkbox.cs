@@ -1,5 +1,9 @@
 namespace Thuja.Widgets
 {
+    /// <summary>
+    /// Виджет, который представлячет собой кнопку с текстом и маркером,
+    /// при нажатии на которую включается/выключается маркер.
+    /// </summary>
     public class Checkbox : Button
     {
         public Checkbox(string text, bool isChecked = false, int maxWidth = int.MaxValue) : base(text, maxWidth)

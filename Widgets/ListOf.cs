@@ -4,10 +4,28 @@ using System.Collections.Generic;
 
 namespace Thuja.Widgets
 {
+    /// <summary>
+    /// Список, который тесно связан с виджетами внутри <see cref="StackContainer"/>.
+    /// Позволяет, например, отображать List{int} в UI.
+    /// 
+    /// Создавать его можно при помощи
+    /// <see cref="StackContainer.ListOf{T}"/> или <see cref="StackContainer.FromList{T}"/>
+    /// </summary>
     public class ListOf<T> : IList<T>
     {
+        /// <summary>
+        /// Функция, преобразующая тип <typeparamref name="T"/> в виджет.
+        /// </summary>
         private readonly Func<T, IWidget> converter;
+        
+        /// <summary>
+        /// Список "настоящих" элементов, не виджетов.
+        /// </summary>
         private readonly IList<T> items;
+        
+        /// <summary>
+        /// Список виджетов, полученный применением <see cref="converter"/> к элементам <see cref="items"/>.
+        /// </summary>
         private readonly List<IWidget> widgets = new();
 
         /// <summary>

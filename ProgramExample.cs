@@ -5,9 +5,12 @@ using Thuja.Widgets;
 
 namespace Thuja
 {
-    internal class Program
+    /// <summary>
+    /// Пример простой программы при помощи Thuja.
+    /// </summary>
+    internal static class ProgramExample
     {
-        private static void Main(string[] args)
+        private static void ThujaMain(string[] args)
         {
             var root = new BaseContainer()
                 .Add(new VideoPlayer(File.OpenRead(Path.Combine(args[0]))))

@@ -2,10 +2,12 @@ using System;
 
 namespace Thuja.Widgets
 {
+    /// <summary>
+    /// Виджет, который совмещает в себе два других: один отображается, когда фокус есть, а другой — когда нет.
+    /// </summary>
     public class Expandable : IFocusable
     {
         private bool isFocused;
-        private MainLoop? mainLoop;
 
         public Expandable(IWidget collapsed, IWidget expanded)
         {
@@ -13,15 +15,28 @@ namespace Thuja.Widgets
             Expanded = expanded;
         }
 
+        /// <summary>
+        /// Виджет, который отображается, когда фокуса нет.
+        /// </summary>
         public IWidget Collapsed { get; set; }
+        
+        /// <summary>
+        /// Виджет, который отображается, когда фокус стоит.
+        /// </summary>
         public IWidget Expanded { get; set; }
+        
+        /// <summary>
+        /// Текущий отображаемый виджет.
+        /// </summary>
         public IWidget Current => isFocused ? Expanded : Collapsed;
 
+        /// <inheritdoc />
         public void Render(RenderContext context)
         {
             Current.Render(context);
         }
 
+        /// <inheritdoc />
         public void FocusChange(bool isFocused)
         {
             if (this.isFocused == isFocused)
@@ -37,6 +52,7 @@ namespace Thuja.Widgets
             }
         }
 
+        /// <inheritdoc />
         public bool BubbleDown(ConsoleKeyInfo key)
         {
             if (Current is IFocusable focusable)

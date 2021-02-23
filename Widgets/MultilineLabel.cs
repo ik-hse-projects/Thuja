@@ -5,10 +5,26 @@ using System.Text;
 
 namespace Thuja.Widgets
 {
+    /// <summary>
+    /// Аналог <see cref="Label"/>, но поддерживающий несколько строк.
+    /// Умеет правильно расставлять переносы где необходимо.
+    /// </summary>
+    /// 
     public class MultilineLabel : IWidget
     {
+        /// <summary>
+        /// Строки, не превышающие <see cref="maxWidth"/>.
+        /// </summary>
         private string[] lines;
+
+        /// <summary>
+        /// Максимальная длина каждой строки.
+        /// </summary>
         private int maxWidth;
+
+        /// <summary>
+        /// Текст, который отображается.
+        /// </summary>
         private string text;
 
         public MultilineLabel(string text, int maxWidth = int.MaxValue)
@@ -72,15 +88,23 @@ namespace Thuja.Widgets
             }
 
             var result = new List<string>();
+
+            // Перебираем все абзацы. \n — маркер того, что здесь точно нужно сделать перенос строки.
             foreach (var paragraph in text.Split('\n'))
             {
                 var words = paragraph.Split();
+
+                // Первое слово всегда помещается на строку. Даже если оно силишком длинное.
                 var lastLine = new StringBuilder(words[0]);
+
+                // Пытаемся добавлять слова в lastLine, но только до тех пор, пока lastLine не станет слишком длинной.
                 foreach (var word in words.Skip(1))
                 {
+                    // Слово ещё влезает?
                     var newLength = lastLine.Length + word.Length + 1;
                     if (newLength > maxWidth)
                     {
+                        // Если нет, то добавляем в результат новую строку, а это слово пенеосим на следующую.
                         result.Add(lastLine.ToString());
                         lastLine = new StringBuilder(word);
                     }

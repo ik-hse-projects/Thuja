@@ -7,7 +7,7 @@ namespace Thuja
     {
         protected abstract IWidget WidgetImplementation { get; }
 
-        public void Render(RenderContext context)
+        public virtual void Render(RenderContext context)
         {
             WidgetImplementation.Render(context);
         }

@@ -3,10 +3,24 @@ using System.IO.Compression;
 
 namespace Thuja.Video
 {
+    /// <summary>
+    /// Виджет, который бесконечно проигрывает видео.
+    /// </summary>
     public class VideoPlayer : LimitFps, IWidget
     {
+        /// <summary>
+        /// Поток, из котрого считывается видео.
+        /// </summary>
         private readonly Stream fileStream;
+        
+        /// <summary>
+        /// Текущий кадр.
+        /// </summary>
         private ColoredChar[,] frame;
+        
+        /// <summary>
+        /// Итератор по кадрам.
+        /// </summary>
         private VideoReader reader;
 
         public VideoPlayer(Stream file)
@@ -16,6 +30,7 @@ namespace Thuja.Video
             Reset();
         }
 
+        /// <inheritdoc />
         public void Render(RenderContext context)
         {
             Update();
@@ -33,6 +48,9 @@ namespace Thuja.Video
             }
         }
 
+        /// <summary>
+        /// Обновляет кадр, если время пришло.
+        /// </summary>
         private void Update()
         {
             if (!IsTimeToDraw())
@@ -49,6 +67,9 @@ namespace Thuja.Video
             frame = reader.Current;
         }
 
+        /// <summary>
+        /// Запускает видео с самого начала.
+        /// </summary>
         private void Reset()
         {
             fileStream.Seek(0, SeekOrigin.Begin);
