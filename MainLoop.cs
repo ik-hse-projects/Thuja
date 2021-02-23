@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 
 namespace Thuja
@@ -51,6 +52,9 @@ namespace Thuja
             {
                 focusable.FocusChange(true);
             }
+
+            Console.OutputEncoding = Encoding.UTF8;
+            Console.InputEncoding = Encoding.UTF8;
 
             display.Clear();
             const int fps = 60;
