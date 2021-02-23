@@ -53,7 +53,7 @@ namespace Thuja.Widgets
             list = new StackContainer
             {
                 MaxVisibleCount = 10
-            }.ListOf<T>(s => new Button(converter(s)).OnClick(() => Select(s)));
+            }.ListOf<T>(s => new Button(converter(s)) {MaxWidth = inputField.MaxLength}.OnClick(() => Select(s)));
             container = new StackContainer()
                 .Add(inputField)
                 .Add(list.Widget);
@@ -88,7 +88,11 @@ namespace Thuja.Widgets
         public int MaxLength
         {
             get => inputField.MaxLength;
-            set => inputField.MaxLength = value;
+            set
+            {
+                inputField.MaxLength = value;
+                list.Update();
+            }
         }
 
         /// <inheritdoc />
