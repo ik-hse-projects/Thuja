@@ -1,28 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net5.0</TargetFramework>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <DocumentationFile>bin\Debug\FileManager.xml</DocumentationFile>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <DocumentationFile>bin\Release\FileManager.xml</DocumentationFile>
+      <DocumentationFile>bin\Debug\Thuja.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="VideoConvertingTool\**" />
       <Compile Remove="work\**" />
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Remove="VideoConvertingTool\**" />
       <EmbeddedResource Remove="work\**" />
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="VideoConvertingTool\**" />
       <None Remove="work\**" />
     </ItemGroup>
 

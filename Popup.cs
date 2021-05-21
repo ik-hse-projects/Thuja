@@ -1,56 +1,57 @@
+using System;
 using Thuja.Widgets;
 
 namespace Thuja
 {
     /// <summary>
-    ///     Всплывающее окно.
+    /// Всплывающее окно.
     /// </summary>
     public class Popup
     {
         /// <summary>
-        ///     Максимальная ширина.
+        /// Максимальная ширина.
         /// </summary>
         private readonly int maxWidth;
 
         /// <summary>
-        ///     Положение окна относительно контейнера.
+        /// Положение окна относительно контейнера.
         /// </summary>
         private readonly (int x, int y, int layer) position;
 
         /// <summary>
-        ///     Внутреннее содержимое окна.
+        /// Внутреннее содержимое окна.
         /// </summary>
-        private readonly StackContainer stack = new StackContainer();
+        private readonly StackContainer stack = new();
 
         /// <summary>
-        ///     Контейнер, в котором находится это окно.
+        /// Контейнер, в котором находится это окно.
         /// </summary>
         private BaseContainer? container;
 
         /// <summary>
-        ///     Последний вставленный в окно виджет.
+        /// Последний вставленный в окно виджет.
         /// </summary>
         private IWidget? last;
 
         /// <summary>
-        ///     Виджет контейнера, который был сфокусирован до того, как появилось окно.
+        /// Виджет контейнера, который был сфокусирован до того, как появилось окно.
         /// </summary>
         private IFocusable? oldFocus;
 
         /// <summary>
-        ///     Контейнер, который содержит себе всё необходимое для правильной отрисовки окна.
+        /// Контейнер, который содержит себе всё необходимое для правильной отрисовки окна.
         /// </summary>
         private BaseContainer? wrapped;
 
         /// <summary>
-        ///     Создаёт новое всплывающее окно.
+        /// Создаёт новое всплывающее окно.
         /// </summary>
         /// <param name="maxWidth">Максимальная ширина.</param>
         /// <param name="maxHeight">Максимальная высота.</param>
         /// <param name="x">Отступ слева.</param>
         /// <param name="y">Остутп сверху.</param>
         /// <param name="layer">Слой, на котором отрисовывается окно.</param>
-        public Popup(int maxWidth = 70, int maxHeight = 19, int x = 5, int y = 5, int layer = 10)
+        public Popup(int maxWidth = 70, int maxHeight = 19, int x = 2, int y = 1, int layer = 5)
         {
             position = (x, y, layer);
             this.maxWidth = maxWidth;
@@ -58,7 +59,12 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Добавляет виджет в окно и настривает его ширину.
+        /// Контейнер, в котором находится содержимое окна.
+        /// </summary>
+        public BaseContainer Container => stack;
+
+        /// <summary>
+        /// Добавляет виджет в окно и настривает его ширину.
         /// </summary>
         /// <returns>Возвращает это же всплывающее окно.</returns>
         public Popup Add(Label label)
@@ -68,7 +74,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Добавляет виджет в окно и настривает его ширину.
+        /// Добавляет виджет в окно и настривает его ширину.
         /// </summary>
         /// <returns>Возвращает это же всплывающее окно.</returns>
         public Popup Add(MultilineLabel label)
@@ -78,7 +84,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Добавляет виджет в окно и настривает его ширину.
+        /// Добавляет виджет в окно и настривает его ширину.
         /// </summary>
         /// <returns>Возвращает это же всплывающее окно.</returns>
         public Popup Add(InputField field)
@@ -88,7 +94,17 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Добавляет виджет в окно.
+        /// Добавляет виджет в окно и настривает его ширину.
+        /// </summary>
+        /// <returns>Возвращает это же всплывающее окно.</returns>
+        public Popup Add<T>(FuzzySearch<T> field)
+        {
+            field.MaxLength = maxWidth;
+            return Add((IWidget) field);
+        }
+
+        /// <summary>
+        /// Добавляет виджет в окно.
         /// </summary>
         /// <returns>Возвращает это же всплывающее окно.</returns>
         public Popup Add(IWidget widget)
@@ -99,7 +115,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Устанавливает фокус на последний добавленный виджет, если это возможно.
+        /// Устанавливает фокус на последний добавленный виджет, если это возможно.
         /// </summary>
         /// <returns>Возвращает это же всплывающее окно.</returns>
         public Popup AndFocus()
@@ -113,7 +129,17 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Добавляет конпку с указанным текстом, нажатие на которую закрывает окно.
+        /// Создаёт виджет при помощи переданной функции и добавляет его.
+        /// Удобно, когда не хочется помещать попап в переменную.
+        /// </summary>
+        /// <returns>Возвращает это же всплывающее окно.</returns>
+        public Popup AddWith(Func<Popup, IWidget> func)
+        {
+            return Add(func(this));
+        }
+
+        /// <summary>
+        /// Добавляет конпку с указанным текстом, нажатие на которую закрывает окно.
         /// </summary>
         /// <param name="text">Текст на кнопке закрытия.</param>
         /// <returns>Возвращает это же всплывающее окно.</returns>
@@ -125,7 +151,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Отрисовывает окно в данном контейнере и устанавливает на него фокус.
+        /// Отрисовывает окно в данном контейнере и устанавливает на него фокус.
         /// </summary>
         public void Show(BaseContainer root)
         {
@@ -139,7 +165,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Закрывает окно и восстанавливает состояние контейнера обратно.
+        /// Закрывает окно и восстанавливает состояние контейнера обратно.
         /// </summary>
         public void Close()
         {

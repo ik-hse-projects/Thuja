@@ -5,32 +5,27 @@ using System.Linq;
 namespace Thuja
 {
     /// <summary>
-    ///     Простейший контейнер, который просто объединяет несколько других виджетов в один.
+    /// Простейший контейнер, который просто объединяет несколько других виджетов в один.
     /// </summary>
     public class BaseContainer : IKeyHandler
     {
         /// <summary>
-        ///     Список виджетов внутри этого контейнера.
+        /// Список виджетов внутри этого контейнера.
         /// </summary>
-        protected readonly List<IWidget> Widgets = new List<IWidget>();
+        protected readonly List<IWidget> Widgets = new();
 
         /// <summary>
-        ///     Сфокусированный на данный момент виджет среди всех виджетов внутри этого контейнера.
+        /// Сфокусированный на данный момент виджет среди всех виджетов внутри этого контейнера.
         /// </summary>
         private IFocusable? focused;
 
         /// <summary>
-        ///     Является ли этот контейнер сфокусированным.
+        /// Является ли этот контейнер сфокусированным.
         /// </summary>
         private bool isFocused;
 
         /// <summary>
-        ///     Главный цикл, к которому принадлежит этот контейнер и все его виджеты.
-        /// </summary>
-        public MainLoop? Loop { get; private set; }
-
-        /// <summary>
-        ///     Сфокусированный на данный момент виджет среди всех виджетов внутри этого контейнера.
+        /// Сфокусированный на данный момент виджет среди всех виджетов внутри этого контейнера.
         /// </summary>
         public IFocusable? Focused
         {
@@ -48,19 +43,7 @@ namespace Thuja
         }
 
         /// <inheritdoc />
-        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } =
-            new Dictionary<HashSet<KeySelector>, Action>();
-
-        /// <inheritdoc />
-        public void OnRegistered(MainLoop loop)
-        {
-            foreach (var widget in Widgets)
-            {
-                loop.Register(widget);
-            }
-
-            Loop = loop;
-        }
+        public Dictionary<HashSet<KeySelector>, Action> Actions { get; } = new();
 
         /// <inheritdoc />
         public virtual void Render(RenderContext context)
@@ -75,7 +58,7 @@ namespace Thuja
         public bool CanFocus => Focused?.CanFocus ?? false;
 
         /// <inheritdoc />
-        public void FocusChange(bool isFocused)
+        public virtual void FocusChange(bool isFocused)
         {
             this.isFocused = isFocused;
             focused?.FocusChange(isFocused);
@@ -93,7 +76,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Удаляет все виджеты внутри этого контейнера.
+        /// Удаляет все виджеты внутри этого контейнера.
         /// </summary>
         public void Clear()
         {
@@ -105,7 +88,23 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Добавляет новый виджет в контейнер.
+        /// Помещает виджет в указанное место, сдвигая другие при необходимости.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">Выбрасывает исключение, если position меньше 0 или больше Widgets.Count</exception>
+        /// <returns>Возвращает этот же контейнер.</returns>
+        public BaseContainer Insert(int position, IWidget widget)
+        {
+            if (Widgets.Count == 0 && position == 0)
+            {
+                return Add(widget);
+            }
+
+            Widgets.Insert(position, widget);
+            return this;
+        }
+
+        /// <summary>
+        /// Добавляет новый виджет в контейнер.
         /// </summary>
         /// <param name="widget">Новый виджет.</param>
         /// <returns>Возвращает этот же контейнер.</returns>
@@ -116,13 +115,12 @@ namespace Thuja
                 Focused = focusable;
             }
 
-            Loop?.Register(widget);
             Widgets.Add(widget);
             return this;
         }
 
         /// <summary>
-        ///     Аналогично <see cref="Add" />, но ещё и фокусируется на этом виджете.
+        /// Аналогично <see cref="Add" />, но ещё и фокусируется на этом виджете.
         /// </summary>
         /// <param name="widget">Виджет, который будет добавлен и сфокусирован.</param>
         /// <returns>Возвращает этот же контейнер.</returns>
@@ -134,13 +132,12 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Удаляет виджет из контейнера и из цикла.
+        /// Удаляет виджет из контейнера и из цикла.
         /// </summary>
         /// <param name="widget">Виджет, который необходимо удалить.</param>
         /// <returns>Возвращает был ли такой виджет внутри этого контейнера.</returns>
         public bool Remove(IWidget widget)
         {
-            Loop?.Unregister(widget);
             var isRemoved = Widgets.Remove(widget);
             if (isRemoved && Focused == widget)
             {
@@ -151,7 +148,22 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Если ни один виджет внутри не смог обработать нажатие кнопки, но вызываетсся этот метод.
+        /// Удаляет виджет из контейнера и из цикла.
+        /// </summary>
+        /// <param name="index">Индекс виджета, который необходимо удалить.</param>
+        /// <returns>Возвращает, удалось ли его удалить. Например, вернёт false, если передан некорректный индекс.</returns>
+        public bool RemoveAt(int index)
+        {
+            if (index < 0 || index > Widgets.Count)
+            {
+                return false;
+            }
+
+            return Remove(Widgets[index]);
+        }
+
+        /// <summary>
+        /// Если ни один виджет внутри не смог обработать нажатие кнопки, но вызываетсся этот метод.
         /// </summary>
         /// <param name="key">Информация о нажатой клавише.</param>
         /// <returns>Удалось ли как-то обработать это нажатие.</returns>
@@ -161,7 +173,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Преобразовывает этот контейнер в экземпляр <see cref="IKeyHandler" />
+        /// Преобразовывает этот контейнер в экземпляр <see cref="IKeyHandler" />
         /// </summary>
         /// <returns>Объект типа <see cref="IKeyHandler" />, который может быть преобразован в тип этого контейнера.</returns>
         public IKeyHandler AsIKeyHandler()

@@ -17,6 +17,7 @@ class Settings:
     text_size: (int, int)
     fps: (int, int)
     alpha: bool
+    dither: str
 
     @property
     def total_chars(self) -> str:
@@ -128,8 +129,8 @@ class State:
             settings.depth * settings.img_size[0],
             red, green, blue, alpha
         )
-        self.dit.set_algorithm(b"fstein")
-        self.dit.set_charset(b"ascii")
+        self.dit.set_algorithm(settings.dither.encode('ascii'))
+        self.dit.set_charset(b"utf8")
 
         self.canvas = Canvas(settings.text_size[0], settings.text_size[1])
         self.canvas.set_color_ansi(caca.COLOR_DEFAULT, caca.COLOR_TRANSPARENT)
@@ -156,7 +157,6 @@ class State:
         )
         if display:
             stderr.write("%s" % self.canvas.export_to_memory("utf8"))
-            stderr.write('\n' * self.settings.text_size[1])
 
         offset = 0
         attrs = caca_lib.caca_get_canvas_attrs(self.canvas).contents
@@ -215,13 +215,17 @@ def parse_fps(fps):
 def write_file(settings, frames, out, display=False):
     state = State(settings)
     out.write(settings.save())
-    widgets = [
-        'Rendering ', progressbar.SimpleProgress(),
-        ' (', progressbar.Percentage(), ')',
-        ' | ', progressbar.AdaptiveETA(),
-    ]
-    bar = progressbar.ProgressBar(widgets=widgets)
-    for i in bar(frames):
+    if not display:
+        widgets = [
+            'Rendering ', progressbar.SimpleProgress(),
+            ' (', progressbar.Percentage(), ')',
+            ' | ', progressbar.AdaptiveETA(),
+        ]
+        bar = progressbar.ProgressBar(widgets=widgets)
+        source = bar(frames)
+    else:
+        source = frames
+    for i in source:
         out.write(state.add_frame(i, display=display))
 
 
@@ -230,6 +234,7 @@ def main():
     parser.add_argument('--width', type=int)
     parser.add_argument('--height', type=int)
     parser.add_argument('--force', action='store_true')
+    parser.add_argument('--dither', type=str, default='fstein')
     parser.add_argument('--fps', type=str, default='0/0')
     parser.add_argument('--alpha', default=None, action='store_true')
     parser.add_argument('--no-alpha', dest='alpha', action='store_false')
@@ -268,7 +273,8 @@ def main():
         img_size = first.size,
         text_size = text_size,
         alpha = args.alpha,
-        fps = parse_fps(args.fps)
+        fps = parse_fps(args.fps),
+        dither = args.dither
     )
     if settings.fps == (0, 0):
         print("Warning: you didn't specified fps", file=stderr)

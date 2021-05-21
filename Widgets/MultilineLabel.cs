@@ -5,10 +5,26 @@ using System.Text;
 
 namespace Thuja.Widgets
 {
+    /// <summary>
+    /// Аналог <see cref="Label"/>, но поддерживающий несколько строк.
+    /// Умеет правильно расставлять переносы где необходимо.
+    /// </summary>
+    /// 
     public class MultilineLabel : IWidget
     {
+        /// <summary>
+        /// Строки, не превышающие <see cref="maxWidth"/>.
+        /// </summary>
         private string[] lines;
+
+        /// <summary>
+        /// Максимальная длина каждой строки.
+        /// </summary>
         private int maxWidth;
+
+        /// <summary>
+        /// Текст, который отображается.
+        /// </summary>
         private string text;
 
         public MultilineLabel(string text, int maxWidth = int.MaxValue)
@@ -19,12 +35,12 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Стиль текста.
+        /// Стиль текста.
         /// </summary>
         public Style Style { get; set; } = Style.Default;
 
         /// <summary>
-        ///     Текст.
+        /// Текст.
         /// </summary>
         public string Text
         {
@@ -37,7 +53,7 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Максимальная ширина.
+        /// Максимальная ширина.
         /// </summary>
         public int MaxWidth
         {
@@ -61,34 +77,46 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Разбивает текст на строки, не превышающие максимальную ширину.
+        /// Разбивает текст на строки, не превышающие максимальную ширину.
         /// </summary>
         private void Recalculate()
         {
-            var words = text.Split();
-            if (words.Length == 0)
+            if (text.Length == 0)
             {
                 lines = new string[0];
                 return;
             }
 
-            var lastLine = new StringBuilder(words[0]);
             var result = new List<string>();
-            foreach (var word in words.Skip(1))
+
+            // Перебираем все абзацы. \n — маркер того, что здесь точно нужно сделать перенос строки.
+            foreach (var paragraph in text.Split('\n'))
             {
-                var newLength = lastLine.Length + word.Length + 1;
-                if (newLength > maxWidth)
+                var words = paragraph.Split();
+
+                // Первое слово всегда помещается на строку. Даже если оно силишком длинное.
+                var lastLine = new StringBuilder(words[0]);
+
+                // Пытаемся добавлять слова в lastLine, но только до тех пор, пока lastLine не станет слишком длинной.
+                foreach (var word in words.Skip(1))
                 {
-                    result.Add(lastLine.ToString());
-                    lastLine = new StringBuilder(word);
+                    // Слово ещё влезает?
+                    var newLength = lastLine.Length + word.Length + 1;
+                    if (newLength > maxWidth)
+                    {
+                        // Если нет, то добавляем в результат новую строку, а это слово пенеосим на следующую.
+                        result.Add(lastLine.ToString());
+                        lastLine = new StringBuilder(word);
+                    }
+                    else
+                    {
+                        lastLine.Append(' ').Append(word);
+                    }
                 }
-                else
-                {
-                    lastLine.Append(' ').Append(word);
-                }
+
+                result.Add(lastLine.ToString());
             }
 
-            result.Add(lastLine.ToString());
             lines = result.ToArray();
         }
     }

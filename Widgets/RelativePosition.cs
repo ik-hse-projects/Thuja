@@ -1,7 +1,7 @@
 namespace Thuja.Widgets
 {
     /// <summary>
-    ///     Контейнер, который сдвигает всё его содержимое на указанное расстояние.
+    /// Контейнер, который сдвигает всё его содержимое на указанное расстояние.
     /// </summary>
     public class RelativePosition : BaseContainer
     {
@@ -16,17 +16,17 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Отступ слева.
+        /// Отступ слева.
         /// </summary>
         public int X { get; set; }
 
         /// <summary>
-        ///     Отступ сверха.
+        /// Отступ сверха.
         /// </summary>
         public int Y { get; set; }
 
         /// <summary>
-        ///     На сколько слоёв сдвинуть.
+        /// На сколько слоёв сдвинуть.
         /// </summary>
         public int Layer { get; set; }
 

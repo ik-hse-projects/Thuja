@@ -5,21 +5,30 @@ using System.Linq;
 namespace Thuja.Widgets
 {
     /// <summary>
-    ///     Расположение <see cref="StackContainer" />.
+    /// Расположение <see cref="StackContainer" />.
     /// </summary>
     public enum Orientation
     {
+        /// <summary>
+        /// Располагать виджеты вертикально, друг над другом.
+        /// </summary>
         Vertical,
+        
+        /// <summary>
+        /// Распологать виджеты горизонатльно, рядом друг с другом.
+        /// </summary>
         Horizontal
     }
 
     /// <summary>
-    ///     Контейнер, который располагает другие виджиты рядом друг с другом.
+    /// Контейнер, который располагает другие виджиты рядом друг с другом.
     /// </summary>
-    public class StackContainer : BaseContainer, IWidget
+    public class StackContainer : BaseContainer
     {
+        /// <summary>
+        /// Виджет, который был сфокусирован в последний раз.
+        /// </summary>
         private IFocusable? lastFocused;
-        private int position;
 
         /// <param name="orientation">Ориентация <see cref="StackContainer" />.</param>
         /// <param name="margin">Промежуток между виджетами.</param>
@@ -33,26 +42,57 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Ориентация.
+        /// Индекс элемента, который на данный момент сфокусирован.
+        /// </summary>
+        public int Position { get; private set; }
+
+        /// <summary>
+        /// Ориентация.
         /// </summary>
         public Orientation Orientation { get; set; }
 
         /// <summary>
-        ///     Промежуток между виджетами.
+        /// Промежуток между виджетами.
         /// </summary>
         public int Margin { get; set; }
 
         /// <summary>
-        ///     Максимальное количество отрисовываемых виджетов.
+        /// Максимальное количество отрисовываемых виджетов.
         /// </summary>
         public int MaxVisibleCount { get; set; }
 
-        /// <inheritdoc />
-        public void Update()
+        /// <summary>
+        /// Вызывается, когда меняется текущий сфокусированный элемент.
+        /// Поля Position и Focused могут быть особенно полезны.
+        /// </summary>
+        public event Action? FocusedChanged;
+
+        /// <summary>
+        /// Создаёт <see cref="ListOf{T}" /> на основе этого списка.
+        /// </summary>
+        /// <param name="converter">Функция, которая превращает элементы списка в элементы интерфейса.</param>
+        public ListOf<T> ListOf<T>(Func<T, IWidget> converter)
         {
-            if (Focused != lastFocused)
+            return new(this, converter);
+        }
+
+        /// <summary>
+        /// Создаёт <see cref="ListOf{T}" />, на основе items и этого списка.
+        /// Все элементы из items будут добавлены в контейнер.
+        /// </summary>
+        /// <param name="items">Список нескорвертированных объектов.</param>
+        /// <param name="converter">Функция, которая превращает элементы списка в элементы интерфейса.</param>
+        public ListOf<T> FromList<T>(IList<T> items, Func<T, IWidget> converter)
+        {
+            return new(this, items, converter);
+        }
+
+        /// <inheritdoc />
+        public override void FocusChange(bool isFocused)
+        {
+            base.FocusChange(isFocused);
+            if (isFocused)
             {
-                lastFocused = Focused;
                 MoveSelection(0);
             }
         }
@@ -60,6 +100,12 @@ namespace Thuja.Widgets
         /// <inheritdoc />
         public override void Render(RenderContext context)
         {
+            if (Focused != lastFocused)
+            {
+                lastFocused = Focused;
+                MoveSelection(0);
+            }
+
             var offsetY = 0;
             var offsetX = 0;
             foreach (var widget in FindVisible())
@@ -77,7 +123,7 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Находит виджеты, которые должны быть видны.
+        /// Находит виджеты, которые должны быть видны.
         /// </summary>
         private IEnumerable<IWidget> FindVisible()
         {
@@ -93,8 +139,8 @@ namespace Thuja.Widgets
                 offsetAfter++;
             }
 
-            var start = position - offsetBefore;
-            var end = position + offsetAfter;
+            var start = Position - offsetBefore;
+            var end = Position + offsetAfter;
 
             if (start < 0)
             {
@@ -110,18 +156,20 @@ namespace Thuja.Widgets
         }
 
         /// <summary>
-        ///     Находит виджеты, которые могут быть сфокусированы, и их индексы среди всех виджетов.
+        /// Находит виджеты, которые могут быть сфокусированы, и их индексы среди всех виджетов.
         /// </summary>
-        private List<(IFocusable?, int index)> FindFocusable()
+        private List<(IFocusable, int index)> FindFocusable()
         {
             return Widgets
                 .Select((widget, index) => (widget as IFocusable, index))
-                .Where(w => w.Item1?.CanFocus ?? false)
+                .Where(w => w.Item1 != null)
+                .Select(w => (w.Item1!, w.index))
+                .Where(w => w.Item1.CanFocus)
                 .ToList();
         }
 
         /// <summary>
-        ///     Передивагет фокус на указанное количество элементов.
+        /// Передивагет фокус на указанное количество элементов.
         /// </summary>
         /// <returns>Удалось ли передвинуть.</returns>
         private bool MoveSelection(int direction)
@@ -135,23 +183,31 @@ namespace Thuja.Widgets
             var currentlySelected = focusable.FindIndex(x => ReferenceEquals(x.Item1, Focused));
             if (currentlySelected == -1)
             {
-                var nearest = focusable.MinBy(i => Math.Abs(i.index - position));
+                // Ранее сфокусированный эл-т больше не может быть сфокусированным.
+                // Поэтому _вместо_ движения фокуса, просто установим его на ближайший возможный к желаемому.
+                var wanted = Position + direction;
+                var nearest = focusable.MinBy(i => Math.Abs(i.index - wanted));
                 if (nearest == null)
                 {
-                    (Focused, position) = (null, 0);
+                    (Focused, Position) = (null, 0);
+                    FocusedChanged?.Invoke();
                     return false;
                 }
 
-                currentlySelected = nearest.Value.index;
+                (Focused, Position) = nearest.Value;
             }
-
-            var newSelected = currentlySelected + direction;
-            if (newSelected < 0 || newSelected >= focusable.Count)
+            else
             {
-                return false;
+                var newSelected = currentlySelected + direction;
+                if (newSelected < 0 || newSelected >= focusable.Count)
+                {
+                    return false;
+                }
+
+                (Focused, Position) = focusable[newSelected];
             }
 
-            (Focused, position) = focusable[newSelected];
+            FocusedChanged?.Invoke();
             return true;
         }
 
@@ -183,7 +239,8 @@ namespace Thuja.Widgets
                         return false;
                     }
 
-                    (Focused, position) = focusable.Last();
+                    (Focused, Position) = focusable.Last();
+                    FocusedChanged?.Invoke();
                     return true;
                 }
                 case ConsoleKey.Home:
@@ -195,7 +252,8 @@ namespace Thuja.Widgets
                         return false;
                     }
 
-                    (Focused, position) = focusable.First();
+                    (Focused, Position) = focusable.First();
+                    FocusedChanged?.Invoke();
                     return true;
                 }
                 default:

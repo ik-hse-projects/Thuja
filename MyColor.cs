@@ -4,10 +4,11 @@ using System.Collections.Generic;
 namespace Thuja
 {
     /// <summary>
-    ///     Цвета консоли.
+    /// Цвета консоли.
     /// </summary>
     public enum MyColor : byte
     {
+#pragma warning disable 1591
         Black = 0,
         DarkBlue = 1,
         DarkGreen = 2,
@@ -17,29 +18,30 @@ namespace Thuja
         DarkYellow = 6,
         Gray = 7,
         DarkGray = 8,
-        Blue = 10,
-        Green = 11,
-        Cyan = 12,
-        Red = 13,
-        Magenta = 14,
+        Blue = 9,
+        Green = 10,
+        Cyan = 11,
+        Red = 12,
+        Magenta = 13,
         Yellow = 14,
         White = 15,
         Default = 16,
         Transparent = 17
+#pragma warning restore 1591
     }
 
     /// <summary>
-    ///     Функции над цветами консоли.
+    /// Функции над цветами консоли.
     /// </summary>
     public static class MyColorExt
     {
         /// <summary>
-        ///     Кэш преобразования <see cref="MyColor" /> в <see cref="ConsoleColor" />.
+        /// Кэш преобразования <see cref="MyColor" /> в <see cref="ConsoleColor" />.
         /// </summary>
-        private static readonly Dictionary<MyColor, ConsoleColor> Mapping = new Dictionary<MyColor, ConsoleColor>();
+        private static readonly Dictionary<MyColor, ConsoleColor> Mapping = new();
 
         /// <summary>
-        ///     Преобразует число в цвет. Если это невозможно, то возвращает цвет по-умолчанию.
+        /// Преобразует число в цвет. Если это невозможно, то возвращает цвет по-умолчанию.
         /// </summary>
         public static MyColor FromInt(int b)
         {
@@ -52,7 +54,7 @@ namespace Thuja
         }
 
         /// <summary>
-        ///     Преобразует <see cref="MyColor" /> в <see cref="ConsoleColor" />.
+        /// Преобразует <see cref="MyColor" /> в <see cref="ConsoleColor" />.
         /// </summary>
         public static ConsoleColor ToConsoleColor(this MyColor color)
         {
